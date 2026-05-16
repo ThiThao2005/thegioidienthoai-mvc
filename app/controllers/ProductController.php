@@ -1,153 +1,257 @@
 <?php
+require_once 'app/config/database.php';
 require_once 'app/models/ProductModel.php';
+require_once 'app/models/CategoryModel.php';
 
 class ProductController
 {
-    private $products = [];
+    private $productModel;
+    private $categoryModel;
+    private $db;
 
     public function __construct()
     {
-        // Kiểm tra xem session đã bắt đầu chưa để tránh lỗi Notice
+        // Khởi động session để làm việc với Giỏ hàng (Bắt buộc phải có)
         if (session_status() === PHP_SESSION_NONE) {
             session_start();
         }
-        if (isset($_SESSION['products'])) {
-            $this->products = $_SESSION['products'];
-        }
+        
+        $this->db = (new Database())->getConnection();
+        $this->productModel = new ProductModel($this->db);
+        $this->categoryModel = new CategoryModel($this->db);
     }
 
-    /**
-     * Hàm hỗ trợ gọi View: Tự động nhúng Header và Footer
-     */
+    // Hàm render dùng chung để giữ nguyên Header/Footer giao diện thế giới điện thoại
     private function render($viewPath, $data = [])
     {
-        extract($data); 
-        
+        extract($data);
         require_once 'app/views/layout/header.php';
         require_once 'app/views/' . $viewPath . '.php';
         require_once 'app/views/layout/footer.php';
     }
 
+    // Hiển thị danh sách sản phẩm (Có hỗ trợ lọc theo danh mục và tìm kiếm)
     public function index()
     {
-        $this->list();
+        $category_id = isset($_GET['category_id']) ? $_GET['category_id'] : null;
+        $products = $this->productModel->getProducts($category_id);
+        $this->render('product/list', ['products' => $products]);
     }
 
-    public function list()
-    {
-        $this->render('product/list', ['products' => $this->products]);
-    }
-
+    // Hiển thị form thêm sản phẩm
     public function add()
     {
-        $errors = [];
+        $categories = $this->categoryModel->getCategories();
+        $this->render('product/add', ['categories' => $categories]);
+    }
+
+    // Xử lý lưu Thêm sản phẩm
+    public function save()
+    {
         if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-            $name = trim($_POST['name']);
-            $description = trim($_POST['description']);
-            $price = $_POST['price'];
+            $name = $_POST['name'] ?? '';
+            $description = $_POST['description'] ?? '';
+            $price = $_POST['price'] ?? '';
+            $category_id = $_POST['category_id'] ?? null;
+            
+            $imageName = 'default.jpg';
 
-            // Kiểm tra dữ liệu đầu vào
-            if (empty($name)) {
-                $errors[] = 'Tên sản phẩm là bắt buộc.';
-            } elseif (strlen($name) < 10 || strlen($name) > 100) {
-                $errors[] = 'Tên sản phẩm phải có từ 10 đến 100 ký tự.';
-            }
-
-            if (!is_numeric($price) || $price <= 0) {
-                $errors[] = 'Giá phải là một số dương lớn hơn 0.';
-            }
-
-            // --- PHẦN MỚI: XỬ LÝ UPLOAD HÌNH ẢNH ---
-            $imageName = 'default.jpg'; // Ảnh mặc định nếu có lỗi
             if (isset($_FILES['image']) && $_FILES['image']['error'] == 0) {
                 $uploadDir = 'public/images/';
-                
-                // Tự động tạo thư mục public/images/ nếu chưa có
-                if (!is_dir($uploadDir)) {
-                    mkdir($uploadDir, 0777, true);
-                }
-                
-                // Đổi tên file để không bị trùng (gắn thêm thời gian lúc upload)
                 $imageName = time() . '_' . basename($_FILES['image']['name']);
-                $targetFilePath = $uploadDir . $imageName;
-                
-                // Di chuyển file từ bộ nhớ tạm vào thư mục dự án
-                if (!move_uploaded_file($_FILES['image']['tmp_name'], $targetFilePath)) {
-                     $errors[] = 'Không thể lưu hình ảnh, vui lòng thử lại.';
-                }
-            } else {
-                $errors[] = 'Vui lòng chọn hình ảnh sản phẩm.';
+                move_uploaded_file($_FILES['image']['tmp_name'], $uploadDir . $imageName);
             }
-            // ----------------------------------------
 
-            if (empty($errors)) {
-                $maxId = 0;
-                foreach ($this->products as $p) {
-                    if ($p->getID() > $maxId) {
-                        $maxId = $p->getID();
-                    }
-                }
-                $id = $maxId + 1;
-                
-                // ĐÃ SỬA: Truyền thêm biến $imageName vào tham số thứ 5
-                $product = new ProductModel($id, $name, $description, $price, $imageName);
-                $this->products[] = $product;
+            $result = $this->productModel->addProduct($name, $description, $price, $category_id, $imageName);
 
-                $_SESSION['products'] = $this->products;
-                header('Location: /project1/Product/list');
+            if ($result === true) {
+                header('Location: /project1/Product/index');
                 exit();
+            } else {
+                $errors = is_array($result) ? $result : ['Lỗi không xác định khi thêm'];
+                $categories = $this->categoryModel->getCategories();
+                $this->render('product/add', ['errors' => $errors, 'categories' => $categories]);
             }
         }
-        
-        $this->render('product/add', ['errors' => $errors]);
     }
 
+    // Xử lý form Sửa sản phẩm
     public function edit($id)
     {
-        if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-            foreach ($this->products as $key => $product) {
-                if ($product->getID() == $id) {
-                    $this->products[$key]->setName($_POST['name']);
-                    $this->products[$key]->setDescription($_POST['description']);
-                    $this->products[$key]->setPrice($_POST['price']);
-                    // Ở trang sửa tạm thời mình giữ nguyên ảnh cũ, chưa làm chức năng đổi ảnh mới
-                    break;
-                }
-            }
-            $_SESSION['products'] = $this->products;
-            header('Location: /project1/Product/list');
-            exit();
+        $product = $this->productModel->getProductById($id);
+        $categories = $this->categoryModel->getCategories();
+        
+        if ($product) {
+            $this->render('product/edit', ['product' => $product, 'categories' => $categories]);
+        } else {
+            die("Không thấy sản phẩm.");
         }
-
-        foreach ($this->products as $product) {
-            if ($product->getID() == $id) {
-                $this->render('product/edit', ['product' => $product]);
-                return;
-            }
-        }
-        die('Product not found');
     }
 
+    // Xử lý xóa sản phẩm
     public function delete($id)
     {
-        foreach ($this->products as $key => $product) {
-            if ($product->getID() == $id) {
-                // (Tùy chọn) Xóa luôn file ảnh trong thư mục public/images/ cho nhẹ máy
-                $imagePath = 'public/images/' . $product->getImage();
-                if (file_exists($imagePath) && $product->getImage() != 'default.jpg') {
-                    unlink($imagePath); 
-                }
-                
-                unset($this->products[$key]);
-                break;
-            }
+        if ($this->productModel->deleteProduct($id)) {
+            header('Location: /project1/Product/index');
+            exit();
+        } else {
+            echo "Đã xảy ra lỗi khi xóa sản phẩm.";
+        }
+    }
+
+    // ==========================================
+    // 🛒 CÁC CHỨC NĂNG BÀI 3: GIỎ HÀNG & ĐẶT HÀNG
+    // ==========================================
+
+    // 1. Thêm sản phẩm vào giỏ hàng bằng SESSION
+    public function addToCart($id)
+    {
+        $product = $this->productModel->getProductById($id);
+        if (!$product) {
+            die("Không tìm thấy sản phẩm.");
+        }
+
+        if (!isset($_SESSION['cart'])) {
+            $_SESSION['cart'] = [];
+        }
+
+        // Nếu sản phẩm đã có trong giỏ thì tăng số lượng, chưa có thì thêm mới
+        if (isset($_SESSION['cart'][$id])) {
+            $_SESSION['cart'][$id]['quantity']++;
+        } else {
+            $_SESSION['cart'][$id] = [
+                'name' => $product->name,
+                'price' => $product->price,
+                'quantity' => 1,
+                'image' => $product->image
+            ];
         }
         
-        $this->products = array_values($this->products);
-        $_SESSION['products'] = $this->products;
-        
-        header('Location: /project1/Product/list');
+        // Chuyển hướng thẳng đến trang xem giỏ hàng
+        header('Location: /project1/Product/cart');
         exit();
+    }
+
+    // 2. Hiển thị trang giỏ hàng
+    public function cart()
+    {
+        $cart = isset($_SESSION['cart']) ? $_SESSION['cart'] : [];
+        $this->render('product/cart', ['cart' => $cart]);
+    }
+
+    // 3. Hiển thị trang điền thông tin thanh toán
+    public function checkout()
+    {
+        $cart = isset($_SESSION['cart']) ? $_SESSION['cart'] : [];
+        if (empty($cart)) {
+            header('Location: /project1/Product/cart');
+            exit();
+        }
+        $this->render('product/checkout', ['cart' => $cart]);
+    }
+
+    // 4. Xử lý lưu thông tin đặt hàng vào Database (Transaction)
+    public function processCheckout()
+    {
+        if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+            $name = $_POST['name'] ?? '';
+            $phone = $_POST['phone'] ?? '';
+            $address = $_POST['address'] ?? '';
+
+            if (!isset($_SESSION['cart']) || empty($_SESSION['cart'])) {
+                die("Giỏ hàng đang trống.");
+            }
+
+            // Bắt đầu Transaction (giao dịch an toàn dữ liệu)
+            $this->db->beginTransaction();
+            try {
+                // Bước A: Lưu vào bảng orders
+                $query = "INSERT INTO orders (name, phone, address) VALUES (:name, :phone, :address)";
+                $stmt = $this->db->prepare($query);
+                $stmt->bindParam(':name', $name);
+                $stmt->bindParam(':phone', $phone);
+                $stmt->bindParam(':address', $address);
+                $stmt->execute();
+                
+                // Lấy ra ID của đơn hàng vừa chèn
+                $order_id = $this->db->lastInsertId();
+
+                // Bước B: Duyệt giỏ hàng và lưu vào bảng order_details
+                $cart = $_SESSION['cart'];
+                foreach ($cart as $product_id => $item) {
+                    $query = "INSERT INTO order_details (order_id, product_id, quantity, price) 
+                              VALUES (:order_id, :product_id, :quantity, :price)";
+                    $stmt = $this->db->prepare($query);
+                    $stmt->bindParam(':order_id', $order_id);
+                    $stmt->bindParam(':product_id', $product_id);
+                    $stmt->bindParam(':quantity', $item['quantity']);
+                    $stmt->bindParam(':price', $item['price']);
+                    $stmt->execute();
+                }
+
+                // Bước C: Xóa giỏ hàng sau khi đặt thành công và commit
+                unset($_SESSION['cart']);
+                $this->db->commit();
+
+                // Chuyển hướng sang trang thông báo thành công
+                header('Location: /project1/Product/orderConfirmation');
+                exit();
+
+            } catch (Exception $e) {
+                // Hoàn tác lại nếu có bất kỳ lỗi nào xảy ra trong quá trình lưu
+                $this->db->rollBack();
+                die("Đã xảy ra lỗi khi xử lý đơn hàng: " . $e->getMessage());
+            }
+        }
+    }
+    public function updateCartQuantity() {
+    if (!isset($_SESSION)) {
+        session_start();
+    }
+
+    $id = isset($_GET['id']) ? $_GET['id'] : null;
+    $action = isset($_GET['action']) ? $_GET['action'] : '';
+
+    if ($id && isset($_SESSION['cart'][$id])) {
+        if ($action === 'increase') {
+            $_SESSION['cart'][$id]['quantity'] += 1;
+        } elseif ($action === 'decrease') {
+            $_SESSION['cart'][$id]['quantity'] -= 1;
+            // Nếu giảm xuống 0 hoặc nhỏ hơn thì tự động xóa sản phẩm đó
+            if ($_SESSION['cart'][$id]['quantity'] <= 0) {
+                unset($_SESSION['cart'][$id]);
+            }
+        }
+    }
+
+    // Chuyển hướng quay ngược lại trang giỏ hàng sau khi tính toán xong
+    header('Location: /project1/Product/cart');
+    exit();
+}
+
+public function removeFromCart() {
+    // 1. Khởi động session nếu chưa có
+    if (!isset($_SESSION)) {
+        session_start();
+    }
+
+    // 2. Lấy ID sản phẩm cần xóa từ URL qua $_GET
+    $id = isset($_GET['id']) ? $_GET['id'] : null;
+
+    // 3. Kiểm tra xem sản phẩm có tồn tại trong giỏ hàng không, nếu có thì hủy nó đi
+    if ($id && isset($_SESSION['cart'][$id])) {
+        unset($_SESSION['cart'][$id]);
+    }
+
+    // 4. Xóa xong chuyển hướng quay trở lại trang giỏ hàng ngay lập tức
+    header('Location: /project1/Product/cart');
+    exit();
+}
+
+    // 5. Hiển thị trang xác nhận đặt hàng thành công
+    public function orderConfirmation()
+    {
+        $this->render('product/orderConfirmation');
     }
 }
 ?>
