@@ -83,15 +83,36 @@
 </div>
 
 <script>
-    // Script xem trước ảnh realtime khi admin chọn file mới
+    // 📸 1. Script xem trước ảnh realtime + Kiểm tra dung lượng file
     function previewImage(event) {
-        var reader = new FileReader();
-        reader.onload = function() {
-            var output = document.getElementById('imagePreview');
-            output.src = reader.result;
-        };
-        if(event.target.files[0]) {
-            reader.readAsDataURL(event.target.files[0]);
+        var input = event.target;
+        var output = document.getElementById('imagePreview');
+        
+        if (input.files && input.files[0]) {
+            var file = input.files[0];
+            
+            // Giới hạn file tối đa 2MB (2 * 1024 * 1024 bytes)
+            var maxSize = 2 * 1024 * 1024; 
+            if (file.size > maxSize) {
+                alert("⚠️ Kích thước ảnh quá lớn! Vui lòng chọn ảnh nhỏ hơn 2MB để hệ thống tải lên mượt mà.");
+                input.value = ""; // Xóa file đã chọn trong input
+                return;
+            }
+
+            var reader = new FileReader();
+            reader.onload = function() {
+                output.src = reader.result;
+            };
+            reader.readAsDataURL(file);
         }
     }
+
+    // ⏳ 2. Chặn đúp chuột (Double Click) khi submit form
+    document.querySelector('form').addEventListener('submit', function(e) {
+        var submitBtn = this.querySelector('button[type="submit"]');
+        
+        // Đổi trạng thái nút để người dùng không bấm liên tục khi đang upload ảnh
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i> Đang lưu thay đổi...';
+    });
 </script>

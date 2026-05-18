@@ -1,7 +1,12 @@
 <?php
-// Kiểm tra xem biến $cart có tồn tại và có dữ liệu không
-$hasItems = isset($cart) && !empty($cart);
+// Gọi SessionHelper để đồng bộ và lấy dữ liệu giỏ hàng trực tiếp từ Session
+SessionHelper::start();
+$cart = $_SESSION['cart'] ?? [];
+$hasItems = !empty($cart);
 $totalPrice = 0;
+
+// Lấy tổng số lượng thực tế (Ví dụ: 2 iPhone + 1 Laptop = 3)
+$totalQuantity = SessionHelper::getCartCount();
 ?>
 
 <div class="row mt-4">
@@ -16,9 +21,10 @@ $totalPrice = 0;
 </div>
 
 <div class="row">
-    <div class="col-lg-8 col-md-12 mb-4"> <div class="card border-0 shadow-sm rounded-3">
+    <div class="col-lg-8 col-md-12 mb-4"> 
+        <div class="card border-0 shadow-sm rounded-3">
             <div class="card-body p-4">
-                <h4 class="fw-bold mb-4"><i class="fas fa-shopping-cart me-2"></i> Giỏ hàng (<?= $hasItems ? count($cart) : 0 ?> sản phẩm)</h4>
+                <h4 class="fw-bold mb-4"><i class="fas fa-shopping-cart me-2"></i> Giỏ hàng (<?= $totalQuantity ?> sản phẩm)</h4>
                 
                 <?php if (!$hasItems): ?>
                     <div class="text-center py-5">
@@ -43,38 +49,51 @@ $totalPrice = 0;
                             </thead>
                             <tbody>
                                 <?php foreach ($cart as $id => $item): 
-                                    $subTotal = $item['price'] * $item['quantity'];
+                                    // Bẫy lỗi: Đảm bảo lấy đúng số lượng dù cấu trúc mảng lưu thế nào
+                                    $quantity = is_array($item) ? ($item['quantity'] ?? $item['Quantity'] ?? 1) : 1;
+                                    $price = $item['price'] ?? $item['Price'] ?? 0;
+                                    $name = $item['name'] ?? $item['Name'] ?? 'Sản phẩm không tên';
+                                    $image = $item['image'] ?? $item['Image'] ?? 'default.png';
+
+                                    $subTotal = $price * $quantity;
                                     $totalPrice += $subTotal;
-                                    // Kiểm tra xem ảnh có phải là ảnh upload hay ảnh mặc định
-                                    $imagePath = (strpos($item['image'], 'public/images/') !== false || strpos($item['image'], 'uploads/') !== false) 
-                                        ? '/project1/' . $item['image'] 
-                                        : '/project1/public/images/' . $item['image'];
+
+                                    // Xử lý đường dẫn ảnh giống code cũ của bạn
+                                    $imagePath = (strpos($image, 'public/images/') !== false || strpos($image, 'uploads/') !== false) 
+                                        ? '/project1/' . $image 
+                                        : '/project1/public/images/' . $image;
+                                    
+                                    // Chuẩn hóa ID sạch để truyền URL không lỗi
+                                    $safeId = trim($id);
                                 ?>
                                     <tr class="border-bottom">
                                         <td>
                                             <div class="d-flex align-items-center py-2">
                                                 <img src="<?= htmlspecialchars($imagePath) ?>" 
-                                                     alt="<?= htmlspecialchars($item['name']) ?>" 
+                                                     alt="<?= htmlspecialchars($name) ?>" 
                                                      class="rounded border bg-white me-3" 
                                                      style="width: 70px; height: 70px; object-fit: contain;">
                                                 <div>
-                                                    <h6 class="fw-bold mb-1 text-dark"><?= htmlspecialchars($item['name']) ?></h6>
+                                                    <h6 class="fw-bold mb-1 text-dark"><?= htmlspecialchars($name) ?></h6>
                                                 </div>
                                             </div>
                                         </td>
                                         <td class="text-center fw-semibold text-secondary">
-                                            <?= number_format($item['price'], 0, ',', '.') ?>đ
+                                            <?= number_format($price, 0, ',', '.') ?>đ
                                         </td>
                                         
                                         <td class="text-center">
                                             <div class="input-group input-group-sm justify-content-center">
-                                                <a href="/project1/Product/updateCartQuantity?id=<?= $id ?>&action=decrease" class="btn btn-outline-secondary btn-minus px-2">
+                                                <a href="/project1/Product/updateCartQuantity?id=<?= $safeId ?>&action=decrease" 
+                                                   class="btn btn-outline-secondary btn-minus px-2" 
+                                                   data-quantity="<?= $quantity ?>"
+                                                   onclick="return handleDecrease(this);">
                                                     <i class="fas fa-minus small"></i>
                                                 </a>
                                                 
-                                                <input type="text" class="form-control text-center bg-white" value="<?= $item['quantity'] ?>" style="max-width: 45px; font-weight: 600;" readonly>
+                                                <input type="text" class="form-control text-center bg-white" value="<?= $quantity ?>" style="max-width: 45px; font-weight: 600;" readonly>
                                                 
-                                                <a href="/project1/Product/updateCartQuantity?id=<?= $id ?>&action=increase" class="btn btn-outline-secondary btn-plus px-2">
+                                                <a href="/project1/Product/updateCartQuantity?id=<?= $safeId ?>&action=increase" class="btn btn-outline-secondary btn-plus px-2">
                                                     <i class="fas fa-plus small"></i>
                                                 </a>
                                             </div>
@@ -85,7 +104,7 @@ $totalPrice = 0;
                                         </td>
                                         
                                         <td class="text-center">
-                                            <a href="/project1/Product/removeFromCart?id=<?= $id ?>" class="btn btn-link link-danger text-decoration-none p-0" 
+                                            <a href="/project1/Product/removeFromCart?id=<?= $safeId ?>" class="btn btn-link link-danger text-decoration-none p-0" 
                                                onclick="return confirm('Bạn có chắc muốn bỏ sản phẩm này khỏi giỏ hàng không?');">
                                                 <i class="far fa-trash-alt fs-5"></i>
                                             </a>
@@ -146,7 +165,6 @@ $totalPrice = 0;
 </div>
 
 <style>
-    /* Đã sửa lại cú pháp đóng mở dấu ngoặc nhọn bị lỗi cũ */
     .btn-checkout {
         background-color: #ffd400 !important;
         border: none;
@@ -157,7 +175,6 @@ $totalPrice = 0;
         transform: translateY(-2px);
         box-shadow: 0 4px 10px rgba(252, 204, 0, 0.4);
     }
-    /* Chỉnh nút tăng giảm cân đối hơn */
     .btn-minus, .btn-plus {
         border-color: #ced4da !important;
         background: #f8f9fa;
@@ -168,3 +185,16 @@ $totalPrice = 0;
         color: #000;
     }
 </style>
+
+<script>
+function handleDecrease(element) {
+    // Lấy số lượng hiện tại từ thuộc tính data-quantity
+    const currentQty = parseInt(element.getAttribute('data-quantity')) || 1;
+    
+    // Nếu số lượng bằng 1 mà người dùng bấm trừ tiếp -> Hỏi xác nhận xóa hẳn
+    if (currentQty <= 1) {
+        return confirm('Số lượng sẽ về 0. Bạn có chắc muốn xóa sản phẩm này khỏi giỏ hàng không?');
+    }
+    return true;
+}
+</script>

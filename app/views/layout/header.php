@@ -6,6 +6,9 @@
     <title>📱 THẾ GIỚI ĐIỆN THOẠI</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
     <style>
         .tgdd-bg { background-color: #ffd400; } 
         
@@ -21,6 +24,12 @@
         .category-item:hover { background-color: rgba(0,0,0,0.05); transform: translateY(-2px); }
         .category-link { color: #333; text-decoration: none; font-size: 0.85rem; display: flex; flex-direction: column; align-items: center; gap: 5px; }
         .category-link i { font-size: 1.5rem; }
+        
+        .user-dropdown-btn { background-color: rgba(255, 255, 255, 0.5) !important; border: none !important; color: #333 !important; transition: all 0.2s; }
+        .user-dropdown-btn:hover { background-color: rgba(255, 255, 255, 0.7) !important; }
+        .dropdown-item { transition: all 0.15s ease-in-out; }
+        .dropdown-item:hover { background-color: #ffd400 !important; color: #000 !important; }
+        .badge-cart { font-size: 0.75rem; padding: 0.35em 0.65em; }
     </style>
 </head>
 <body class="bg-light">
@@ -41,15 +50,56 @@
                 </button>
             </form>
             
-            <ul class="navbar-nav ms-auto gap-3">
-                <li class="nav-item d-flex align-items-center">
-                    <a class="nav-link text-dark fw-bold bg-white bg-opacity-25 rounded-pill px-3 py-2" href="/project1/Account/profile">
-                        <i class="fas fa-user-circle me-1 fs-5 align-middle"></i> Tài khoản
-                    </a>
+            <ul class="navbar-nav ms-auto gap-3 align-items-lg-center">
+                
+                <li class="nav-item">
+                    <?php if (SessionHelper::isLoggedIn()): ?>
+                        <div class="dropdown">
+                            <button class="btn user-dropdown-btn fw-bold rounded-pill px-3 py-2 dropdown-toggle" 
+                                    type="button" 
+                                    id="userDropdown" 
+                                    data-bs-toggle="dropdown" 
+                                    aria-expanded="false">
+                                <i class="fas fa-user-circle me-1 fs-5 align-middle"></i> 
+                                <?= htmlspecialchars(SessionHelper::getUserData('fullname')) ?>
+                            </button>
+                            
+                            <ul class="dropdown-menu dropdown-menu-end border-0 shadow mt-2 rounded-3 py-2" aria-labelledby="userDropdown">
+                                <?php if (SessionHelper::isAdmin()): ?>
+                                    <li>
+                                        <a class="dropdown-item small py-2 fw-semibold text-primary" href="/project1/product/dashboard">
+                                            <i class="fas fa-user-shield me-2"></i>Quản trị hệ thống
+                                        </a>
+                                    </li>
+                                    <li><hr class="dropdown-divider opacity-50"></li>
+                                <?php endif; ?>
+                                
+                                <li>
+                                    <a class="dropdown-item small py-2 text-danger fw-semibold" href="/project1/Account/logout">
+                                        <i class="fas fa-sign-out-alt me-2"></i>Đăng xuất
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                    <?php else: ?>
+                        <a class="nav-link text-dark fw-bold bg-white bg-opacity-25 rounded-pill px-3 py-2" href="/project1/Account/login">
+                            <i class="fas fa-user-circle me-1 fs-5 align-middle"></i> Tài khoản
+                        </a>
+                    <?php endif; ?>
                 </li>
+
                 <li class="nav-item d-flex align-items-center">
-                    <a class="nav-link text-dark fw-bold bg-white bg-opacity-25 rounded-pill px-3 py-2" href="/project1/Product/cart">
-                        <i class="fas fa-shopping-cart me-1 fs-5 align-middle"></i> Giỏ hàng
+                    <a class="nav-link text-dark fw-bold bg-white bg-opacity-25 rounded-pill px-3 py-2 position-relative" href="/project1/Product/cart">
+                        <i class="fas fa-shopping-cart me-1 fs-5 align-middle"></i> 
+                        Giỏ hàng 
+                        <?php 
+                            $cartCount = SessionHelper::getCartCount(); 
+                            if ($cartCount > 0): 
+                        ?>
+                            <span class="badge badge-cart bg-danger ms-1 rounded-circle"><?= $cartCount ?></span>
+                        <?php else: ?>
+                            <span class="badge badge-cart bg-secondary bg-opacity-50 ms-1 rounded-circle">0</span>
+                        <?php endif; ?>
                     </a>
                 </li>
             </ul>
@@ -91,19 +141,38 @@
 
 <div class="container pb-5">
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-
 <script>
+    // 1. Xử lý tìm kiếm sản phẩm an toàn
     document.getElementById('searchForm').addEventListener('submit', function(event) {
         event.preventDefault(); 
-        
         let keyword = document.getElementById('searchInput').value.trim();
         
         if (keyword !== "") {
-            // Đã sửa: Đồng bộ tìm kiếm về action index
             window.location.href = "/project1/Product/index?search=" + encodeURIComponent(keyword);
         } else {
             alert("Vui lòng nhập từ khóa cần tìm!");
+        }
+    });
+
+    // 🔥 2. ÉP BUỘC DROPDOWN ĐĂNG XUẤT PHẢI HIỂN THỊ KHI CLICK (FIX KẸT DROPDOWN)
+    document.addEventListener("DOMContentLoaded", function() {
+        const dropdownBtn = document.getElementById("userDropdown");
+        // Tìm menu <ul> nằm ngay kế tiếp nút button tài khoản
+        const dropdownMenu = document.querySelector(".dropdown-menu"); 
+        
+        if (dropdownBtn && dropdownMenu) {
+            dropdownBtn.addEventListener("click", function(e) {
+                e.preventDefault();
+                e.stopPropagation(); // Chặn sự kiện lan ra ngoài
+                
+                // Bật/Tắt class "show" của Bootstrap để ép menu xổ xuống
+                dropdownMenu.classList.toggle("show");
+            });
+            
+            // Nếu người dùng click ra bất kỳ vùng nào ngoài menu thì tự động đóng lại
+            document.addEventListener("click", function() {
+                dropdownMenu.classList.remove("show");
+            });
         }
     });
 </script>
