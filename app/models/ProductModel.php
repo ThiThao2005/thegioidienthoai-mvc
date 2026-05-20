@@ -70,7 +70,9 @@ class ProductModel
                 'brand_id' => "ALTER TABLE `product` ADD `brand_id` INT NULL",
                 'warranty_months' => "ALTER TABLE `product` ADD `warranty_months` INT NOT NULL DEFAULT 12",
                 'sale_percent' => "ALTER TABLE `product` ADD `sale_percent` INT NOT NULL DEFAULT 0",
-                'featured' => "ALTER TABLE `product` ADD `featured` TINYINT(1) NOT NULL DEFAULT 0"
+                'featured' => "ALTER TABLE `product` ADD `featured` TINYINT(1) NOT NULL DEFAULT 0",
+                'slug' => "ALTER TABLE `product` ADD `slug` VARCHAR(180) NULL",
+                'sold_count' => "ALTER TABLE `product` ADD `sold_count` INT NOT NULL DEFAULT 0"
             ] as $column => $sql) {
                 if (!$this->columnExists('product', $column)) {
                     $this->conn->exec($sql);
@@ -108,6 +110,48 @@ class ProductModel
                 sku VARCHAR(120) NULL,
                 INDEX idx_product_variants_product (product_id),
                 CONSTRAINT fk_product_variants_product FOREIGN KEY (product_id) REFERENCES product(id) ON DELETE CASCADE
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4");
+
+            $this->conn->exec("CREATE TABLE IF NOT EXISTS banners (
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                title VARCHAR(160) NOT NULL,
+                subtitle VARCHAR(255) NULL,
+                image VARCHAR(255) NULL,
+                link VARCHAR(255) NULL,
+                position VARCHAR(40) NOT NULL DEFAULT 'home',
+                is_active TINYINT(1) NOT NULL DEFAULT 1,
+                sort_order INT NOT NULL DEFAULT 0,
+                starts_at DATETIME NULL,
+                ends_at DATETIME NULL,
+                created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4");
+
+            $this->conn->exec("CREATE TABLE IF NOT EXISTS vouchers (
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                code VARCHAR(60) NOT NULL UNIQUE,
+                discount_type VARCHAR(20) NOT NULL DEFAULT 'percent',
+                discount_value DECIMAL(10,2) NOT NULL DEFAULT 0,
+                min_order DECIMAL(10,2) NOT NULL DEFAULT 0,
+                usage_limit INT NOT NULL DEFAULT 0,
+                used_count INT NOT NULL DEFAULT 0,
+                starts_at DATETIME NULL,
+                ends_at DATETIME NULL,
+                is_active TINYINT(1) NOT NULL DEFAULT 1,
+                created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4");
+
+            $this->conn->exec("CREATE TABLE IF NOT EXISTS product_questions (
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                product_id INT NOT NULL,
+                user_id INT NULL,
+                customer_name VARCHAR(120) NULL,
+                question TEXT NOT NULL,
+                answer TEXT NULL,
+                is_public TINYINT(1) NOT NULL DEFAULT 1,
+                created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                answered_at DATETIME NULL,
+                INDEX idx_product_questions_product (product_id),
+                CONSTRAINT fk_product_questions_product FOREIGN KEY (product_id) REFERENCES product(id) ON DELETE CASCADE
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4");
         } catch (Exception $e) {
             // Some hosting/database accounts do not allow ALTER/CREATE. The app still runs with existing schema.
@@ -209,9 +253,73 @@ class ProductModel
         return $row ? (int) $row->id : null;
     }
 
+    public function makeSlug($text)
+    {
+        $slug = strtolower(trim(preg_replace('/[^a-zA-Z0-9]+/', '-', iconv('UTF-8', 'ASCII//TRANSLIT//IGNORE', $text) ?: $text), '-'));
+        return $slug ?: ('product-' . time());
+    }
+
+    public function getActiveBanners($position = 'home')
+    {
+        $query = "SELECT * FROM banners
+                  WHERE is_active = 1 AND position = :position
+                    AND (starts_at IS NULL OR starts_at <= NOW())
+                    AND (ends_at IS NULL OR ends_at >= NOW())
+                  ORDER BY sort_order ASC, id DESC";
+        $stmt = $this->conn->prepare($query);
+        $stmt->execute([':position' => $position]);
+        return $stmt->fetchAll(PDO::FETCH_OBJ);
+    }
+
+    public function seedDefaultMarketingData()
+    {
+        $count = (int)$this->conn->query("SELECT COUNT(*) FROM banners")->fetchColumn();
+        if ($count === 0) {
+            $stmt = $this->conn->prepare("INSERT INTO banners (title, subtitle, image, link, position, sort_order) VALUES (:title, :subtitle, :image, :link, 'home', :sort_order)");
+            $rows = [
+                ['Flash sale cong nghe moi', 'Giam den 30% cho dien thoai va phu kien hot', '1779075308_xiaomi-17-5g-xanh-la-1-639088210870268655-750x500.jpg', '/project1/Product/index?featured=1', 1],
+                ['Laptop hoc tap lam viec', 'Nhieu mau mong nhe, bao hanh chinh hang', '1778557560_acer-swift-x-14-2024-front-angled-e1715278668968.jpg', '/project1/Product/index?category_id=2', 2],
+                ['Phu kien gia tot', 'Tai nghe, chuot, sac nhanh va man hinh', '1778937883_tai-nghe-bluetooth-chup-tai-sony-wh-ch520-xanh-1-750x500.jpg', '/project1/Product/index?category_id=4', 3],
+            ];
+            foreach ($rows as $row) {
+                $stmt->execute([':title' => $row[0], ':subtitle' => $row[1], ':image' => $row[2], ':link' => $row[3], ':sort_order' => $row[4]]);
+            }
+        }
+
+        $voucherCount = (int)$this->conn->query("SELECT COUNT(*) FROM vouchers")->fetchColumn();
+        if ($voucherCount === 0) {
+            $stmt = $this->conn->prepare("INSERT IGNORE INTO vouchers (code, discount_type, discount_value, min_order, usage_limit, is_active) VALUES (:code, :type, :value, :min_order, :limit, 1)");
+            $stmt->execute([':code' => 'SALE10', ':type' => 'percent', ':value' => 10, ':min_order' => 1000000, ':limit' => 100]);
+            $stmt->execute([':code' => 'FREESHIP', ':type' => 'fixed', ':value' => 50000, ':min_order' => 500000, ':limit' => 200]);
+        }
+    }
+
+    public function getVoucherByCode($code)
+    {
+        $stmt = $this->conn->prepare("SELECT * FROM vouchers WHERE code = :code AND is_active = 1 LIMIT 1");
+        $stmt->execute([':code' => strtoupper(trim($code))]);
+        return $stmt->fetch(PDO::FETCH_OBJ);
+    }
+
+    public function calculateVoucherDiscount($code, $total)
+    {
+        $voucher = $this->getVoucherByCode($code);
+        if (!$voucher) return [0, null, 'Ma giam gia khong ton tai hoac da tat.'];
+        if ($voucher->usage_limit > 0 && $voucher->used_count >= $voucher->usage_limit) return [0, null, 'Ma giam gia da het luot su dung.'];
+        if ($voucher->starts_at && strtotime($voucher->starts_at) > time()) return [0, null, 'Ma giam gia chua bat dau.'];
+        if ($voucher->ends_at && strtotime($voucher->ends_at) < time()) return [0, null, 'Ma giam gia da het han.'];
+        if ($total < (float)$voucher->min_order) return [0, null, 'Don hang chua dat gia tri toi thieu de dung ma.'];
+
+        $discount = $voucher->discount_type === 'fixed'
+            ? (float)$voucher->discount_value
+            : $total * ((float)$voucher->discount_value / 100);
+        $discount = min($discount, $total);
+        return [$discount, $voucher, null];
+    }
+
     public function getProducts($category_id = null, $search = '', $limit = null, $offset = 0, $filters = [])
     {
-        $query = "SELECT p.id, p.name, p.description, p.price, p.image, p.sale_percent, p.featured,
+        $query = "SELECT p.id, p.name, p.description, p.price, p.image, p.sale_percent, p.featured, p.slug, p.sold_count,
                          p.warranty_months, b.name as brand_name, c.name as category_name,
                          COALESCE((SELECT SUM(stock) FROM product_variants pv WHERE pv.product_id = p.id), 0) as total_stock,
                          COALESCE(AVG(r.rating), 0) as avg_rating,
@@ -251,7 +359,7 @@ class ProductModel
             $query .= " WHERE " . implode(" AND ", $conditions);
         }
 
-        $query .= " GROUP BY p.id, p.name, p.description, p.price, p.image, p.sale_percent, p.featured, p.warranty_months, b.name, c.name";
+        $query .= " GROUP BY p.id, p.name, p.description, p.price, p.image, p.sale_percent, p.featured, p.slug, p.sold_count, p.warranty_months, b.name, c.name";
         $sort = $filters['sort'] ?? 'newest';
         if ($sort === 'price_asc') {
             $query .= " ORDER BY p.price ASC";
@@ -322,7 +430,7 @@ class ProductModel
     // Lấy chi tiết một sản phẩm theo ID
     public function getProductById($id)
     {
-        $query = "SELECT p.id, p.name, p.description, p.price, p.category_id, p.image,
+        $query = "SELECT p.id, p.name, p.description, p.price, p.category_id, p.image, p.slug, p.sold_count,
                          p.brand_id, p.warranty_months, p.sale_percent, p.featured,
                          b.name as brand_name, c.name as category_name,
                          COALESCE(AVG(r.rating), 0) as avg_rating,
@@ -332,7 +440,7 @@ class ProductModel
                   LEFT JOIN brands b ON p.brand_id = b.id
                   LEFT JOIN product_reviews r ON r.product_id = p.id
                   WHERE p.id = :id
-                  GROUP BY p.id, p.name, p.description, p.price, p.category_id, p.image, p.brand_id,
+                  GROUP BY p.id, p.name, p.description, p.price, p.category_id, p.image, p.slug, p.sold_count, p.brand_id,
                            p.warranty_months, p.sale_percent, p.featured, b.name, c.name";
         $stmt = $this->conn->prepare($query);
         $stmt->bindParam(':id', $id);
@@ -343,8 +451,8 @@ class ProductModel
     // Thêm sản phẩm mới
     public function addProduct($name, $description, $price, $category_id, $image, $brand_id = null, $warranty_months = 12, $sale_percent = 0, $featured = 0)
     {
-        $query = "INSERT INTO " . $this->table_name . " (name, description, price, category_id, image, brand_id, warranty_months, sale_percent, featured) 
-                  VALUES (:name, :description, :price, :category_id, :image, :brand_id, :warranty_months, :sale_percent, :featured)";
+        $query = "INSERT INTO " . $this->table_name . " (name, description, price, category_id, image, brand_id, warranty_months, sale_percent, featured, slug) 
+                  VALUES (:name, :description, :price, :category_id, :image, :brand_id, :warranty_months, :sale_percent, :featured, :slug)";
         
         $stmt = $this->conn->prepare($query);
 
@@ -363,6 +471,7 @@ class ProductModel
         $stmt->bindValue(':warranty_months', (int) $warranty_months, PDO::PARAM_INT);
         $stmt->bindValue(':sale_percent', (int) $sale_percent, PDO::PARAM_INT);
         $stmt->bindValue(':featured', (int) $featured, PDO::PARAM_INT);
+        $stmt->bindValue(':slug', $this->makeSlug($name), PDO::PARAM_STR);
 
         return $stmt->execute() ? (int) $this->conn->lastInsertId() : false;
     }
@@ -379,7 +488,8 @@ class ProductModel
                       brand_id = :brand_id,
                       warranty_months = :warranty_months,
                       sale_percent = :sale_percent,
-                      featured = :featured
+                      featured = :featured,
+                      slug = :slug
                   WHERE id = :id";
         
         $stmt = $this->conn->prepare($query);
@@ -400,6 +510,7 @@ class ProductModel
         $stmt->bindValue(':warranty_months', (int) $warranty_months, PDO::PARAM_INT);
         $stmt->bindValue(':sale_percent', (int) $sale_percent, PDO::PARAM_INT);
         $stmt->bindValue(':featured', (int) $featured, PDO::PARAM_INT);
+        $stmt->bindValue(':slug', $this->makeSlug($name), PDO::PARAM_STR);
 
         return $stmt->execute();
     }
@@ -667,6 +778,21 @@ class ProductModel
         return $stmt->fetch(PDO::FETCH_OBJ);
     }
 
+    public function getProductsByIds($ids)
+    {
+        $ids = array_values(array_filter(array_map('intval', $ids)));
+        if (empty($ids)) return [];
+        $placeholders = implode(',', array_fill(0, count($ids), '?'));
+        $query = "SELECT p.*, b.name as brand_name, c.name as category_name
+                  FROM product p
+                  LEFT JOIN brands b ON b.id = p.brand_id
+                  LEFT JOIN category c ON c.id = p.category_id
+                  WHERE p.id IN ($placeholders)";
+        $stmt = $this->conn->prepare($query);
+        $stmt->execute($ids);
+        return $stmt->fetchAll(PDO::FETCH_OBJ);
+    }
+
     public function userCanReviewProduct($user_id, $product_id) {
         $query = "SELECT COUNT(*) as total
                   FROM orders o
@@ -720,6 +846,68 @@ class ProductModel
         $stmt->bindValue(':user_id', (int) $user_id, PDO::PARAM_INT);
         $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_OBJ);
+    }
+
+    public function addProductQuestion($product_id, $user_id, $customer_name, $question)
+    {
+        $stmt = $this->conn->prepare("INSERT INTO product_questions (product_id, user_id, customer_name, question) VALUES (:product_id, :user_id, :customer_name, :question)");
+        return $stmt->execute([
+            ':product_id' => (int)$product_id,
+            ':user_id' => $user_id ? (int)$user_id : null,
+            ':customer_name' => htmlspecialchars(strip_tags($customer_name)),
+            ':question' => htmlspecialchars(strip_tags($question))
+        ]);
+    }
+
+    public function getProductQuestions($product_id)
+    {
+        $stmt = $this->conn->prepare("SELECT q.*, a.fullname FROM product_questions q LEFT JOIN account a ON a.id = q.user_id WHERE q.product_id = :product_id AND q.is_public = 1 ORDER BY q.id DESC");
+        $stmt->execute([':product_id' => (int)$product_id]);
+        return $stmt->fetchAll(PDO::FETCH_OBJ);
+    }
+
+    public function answerQuestion($question_id, $answer)
+    {
+        $stmt = $this->conn->prepare("UPDATE product_questions SET answer = :answer, answered_at = NOW() WHERE id = :id");
+        return $stmt->execute([':answer' => htmlspecialchars(strip_tags($answer)), ':id' => (int)$question_id]);
+    }
+
+    public function decrementStockForProduct($product_id, $quantity)
+    {
+        $variant = $this->conn->prepare("SELECT id, stock FROM product_variants WHERE product_id = :product_id AND stock >= :quantity ORDER BY stock DESC LIMIT 1");
+        $variant->execute([':product_id' => (int)$product_id, ':quantity' => (int)$quantity]);
+        $row = $variant->fetch(PDO::FETCH_OBJ);
+        if ($row) {
+            $this->conn->prepare("UPDATE product_variants SET stock = stock - :quantity WHERE id = :id")->execute([':quantity' => (int)$quantity, ':id' => (int)$row->id]);
+        }
+        $this->conn->prepare("UPDATE product SET sold_count = sold_count + :quantity WHERE id = :id")->execute([':quantity' => (int)$quantity, ':id' => (int)$product_id]);
+    }
+
+    public function restoreStockForOrder($order_id)
+    {
+        $items = $this->getOrderDetails($order_id);
+        foreach ($items as $item) {
+            $variant = $this->conn->prepare("SELECT id FROM product_variants WHERE product_id = :product_id ORDER BY id ASC LIMIT 1");
+            $variant->execute([':product_id' => (int)$item->product_id]);
+            $row = $variant->fetch(PDO::FETCH_OBJ);
+            if ($row) {
+                $this->conn->prepare("UPDATE product_variants SET stock = stock + :quantity WHERE id = :id")->execute([':quantity' => (int)$item->quantity, ':id' => (int)$row->id]);
+            }
+        }
+    }
+
+    public function getDashboardStats()
+    {
+        $revenue = $this->conn->query("SELECT COALESCE(SUM(od.quantity * od.price), 0) FROM order_details od JOIN orders o ON o.id = od.order_id WHERE o.status IN ('processing','shipped','done')")->fetchColumn();
+        $today = $this->conn->query("SELECT COALESCE(SUM(od.quantity * od.price), 0) FROM order_details od JOIN orders o ON o.id = od.order_id WHERE DATE(o.created_at) = CURDATE()")->fetchColumn();
+        $lowStock = $this->conn->query("SELECT COUNT(*) FROM product_variants WHERE stock <= 3")->fetchColumn();
+        $topProducts = $this->conn->query("SELECT id, name, sold_count FROM product ORDER BY sold_count DESC, id DESC LIMIT 5")->fetchAll(PDO::FETCH_OBJ);
+        return [
+            'revenue' => (float)$revenue,
+            'todayRevenue' => (float)$today,
+            'lowStock' => (int)$lowStock,
+            'topProducts' => $topProducts
+        ];
     }
 }
 ?>

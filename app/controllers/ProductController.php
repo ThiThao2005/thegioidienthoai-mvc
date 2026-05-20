@@ -184,6 +184,25 @@ class ProductController
         ]);
     }
 
+    public function home()
+    {
+        $this->productModel->seedDefaultMarketingData();
+        $banners = $this->productModel->getActiveBanners('home');
+        $featuredProducts = $this->productModel->getProducts(null, '', 10, 0, ['featured' => 1]);
+        $phoneProducts = $this->productModel->getProducts(1, '', 10, 0, ['sort' => 'newest']);
+        $laptopProducts = $this->productModel->getProducts(2, '', 10, 0, ['sort' => 'newest']);
+        $accessoryProducts = $this->productModel->getProducts(4, '', 10, 0, ['sort' => 'newest']);
+        $brands = $this->productModel->getBrands();
+        $this->render('product/home', [
+            'banners' => $banners,
+            'featuredProducts' => $featuredProducts,
+            'phoneProducts' => $phoneProducts,
+            'laptopProducts' => $laptopProducts,
+            'accessoryProducts' => $accessoryProducts,
+            'brands' => $brands
+        ]);
+    }
+
     // Hiển thị form thêm sản phẩm
     public function add()
     {
@@ -414,6 +433,7 @@ class ProductController
         $productImages = $this->productModel->getProductImages($id);
         $productSpecs = $this->productModel->getProductSpecs($id);
         $productVariants = $this->productModel->getProductVariants($id);
+        $productQuestions = $this->productModel->getProductQuestions($id);
 
         $this->render('product/detail', [
             'product' => $product,
@@ -423,8 +443,38 @@ class ProductController
             'isWishlisted' => $isWishlisted,
             'productImages' => $productImages,
             'productSpecs' => $productSpecs,
-            'productVariants' => $productVariants
+            'productVariants' => $productVariants,
+            'productQuestions' => $productQuestions
         ]);
+    }
+
+    public function askQuestion()
+    {
+        $product_id = (int)($_POST['product_id'] ?? 0);
+        $question = trim($_POST['question'] ?? '');
+        $name = SessionHelper::isLoggedIn() ? SessionHelper::getUserData('fullname') : trim($_POST['customer_name'] ?? 'Khach hang');
+        $userId = SessionHelper::isLoggedIn() ? SessionHelper::getUserData('id') : null;
+        if ($product_id > 0 && strlen($question) >= 5) {
+            $this->productModel->addProductQuestion($product_id, $userId, $name, $question);
+            $_SESSION['success_msg'] = 'Cau hoi cua ban da duoc ghi nhan.';
+        } else {
+            $_SESSION['error_msg'] = 'Vui long nhap cau hoi ro hon.';
+        }
+        header('Location: /project1/Product/detail?id=' . $product_id);
+        exit();
+    }
+
+    public function answerQuestion()
+    {
+        SessionHelper::requireAdmin();
+        $questionId = (int)($_POST['question_id'] ?? 0);
+        $productId = (int)($_POST['product_id'] ?? 0);
+        $answer = trim($_POST['answer'] ?? '');
+        if ($questionId > 0 && strlen($answer) >= 2) {
+            $this->productModel->answerQuestion($questionId, $answer);
+        }
+        header('Location: /project1/Product/detail?id=' . $productId);
+        exit();
     }
 
     public function saveReview()
@@ -439,22 +489,26 @@ class ProductController
         $rating = (int) ($_POST['rating'] ?? 0);
         $comment = trim($_POST['comment'] ?? '');
         $user_id = SessionHelper::getUserData('id');
+        $redirect = $_POST['redirect'] ?? ('/project1/Product/detail?id=' . $product_id);
+        if (!is_string($redirect) || strpos($redirect, '/project1/') !== 0) {
+            $redirect = '/project1/Product/detail?id=' . $product_id;
+        }
 
         if ($product_id <= 0 || $rating < 1 || $rating > 5 || strlen($comment) < 5) {
             $_SESSION['error_msg'] = 'Danh gia can co so sao tu 1-5 va binh luan toi thieu 5 ky tu.';
-            header('Location: /project1/Product/detail?id=' . $product_id);
+            header('Location: ' . $redirect);
             exit();
         }
 
         if (!$this->productModel->userCanReviewProduct($user_id, $product_id)) {
             $_SESSION['error_msg'] = 'Chi khach hang da mua va hoan thanh don moi duoc danh gia san pham.';
-            header('Location: /project1/Product/detail?id=' . $product_id);
+            header('Location: ' . $redirect);
             exit();
         }
 
         $this->productModel->addOrUpdateReview($user_id, $product_id, $rating, $comment);
         $_SESSION['success_msg'] = 'Cam on ban da danh gia san pham.';
-        header('Location: /project1/Product/detail?id=' . $product_id);
+        header('Location: ' . $redirect);
         exit();
     }
 
@@ -469,6 +523,34 @@ class ProductController
         $back = $_SERVER['HTTP_REFERER'] ?? '/project1/Product/detail?id=' . $product_id;
         header('Location: ' . $back);
         exit();
+    }
+
+    public function toggleCompare()
+    {
+        $product_id = (int)($_POST['product_id'] ?? $_GET['id'] ?? 0);
+        if (!isset($_SESSION['compare'])) $_SESSION['compare'] = [];
+        if ($product_id > 0) {
+            if (in_array($product_id, $_SESSION['compare'])) {
+                $_SESSION['compare'] = array_values(array_diff($_SESSION['compare'], [$product_id]));
+            } elseif (count($_SESSION['compare']) < 4) {
+                $_SESSION['compare'][] = $product_id;
+            } else {
+                $_SESSION['error_msg'] = 'Chi co the so sanh toi da 4 san pham.';
+            }
+        }
+        header('Location: ' . ($_SERVER['HTTP_REFERER'] ?? '/project1/Product/compare'));
+        exit();
+    }
+
+    public function compare()
+    {
+        $ids = $_SESSION['compare'] ?? [];
+        $products = $this->productModel->getProductsByIds($ids);
+        $specMap = [];
+        foreach ($products as $product) {
+            $specMap[$product->id] = $this->productModel->getProductSpecs($product->id);
+        }
+        $this->render('product/compare', ['products' => $products, 'specMap' => $specMap]);
     }
 
     public function wishlist()
@@ -558,6 +640,29 @@ class ProductController
             unset($_SESSION['cart'][$id]);
         }
 
+        header('Location: /project1/Product/cart');
+        exit();
+    }
+
+    public function applyVoucher()
+    {
+        $code = strtoupper(trim($_POST['voucher_code'] ?? ''));
+        $cart = $_SESSION['cart'] ?? [];
+        $total = 0;
+        foreach ($cart as $item) {
+            $total += ((float)($item['price'] ?? 0)) * ((int)($item['quantity'] ?? 1));
+        }
+        [$discount, $voucher, $error] = $this->productModel->calculateVoucherDiscount($code, $total);
+        if ($error) {
+            unset($_SESSION['voucher']);
+            $_SESSION['error_msg'] = $error;
+        } else {
+            $_SESSION['voucher'] = [
+                'code' => $voucher->code,
+                'discount' => $discount
+            ];
+            $_SESSION['success_msg'] = 'Da ap dung ma ' . $voucher->code . '.';
+        }
         header('Location: /project1/Product/cart');
         exit();
     }
@@ -653,9 +758,11 @@ class ProductController
                     $stmtDetail->bindParam(':quantity', $qty);
                     $stmtDetail->bindParam(':price', $item['price']);
                     $stmtDetail->execute();
+                    $this->productModel->decrementStockForProduct($product_id, $qty);
                 }
 
                 unset($_SESSION['cart']);
+                unset($_SESSION['voucher']);
                 $this->db->commit();
                 $this->sendOrderEmail($email, $order_id, $name, $total);
                 $_SESSION['success_msg'] = 'Don hang #' . $order_id . ' da duoc tao. Email xac nhan se duoc gui neu server da cau hinh mail.';
@@ -723,12 +830,14 @@ class ProductController
         $totalCategories = $this->productModel->countCategories();
         $totalOrders = $this->productModel->countOrders();
         $totalUsers = $this->productModel->countUsers();
+        $dashboardStats = $this->productModel->getDashboardStats();
 
         $this->render('product/dashboard', [
             'products'         => $products,
             'totalCategories'  => $totalCategories,
             'totalOrders'      => $totalOrders,
-            'totalUsers'       => $totalUsers
+            'totalUsers'       => $totalUsers,
+            'dashboardStats'   => $dashboardStats
         ]);
     }
 
@@ -834,7 +943,11 @@ class ProductController
             $currentTab = $_POST['current_tab'] ?? 'all'; 
 
             if ($order_id) {
+                $order = $this->productModel->getOrderById($order_id);
                 $this->productModel->clientCancelOrder($order_id, $user_id);
+                if ($order && ($order->status ?? '') === 'pending') {
+                    $this->productModel->restoreStockForOrder($order_id);
+                }
             }
         }
         

@@ -89,6 +89,12 @@ $imagePath = (strpos($imgName, 'public/images/') !== false || strpos($imgName, '
                         </button>
                     </form>
                 <?php endif; ?>
+                <form method="POST" action="/project1/Product/toggleCompare" class="m-0">
+                    <input type="hidden" name="product_id" value="<?php echo $product->id; ?>">
+                    <button type="submit" class="btn btn-outline-dark btn-lg fw-bold rounded-pill py-3 w-100">
+                        <i class="fas fa-balance-scale me-2"></i>THEM VAO SO SANH
+                    </button>
+                </form>
             </div>
 
             <?php if (!empty($productVariants)): ?>
@@ -167,6 +173,43 @@ $imagePath = (strpos($imgName, 'public/images/') !== false || strpos($imgName, '
             </div>
         </div>
     <?php endif; ?>
+    <div class="row mt-5">
+        <div class="col-12">
+            <div class="border-top pt-4">
+                <h5 class="fw-bold text-uppercase text-dark mb-3">
+                    <i class="fas fa-comments text-warning me-2"></i> Hoi dap san pham
+                </h5>
+                <form method="POST" action="/project1/Product/askQuestion" class="bg-light border rounded-3 p-3 mb-3">
+                    <input type="hidden" name="product_id" value="<?php echo $product->id; ?>">
+                    <?php if (!SessionHelper::isLoggedIn()): ?>
+                        <input type="text" name="customer_name" class="form-control mb-2" placeholder="Ten cua ban">
+                    <?php endif; ?>
+                    <textarea name="question" class="form-control mb-2" rows="2" minlength="5" placeholder="Nhap cau hoi ve san pham..." required></textarea>
+                    <button class="btn btn-warning rounded-pill fw-bold text-dark px-4" type="submit">Gui cau hoi</button>
+                </form>
+                <?php if (empty($productQuestions)): ?>
+                    <p class="text-muted">Chua co cau hoi nao.</p>
+                <?php else: ?>
+                    <?php foreach ($productQuestions as $q): ?>
+                        <div class="border-bottom py-3">
+                            <div class="fw-bold"><?php echo htmlspecialchars($q->fullname ?: $q->customer_name ?: 'Khach hang', ENT_QUOTES, 'UTF-8'); ?></div>
+                            <div class="text-secondary"><?php echo htmlspecialchars($q->question, ENT_QUOTES, 'UTF-8'); ?></div>
+                            <?php if (!empty($q->answer)): ?>
+                                <div class="mt-2 p-2 bg-warning bg-opacity-10 rounded"><strong>Admin:</strong> <?php echo htmlspecialchars($q->answer, ENT_QUOTES, 'UTF-8'); ?></div>
+                            <?php elseif (SessionHelper::isAdmin()): ?>
+                                <form method="POST" action="/project1/Product/answerQuestion" class="mt-2 d-flex gap-2">
+                                    <input type="hidden" name="question_id" value="<?php echo $q->id; ?>">
+                                    <input type="hidden" name="product_id" value="<?php echo $product->id; ?>">
+                                    <input type="text" name="answer" class="form-control form-control-sm" placeholder="Tra loi cau hoi">
+                                    <button class="btn btn-sm btn-dark" type="submit">Tra loi</button>
+                                </form>
+                            <?php endif; ?>
+                        </div>
+                    <?php endforeach; ?>
+                <?php endif; ?>
+            </div>
+        </div>
+    </div>
     <div class="row mt-5">
         <div class="col-12">
             <div class="border-top pt-4">

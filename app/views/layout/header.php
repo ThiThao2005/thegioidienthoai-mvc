@@ -99,6 +99,11 @@
 </li>
 
                 <li class="nav-item d-flex align-items-center">
+                    <a class="nav-link text-dark fw-bold bg-white bg-opacity-25 rounded-pill px-3 py-2" href="/project1/Product/compare">
+                        <i class="fas fa-balance-scale me-1"></i> So sanh
+                    </a>
+                </li>
+                <li class="nav-item d-flex align-items-center">
                     <a class="nav-link text-dark fw-bold bg-white bg-opacity-25 rounded-pill px-3 py-2 position-relative" href="/project1/Product/cart">
                         <i class="fas fa-shopping-cart me-1 fs-5 align-middle"></i> 
                         Giỏ hàng 

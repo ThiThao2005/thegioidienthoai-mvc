@@ -131,6 +131,43 @@
                 </div>
             </div>
 
+            <div class="row g-3 mb-4">
+                <div class="col-md-4">
+                    <div class="card stat-card bg-white p-3 shadow-sm border-start border-warning border-4">
+                        <h6 class="text-muted small fw-bold text-uppercase mb-1">Doanh thu tong</h6>
+                        <h3 class="fw-bold m-0 text-danger"><?= number_format($dashboardStats['revenue'] ?? 0, 0, ',', '.') ?>đ</h3>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card stat-card bg-white p-3 shadow-sm border-start border-dark border-4">
+                        <h6 class="text-muted small fw-bold text-uppercase mb-1">Doanh thu hom nay</h6>
+                        <h3 class="fw-bold m-0 text-dark"><?= number_format($dashboardStats['todayRevenue'] ?? 0, 0, ',', '.') ?>đ</h3>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card stat-card bg-white p-3 shadow-sm border-start border-danger border-4">
+                        <h6 class="text-muted small fw-bold text-uppercase mb-1">Bien the sap het hang</h6>
+                        <h3 class="fw-bold m-0 text-danger"><?= number_format($dashboardStats['lowStock'] ?? 0, 0, ',', '.') ?></h3>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card border-0 shadow-sm p-4 mb-4" style="border-radius: 12px;">
+                <h5 class="fw-bold m-0 mb-3 text-dark">
+                    <i class="fas fa-chart-line text-warning me-2"></i>Top san pham ban chay
+                </h5>
+                <div class="row g-2">
+                    <?php foreach (($dashboardStats['topProducts'] ?? []) as $top): ?>
+                        <div class="col-md-6">
+                            <div class="border rounded p-3 d-flex justify-content-between">
+                                <span class="fw-semibold"><?= htmlspecialchars($top->name, ENT_QUOTES, 'UTF-8') ?></span>
+                                <span class="badge bg-dark"><?= (int)$top->sold_count ?> da ban</span>
+                            </div>
+                        </div>
+                    <?php endforeach; ?>
+                </div>
+            </div>
+
             <div class="card border-0 shadow-sm p-4" style="border-radius: 12px;">
                 <div class="d-flex justify-content-between align-items-center mb-3">
                     <h5 class="fw-bold m-0 text-dark">

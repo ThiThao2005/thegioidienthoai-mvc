@@ -23,7 +23,7 @@ $url = explode('/', $url);
 $controllerName = isset($url[0]) && $url[0] != '' ? ucfirst($url[0]) . 'Controller' : 'ProductController';
 
 // 3. Xác định Action
-$action = isset($url[1]) && $url[1] != '' ? $url[1] : 'index';
+$action = isset($url[1]) && $url[1] != '' ? $url[1] : 'home';
 if (strpos($action, '?') !== false) {
     $action = explode('?', $action)[0];
 }
