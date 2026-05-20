@@ -135,6 +135,55 @@
         <?php endif; ?>
     </div>
 
+    <form class="row g-2 align-items-center mb-4" method="GET" action="/project1/Product/index">
+        <?php if (!empty($category_id)): ?>
+            <input type="hidden" name="category_id" value="<?php echo (int) $category_id; ?>">
+        <?php endif; ?>
+        <div class="col-md-4">
+            <input type="search" name="search" class="form-control rounded-pill px-4"
+                   value="<?php echo htmlspecialchars($search ?? '', ENT_QUOTES, 'UTF-8'); ?>"
+                   placeholder="Nhap tu khoa san pham, mo ta hoac danh muc...">
+        </div>
+        <div class="col-md-2">
+            <select name="brand_id" class="form-select rounded-pill">
+                <option value="">Tat ca hang</option>
+                <?php foreach (($brands ?? []) as $brand): ?>
+                    <option value="<?php echo $brand->id; ?>" <?php echo (($filters['brand_id'] ?? '') == $brand->id) ? 'selected' : ''; ?>>
+                        <?php echo htmlspecialchars($brand->name, ENT_QUOTES, 'UTF-8'); ?>
+                    </option>
+                <?php endforeach; ?>
+            </select>
+        </div>
+        <div class="col-md-2">
+            <input type="number" name="min_price" class="form-control rounded-pill" value="<?php echo htmlspecialchars($filters['min_price'] ?? '', ENT_QUOTES, 'UTF-8'); ?>" placeholder="Gia tu">
+        </div>
+        <div class="col-md-2">
+            <input type="number" name="max_price" class="form-control rounded-pill" value="<?php echo htmlspecialchars($filters['max_price'] ?? '', ENT_QUOTES, 'UTF-8'); ?>" placeholder="Gia den">
+        </div>
+        <div class="col-md-2">
+            <select name="sort" class="form-select rounded-pill">
+                <option value="newest" <?php echo (($filters['sort'] ?? '') === 'newest') ? 'selected' : ''; ?>>Moi nhat</option>
+                <option value="price_asc" <?php echo (($filters['sort'] ?? '') === 'price_asc') ? 'selected' : ''; ?>>Gia tang</option>
+                <option value="price_desc" <?php echo (($filters['sort'] ?? '') === 'price_desc') ? 'selected' : ''; ?>>Gia giam</option>
+                <option value="rating" <?php echo (($filters['sort'] ?? '') === 'rating') ? 'selected' : ''; ?>>Danh gia cao</option>
+            </select>
+        </div>
+        <div class="col-12 d-flex gap-2 align-items-center">
+            <label class="form-check-label small me-2">
+                <input class="form-check-input" type="checkbox" name="featured" value="1" <?php echo !empty($filters['featured']) ? 'checked' : ''; ?>> Chi san pham noi bat
+            </label>
+            <button class="btn btn-dark rounded-pill px-4 fw-semibold" type="submit">
+                <i class="fas fa-search me-1"></i> Tim kiem
+            </button>
+            <?php if (!empty($search) || !empty($category_id)): ?>
+                <a class="btn btn-outline-secondary rounded-pill px-4" href="/project1/Product/index">Xoa loc</a>
+            <?php endif; ?>
+        </div>
+        <div class="col-12 text-muted small">
+            Tim thay <?php echo (int) ($totalProducts ?? count($products)); ?> san pham<?php echo !empty($search) ? ' cho "' . htmlspecialchars($search, ENT_QUOTES, 'UTF-8') . '"' : ''; ?>.
+        </div>
+    </form>
+
     <div class="row row-cols-2 row-cols-md-3 row-cols-lg-5 g-3">
         
         <?php if (empty($products)): ?>
@@ -160,7 +209,12 @@
                             : "/project1/public/images/" . $imgName; 
                     ?>
                     
-                    <a href="/project1/Product/detail?id=<?php echo $product->id; ?>" class="text-center d-block text-decoration-none">
+                    <a href="/project1/Product/detail?id=<?php echo $product->id; ?>" class="text-center d-block text-decoration-none position-relative">
+                        <?php if (!empty($product->sale_percent)): ?>
+                            <span class="badge bg-danger position-absolute top-0 start-0 m-2">-<?php echo (int)$product->sale_percent; ?>%</span>
+                        <?php elseif (!empty($product->featured)): ?>
+                            <span class="badge bg-warning text-dark position-absolute top-0 start-0 m-2">Noi bat</span>
+                        <?php endif; ?>
                         <img src="<?php echo htmlspecialchars($imagePath, ENT_QUOTES, 'UTF-8'); ?>" 
                              class="card-img-top" 
                              alt="Ảnh sản phẩm"
@@ -180,6 +234,9 @@
                             </span>
                         </div>
                         
+                        <?php if (!empty($product->brand_name)): ?>
+                            <div class="small fw-semibold text-dark mb-1"><?php echo htmlspecialchars($product->brand_name, ENT_QUOTES, 'UTF-8'); ?></div>
+                        <?php endif; ?>
                         <p class="card-text text-muted small text-truncate mb-2" style="font-size: 0.8rem;">
                             <?php echo htmlspecialchars($product->description, ENT_QUOTES, 'UTF-8'); ?>
                         </p>
@@ -188,6 +245,11 @@
                             <strong style="color: #d70018; font-size: 1.05rem;">
                                 <?php echo number_format($product->price, 0, ',', '.'); ?>₫
                             </strong>
+                            <div class="small text-warning mt-1">
+                                <i class="fas fa-star"></i>
+                                <?php echo number_format((float)($product->avg_rating ?? 0), 1); ?>
+                                <span class="text-muted">(<?php echo (int)($product->review_count ?? 0); ?> danh gia)</span>
+                            </div>
                         </div>
                     </div>
                     
@@ -214,6 +276,24 @@
         <?php endif; ?>
 
     </div>
+
+    <?php if (($totalPages ?? 1) > 1): ?>
+        <nav class="mt-4">
+            <ul class="pagination justify-content-center">
+                <?php
+                    $queryBase = [];
+                    if (!empty($search)) $queryBase['search'] = $search;
+                    if (!empty($category_id)) $queryBase['category_id'] = $category_id;
+                    for ($i = 1; $i <= $totalPages; $i++):
+                        $queryBase['page'] = $i;
+                ?>
+                    <li class="page-item <?php echo $i == ($page ?? 1) ? 'active' : ''; ?>">
+                        <a class="page-link" href="/project1/Product/index?<?php echo http_build_query($queryBase); ?>"><?php echo $i; ?></a>
+                    </li>
+                <?php endfor; ?>
+            </ul>
+        </nav>
+    <?php endif; ?>
 </div>
 
 <style>

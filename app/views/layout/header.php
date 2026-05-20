@@ -53,40 +53,50 @@
             <ul class="navbar-nav ms-auto gap-3 align-items-lg-center">
                 
                 <li class="nav-item">
-                    <?php if (SessionHelper::isLoggedIn()): ?>
-                        <div class="dropdown">
-                            <button class="btn user-dropdown-btn fw-bold rounded-pill px-3 py-2 dropdown-toggle" 
-                                    type="button" 
-                                    id="userDropdown" 
-                                    data-bs-toggle="dropdown" 
-                                    aria-expanded="false">
-                                <i class="fas fa-user-circle me-1 fs-5 align-middle"></i> 
-                                <?= htmlspecialchars(SessionHelper::getUserData('fullname')) ?>
-                            </button>
-                            
-                            <ul class="dropdown-menu dropdown-menu-end border-0 shadow mt-2 rounded-3 py-2" aria-labelledby="userDropdown">
-                                <?php if (SessionHelper::isAdmin()): ?>
-                                    <li>
-                                        <a class="dropdown-item small py-2 fw-semibold text-primary" href="/project1/product/dashboard">
-                                            <i class="fas fa-user-shield me-2"></i>Quản trị hệ thống
-                                        </a>
-                                    </li>
-                                    <li><hr class="dropdown-divider opacity-50"></li>
-                                <?php endif; ?>
-                                
-                                <li>
-                                    <a class="dropdown-item small py-2 text-danger fw-semibold" href="/project1/Account/logout">
-                                        <i class="fas fa-sign-out-alt me-2"></i>Đăng xuất
-                                    </a>
-                                </li>
-                            </ul>
-                        </div>
-                    <?php else: ?>
-                        <a class="nav-link text-dark fw-bold bg-white bg-opacity-25 rounded-pill px-3 py-2" href="/project1/Account/login">
-                            <i class="fas fa-user-circle me-1 fs-5 align-middle"></i> Tài khoản
+    <?php if (SessionHelper::isLoggedIn()): ?>
+        <div class="dropdown">
+            <button class="btn user-dropdown-btn fw-bold rounded-pill px-3 py-2 dropdown-toggle" 
+                    type="button" 
+                    id="userDropdown" 
+                    data-bs-toggle="dropdown" 
+                    aria-expanded="false">
+                <i class="fas fa-user-circle me-1 fs-5 align-middle"></i> 
+                <?= htmlspecialchars(SessionHelper::getUserData('fullname')) ?>
+            </button>
+            
+            <ul class="dropdown-menu dropdown-menu-end border-0 shadow mt-2 rounded-3 py-2" aria-labelledby="userDropdown">
+                <?php if (SessionHelper::isAdmin()): ?>
+                    <li>
+                        <a class="dropdown-item small py-2 fw-semibold text-primary" href="/project1/Product/dashboard">
+                            <i class="fas fa-user-shield me-2"></i>Quản trị hệ thống
                         </a>
-                    <?php endif; ?>
+                    </li>
+                    <li><hr class="dropdown-divider opacity-50"></li>
+                <?php endif; ?>
+                
+                <li>
+                    <a class="dropdown-item small py-2 fw-semibold text-dark" 
+                       href="/project1/Product/myOrders"
+                       onclick="checkOrderClick(event, <?= SessionHelper::isLoggedIn() ? 'true' : 'false' ?>)">
+                        <i class="fas fa-box me-2 text-warning"></i>Đơn hàng của tôi
+                    </a>
                 </li>
+                
+                <li><hr class="dropdown-divider opacity-50"></li>
+                
+                <li>
+                    <a class="dropdown-item small py-2 text-danger fw-semibold" href="/project1/Account/logout">
+                        <i class="fas fa-sign-out-alt me-2"></i>Đăng xuất
+                    </a>
+                </li>
+            </ul>
+        </div>
+    <?php else: ?>
+        <a class="nav-link text-dark fw-bold bg-white bg-opacity-25 rounded-pill px-3 py-2" href="/project1/Account/login">
+            <i class="fas fa-user-circle me-1 fs-5 align-middle"></i> Tài khoản
+        </a>
+    <?php endif; ?>
+</li>
 
                 <li class="nav-item d-flex align-items-center">
                     <a class="nav-link text-dark fw-bold bg-white bg-opacity-25 rounded-pill px-3 py-2 position-relative" href="/project1/Product/cart">
@@ -142,6 +152,18 @@
 <div class="container pb-5">
 
 <script>
+    // 🔍 HÀM KIỂM TRA LỖI KHI CLICK VÀO ĐƠN HÀNG
+    function checkOrderClick(event, isLoggedIn) {
+        if (!isLoggedIn) {
+            event.preventDefault(); // Chặn chuyển trang vô ích
+            alert("⚠️ LỖI: Hệ thống ghi nhận bạn CHƯA đăng nhập (Mất Session).\nVui lòng đăng nhập lại!");
+            window.location.href = "/project1/Account/login";
+        } else {
+            // Nếu đã đăng nhập, in thông tin link ra màn hình console F12 trước khi nhảy trang
+            console.log("Trạng thái: Đã đăng nhập. Đang gọi URL: " + event.currentTarget.href);
+        }
+    }
+
     // 1. Xử lý tìm kiếm sản phẩm an toàn
     document.getElementById('searchForm').addEventListener('submit', function(event) {
         event.preventDefault(); 
@@ -157,19 +179,16 @@
     // 🔥 2. ÉP BUỘC DROPDOWN ĐĂNG XUẤT PHẢI HIỂN THỊ KHI CLICK (FIX KẸT DROPDOWN)
     document.addEventListener("DOMContentLoaded", function() {
         const dropdownBtn = document.getElementById("userDropdown");
-        // Tìm menu <ul> nằm ngay kế tiếp nút button tài khoản
         const dropdownMenu = document.querySelector(".dropdown-menu"); 
         
         if (dropdownBtn && dropdownMenu) {
             dropdownBtn.addEventListener("click", function(e) {
                 e.preventDefault();
-                e.stopPropagation(); // Chặn sự kiện lan ra ngoài
+                e.stopPropagation(); 
                 
-                // Bật/Tắt class "show" của Bootstrap để ép menu xổ xuống
                 dropdownMenu.classList.toggle("show");
             });
             
-            // Nếu người dùng click ra bất kỳ vùng nào ngoài menu thì tự động đóng lại
             document.addEventListener("click", function() {
                 dropdownMenu.classList.remove("show");
             });

@@ -14,14 +14,24 @@ class SessionHelper {
     }
 
     // Lấy thông tin cụ thể của user từ Session (fullname, email, role,...)
+// Lấy thông tin cụ thể của user từ Session (fullname, email, role,...)
     public static function getUserData($key) {
         self::start();
-        if (isset($_SESSION['user'][$key])) {
-            return $_SESSION['user'][$key];
+        if (isset($_SESSION['user'])) {
+            $user = $_SESSION['user'];
+            
+            // Nếu dữ liệu đăng nhập lưu dạng Object (Đối tượng)
+            if (is_object($user) && isset($user->$key)) {
+                return $user->$key;
+            }
+            
+            // Nếu dữ liệu đăng nhập lưu dạng Array (Mảng)
+            if (is_array($user) && isset($user[$key])) {
+                return $user[$key];
+            }
         }
         return null;
     }
-
     // Kiểm tra xem có phải tài khoản Admin hay không
     public static function isAdmin() {
         self::start();

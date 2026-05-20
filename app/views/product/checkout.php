@@ -15,6 +15,15 @@ $totalPrice = 0;
 </div>
 
 <form action="/project1/Product/processCheckout" method="POST">
+    <?php if (!empty($errors)): ?>
+        <div class="alert alert-danger">
+            <ul class="mb-0">
+                <?php foreach ($errors as $error): ?>
+                    <li><?php echo htmlspecialchars($error, ENT_QUOTES, 'UTF-8'); ?></li>
+                <?php endforeach; ?>
+            </ul>
+        </div>
+    <?php endif; ?>
     <div class="row">
         <div class="col-lg-7 col-md-12 mb-4">
             <div class="card border-0 shadow-sm rounded-3">
@@ -29,6 +38,11 @@ $totalPrice = 0;
                     <div class="mb-3">
                         <label for="phone" class="form-label fw-semibold text-secondary">Số điện thoại <span class="text-danger">*</span></label>
                         <input type="tel" class="form-control rounded-3 py-2" id="phone" name="phone" placeholder="Ví dụ: 0912345678" pattern="[0-9]{10}" title="Vui lòng nhập đúng số điện thoại 10 chữ số" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="email" class="form-label fw-semibold text-secondary">Email nhan xac nhan <span class="text-danger">*</span></label>
+                        <input type="email" class="form-control rounded-3 py-2" id="email" name="email" placeholder="vidu@email.com" required>
                     </div>
 
                     <div class="mb-4">
@@ -50,6 +64,14 @@ $totalPrice = 0;
                             <label for="momo" class="form-check-label fw-semibold m-0 text-dark w-100 cursor-pointer">
                                 <span class="badge bg-danger p-1 me-1" style="background-color: #a50064 !important; font-size: 0.65rem;">MoMo</span> 
                                 Chuyển khoản qua Mã QR MoMo (VietQR)
+                            </label>
+                        </div>
+
+                        <div class="p-3 border rounded-3 bg-light d-flex align-items-center gap-3 payment-method-option">
+                            <input type="radio" id="vnpay" name="payment_method" value="VNPAY" class="form-check-input ms-1">
+                            <label for="vnpay" class="form-check-label fw-semibold m-0 text-dark w-100 cursor-pointer">
+                                <span class="badge bg-primary p-1 me-1" style="font-size: 0.65rem;">VNPay</span>
+                                Thanh toan qua VNPay QR
                             </label>
                         </div>
 
@@ -75,6 +97,17 @@ $totalPrice = 0;
                             <span class="badge bg-warning text-dark mt-3 px-3 py-2 rounded-pill small fw-semibold">
                                 <i class="fas fa-info-circle me-1"></i> Bạn hãy chụp lại biên lai sau khi chuyển khoản thành công nhé!
                             </span>
+                        </div>
+
+                        <div id="vnpay-qr-container" class="border rounded-3 p-4 text-center bg-white shadow-sm mt-2 d-none">
+                            <p class="text-secondary small mb-2">Quet QR VNPay cua cua hang, sau do nhap ma giao dich de admin doi soat.</p>
+                            <div class="display-6 text-primary mb-2"><i class="fas fa-qrcode"></i></div>
+                            <span class="badge bg-primary-subtle text-primary border rounded-pill px-3 py-2">VNPay sandbox/manual verify</span>
+                        </div>
+
+                        <div id="transaction-code-wrap" class="mt-2">
+                            <label for="transaction_code" class="form-label fw-semibold text-secondary">Ma giao dich / Noi dung chuyen khoan</label>
+                            <input type="text" class="form-control rounded-3 py-2" id="transaction_code" name="transaction_code" placeholder="VD: MOMO123456 hoac VNPAY987654">
                         </div>
                     </div>
                 </div>
@@ -154,7 +187,11 @@ $totalPrice = 0;
 document.addEventListener('DOMContentLoaded', function () {
     const codRadio = document.getElementById('cod');
     const momoRadio = document.getElementById('momo');
+    const vnpayRadio = document.getElementById('vnpay');
     const qrContainer = document.getElementById('momo-qr-container');
+    const vnpayQrContainer = document.getElementById('vnpay-qr-container');
+    const transactionWrap = document.getElementById('transaction-code-wrap');
+    const transactionInput = document.getElementById('transaction_code');
     const transferContent = document.getElementById('transfer-content');
     const phoneInput = document.getElementById('phone');
 
@@ -170,6 +207,9 @@ document.addEventListener('DOMContentLoaded', function () {
     function handlePaymentMethodChange() {
         if (momoRadio.checked) {
             qrContainer.classList.remove('d-none'); // Hiện QR Code
+            vnpayQrContainer.classList.add('d-none');
+            transactionWrap.classList.remove('d-none');
+            transactionInput.required = true;
             updateTransferContent();
         } else {
             qrContainer.classList.add('d-none');    // Ẩn QR Code
