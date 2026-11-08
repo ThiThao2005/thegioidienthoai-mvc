@@ -4,7 +4,6 @@
 *.log
 .idea/
 .vscode/
-
 # Cấu hình DB riêng cho hosting (chứa mật khẩu)
 app/config/db.local.php
 
