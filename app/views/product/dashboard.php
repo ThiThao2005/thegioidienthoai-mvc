@@ -7,26 +7,26 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/public/css/theme.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <style>
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
         :root {
-            --yellow: #FFD400;
-            --yellow-dark: #E6BE00;
-            --yellow-light: #FFF9D6;
+            --yellow: var(--brand);
+            --yellow-dark: var(--brand-deep);
+            --yellow-light: var(--brand-soft);
             --sidebar-w: 260px;
             --topbar-h: 64px;
             --radius: 12px;
             --radius-sm: 8px;
-            --shadow: 0 1px 3px rgba(0,0,0,0.06), 0 4px 16px rgba(0,0,0,0.05);
-            --border: 1px solid #ECEAEA;
-            --text: #1A1A1A;
-            --muted: #888;
-            --bg: #F5F4F1;
+            --shadow: 0 1px 3px rgba(31,58,61,0.06), 0 4px 16px rgba(31,58,61,0.05);
+            --border: 1px solid var(--line);
+            --text: var(--ink);
             --white: #FFFFFF;
-            --sidebar-bg: #141414;
+            --sidebar-bg: var(--ink);
         }
 
         body {
@@ -114,7 +114,7 @@
 
         .nav-link.active {
             background: var(--yellow);
-            color: #000 !important;
+            color: var(--ink) !important;
             font-weight: 600;
         }
 
@@ -134,7 +134,7 @@
             background: var(--yellow);
             border-radius: 50%;
             display: flex; align-items: center; justify-content: center;
-            font-size: 12px; font-weight: 700; color: #000; flex-shrink: 0;
+            font-size: 12px; font-weight: 700; color: var(--ink); flex-shrink: 0;
         }
 
         .user-name {
@@ -177,7 +177,7 @@
             border-radius: 20px;
             padding: 6px 14px;
             font-size: 12.5px; font-weight: 600;
-            color: #7A6200;
+            color: var(--brand-strong-dark);
             display: flex; align-items: center; gap: 6px;
         }
 
@@ -187,12 +187,12 @@
             border: none; border-radius: 20px;
             padding: 7px 16px;
             font-size: 13px; font-weight: 600;
-            color: #000; cursor: pointer;
+            color: var(--ink); cursor: pointer;
             text-decoration: none;
             transition: background 0.15s;
         }
 
-        .btn-home:hover { background: var(--yellow-dark); color: #000; }
+        .btn-home:hover { background: var(--yellow-dark); color: var(--ink); }
 
         /* ── MAIN ── */
         .main {
@@ -254,7 +254,7 @@
 
         .stat-card:hover {
             transform: translateY(-2px);
-            box-shadow: 0 4px 20px rgba(0,0,0,0.09);
+            box-shadow: 0 4px 20px rgba(31,58,61,0.09);
         }
 
         .stat-icon {
@@ -266,10 +266,10 @@
 
         .stat-icon.blue  { background: #EBF3FF; color: #2B6CB0; }
         .stat-icon.green { background: #E8F7EE; color: #1E7E45; }
-        .stat-icon.red   { background: #FEF0EF; color: #C53030; }
+        .stat-icon.red   { background: var(--accent-soft); color: var(--danger); }
         .stat-icon.cyan  { background: #E8F8F8; color: #0E7490; }
         .stat-icon.amber { background: #FFF8E8; color: #92650A; }
-        .stat-icon.dark  { background: #F0F0F0; color: #333; }
+        .stat-icon.dark  { background: var(--surface-2); color: var(--ink-soft); }
         .stat-icon.orange{ background: #FFF3EC; color: #C05621; }
 
         .stat-label {
@@ -285,7 +285,7 @@
             line-height: 1;
         }
 
-        .stat-value.danger { color: #C53030; }
+        .stat-value.danger { color: var(--danger); }
 
         /* ── CONTENT CARDS ── */
         .content-card {
@@ -330,7 +330,7 @@
         }
 
         .sold-badge {
-            background: #1A1A1A;
+            background: var(--ink);
             color: #fff;
             font-size: 11px; font-weight: 600;
             padding: 3px 10px;
@@ -401,7 +401,7 @@
         }
 
         .price-cell {
-            font-weight: 700; color: #C53030;
+            font-weight: 700; color: var(--danger);
             font-size: 14px;
         }
 
@@ -418,12 +418,12 @@
         }
 
         .btn-edit {
-            background: #F0F0F0; color: #333;
+            background: var(--surface-2); color: var(--ink-soft);
         }
-        .btn-edit:hover { background: #E0E0E0; color: #000; }
+        .btn-edit:hover { background: #E0E0E0; color: var(--ink); }
 
         .btn-delete {
-            background: #FEF0EF; color: #C53030;
+            background: var(--accent-soft); color: var(--danger);
         }
         .btn-delete:hover { background: #FCDEDE; color: #9B2C2C; }
 
@@ -433,11 +433,11 @@
             border: none; border-radius: 8px;
             padding: 8px 16px;
             font-size: 13px; font-weight: 700;
-            color: #000; cursor: pointer;
+            color: var(--ink); cursor: pointer;
             text-decoration: none;
             transition: background 0.15s;
         }
-        .btn-add-product:hover { background: var(--yellow-dark); color: #000; }
+        .btn-add-product:hover { background: var(--yellow-dark); color: var(--ink); }
 
         /* ── EMPTY STATE ── */
         .empty-state {
@@ -586,7 +586,7 @@
         <div class="content-card">
             <div class="card-header-bar">
                 <div class="title">
-                    <i class="ti ti-trophy" style="color:#E6BE00; margin-right:6px; font-size:16px; vertical-align:-2px;"></i>
+                    <i class="ti ti-trophy" style="color:var(--brand-deep); margin-right:6px; font-size:16px; vertical-align:-2px;"></i>
                     Top sản phẩm bán chạy
                 </div>
             </div>
@@ -604,7 +604,7 @@
         <div class="content-card">
             <div class="card-header-bar">
                 <div class="title">
-                    <i class="ti ti-list" style="color:#E6BE00; margin-right:6px; font-size:16px; vertical-align:-2px;"></i>
+                    <i class="ti ti-list" style="color:var(--brand-deep); margin-right:6px; font-size:16px; vertical-align:-2px;"></i>
                     Sản phẩm đang kinh doanh
                 </div>
                 <a href="/Product/add" class="btn-add-product">

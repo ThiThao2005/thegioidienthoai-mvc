@@ -359,8 +359,8 @@
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: .06em;
-    color: #555;
-    border-left: 3px solid #ffd400;
+    color: var(--muted);
+    border-left: 3px solid var(--brand);
     padding-left: 10px;
     margin-bottom: 1rem;
 }
@@ -369,14 +369,14 @@
 .img-drop-zone {
     border: 2px dashed #ccc;
     border-radius: 10px;
-    background: #fafafa;
+    background: var(--surface-2);
     cursor: pointer;
     transition: all .2s ease;
     padding: .75rem;
 }
 .img-drop-zone:hover,
 .img-drop-zone.drag-over {
-    border-color: #288ad6;
+    border-color: var(--brand-strong);
     background: #eaf4ff;
 }
 
@@ -388,7 +388,7 @@
     margin-top: 4px;
     cursor: pointer;
     font-size: .72rem;
-    color: #dc3545;
+    color: var(--danger);
 }
 .gallery-del-label input { margin-right: 3px; }
 

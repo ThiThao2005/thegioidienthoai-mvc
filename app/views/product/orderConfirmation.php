@@ -46,13 +46,13 @@
 
     /* Định dạng nút quay lại */
     .btn-back-home {
-        background-color: #ffd400 !important;
+        background-color: var(--brand) !important;
         border: none;
         transition: all 0.2s ease-in-out;
     }
     .btn-back-home:hover {
-        background-color: #fccc00 !important;
+        background-color: var(--brand) !important;
         transform: translateY(-2px);
-        box-shadow: 0 4px 10px rgba(252, 204, 0, 0.3);
+        box-shadow: 0 4px 10px rgba(158,217,196, 0.3);
     }
 </style>

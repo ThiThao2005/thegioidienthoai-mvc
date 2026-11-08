@@ -8,15 +8,17 @@
                 <div class="card-body">
 
                     <div class="text-center mb-4">
-                        <?php
-                            $avatar = !empty($user['avatar'])
-                                ? '/public/uploads/avatars/' . $user['avatar']
-                                : 'https://ui-avatars.com/api/?name=' . urlencode($user['fullname'] ?? 'User') . '&background=ffd400&color=111';
-                        ?>
-
-                        <img src="<?= htmlspecialchars($avatar) ?>"
-                             class="rounded-circle shadow-sm mb-3"
-                             style="width:110px;height:110px;object-fit:cover;">
+                        <?php if (!empty($user['avatar'])): ?>
+                            <img src="<?= htmlspecialchars('/public/uploads/avatars/' . $user['avatar']) ?>"
+                                 class="rounded-circle shadow-sm mb-3"
+                                 style="width:110px;height:110px;object-fit:cover;" alt="Ảnh đại diện">
+                        <?php else: ?>
+                            <?php $profileInitial = mb_strtoupper(mb_substr($user['fullname'] ?? 'U', 0, 1, 'UTF-8'), 'UTF-8'); ?>
+                            <div class="rounded-circle mb-3 mx-auto d-flex align-items-center justify-content-center"
+                                 style="width:110px;height:110px;background:var(--brand);color:var(--ink);font-size:2.6rem;font-weight:700;box-shadow:0 0 0 6px var(--brand-soft);">
+                                <?= htmlspecialchars($profileInitial) ?>
+                            </div>
+                        <?php endif; ?>
 
                         <h3 class="fw-bold">HỒ SƠ CÁ NHÂN</h3>
                         <p class="text-secondary small">Xem và cập nhật thông tin tài khoản</p>

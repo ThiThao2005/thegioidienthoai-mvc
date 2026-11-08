@@ -79,7 +79,7 @@
                                 <label for="image" class="form-label fw-bold">Anh dai dien</label>
                                 <input class="form-control" type="file" id="image" name="image" accept="image/*" onchange="previewImage(event)" required>
                                 <div class="mt-3 text-center">
-                                    <img id="imagePreview" src="#" alt="Preview" style="max-width:100%;max-height:200px;display:none;border-radius:8px;border:1px solid #ddd;padding:5px;">
+                                    <img id="imagePreview" src="#" alt="Preview" style="max-width:100%;max-height:200px;display:none;border-radius:8px;border:1px solid var(--line);padding:5px;">
                                 </div>
                             </div>
                             <div class="col-md-6">

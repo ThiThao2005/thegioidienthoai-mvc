@@ -10,14 +10,14 @@ foreach (($specMap ?? []) as $specs) {
 
 <style>
 .compare-shell { max-width: 1180px; }
-.compare-hero { background: linear-gradient(135deg, #fff7cc, #ffffff 58%); border: 1px solid #ffe58a; border-radius: 18px; }
-.compare-card { border: 1px solid #edf0f2; border-radius: 16px; transition: transform .2s ease, box-shadow .2s ease; }
+.compare-hero { background: linear-gradient(135deg, var(--brand-soft), #ffffff 58%); border: 1px solid var(--brand-light); border-radius: 18px; }
+.compare-card { border: 1px solid var(--line); border-radius: 16px; transition: transform .2s ease, box-shadow .2s ease; }
 .compare-card:hover { transform: translateY(-2px); box-shadow: 0 10px 28px rgba(15, 23, 42, .08); }
 .compare-img { height: 138px; width: 100%; object-fit: contain; }
 .spec-table th { width: 210px; background: #f8fafc; color: #475569; font-size: .88rem; }
 .spec-table td { min-width: 220px; vertical-align: top; }
 .sticky-spec { position: sticky; left: 0; z-index: 1; }
-.winner-chip { background: #fff3bf; color: #7c5a00; border-radius: 999px; padding: 4px 10px; font-size: .74rem; font-weight: 700; }
+.winner-chip { background: var(--brand-soft); color: var(--brand-strong-dark); border-radius: 999px; padding: 4px 10px; font-size: .74rem; font-weight: 700; }
 </style>
 
 <div class="container compare-shell py-4">

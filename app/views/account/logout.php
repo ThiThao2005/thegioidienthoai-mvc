@@ -1,6 +1,7 @@
 <?php
 // Gọi SessionHelper để kiểm tra trạng thái nếu cần
 SessionHelper::start();
+require_once 'app/views/layout/header.php';
 ?>
 
 <div class="row justify-content-center mt-5">
@@ -35,14 +36,14 @@ SessionHelper::start();
 
 <style>
     .btn-logout-manual {
-        background-color: #ffd400 !important;
+        background-color: var(--brand) !important;
         border: none;
         transition: all 0.2s ease-in-out;
     }
     .btn-logout-manual:hover {
-        background-color: #fccc00 !important;
+        background-color: var(--brand) !important;
         transform: translateY(-1px);
-        box-shadow: 0 4px 8px rgba(252, 204, 0, 0.3);
+        box-shadow: 0 4px 8px rgba(158,217,196, 0.3);
     }
 </style>
 
@@ -51,3 +52,4 @@ SessionHelper::start();
         window.location.href = '/Account/executeLogout';
     }, 1500);
 </script>
+<?php require_once 'app/views/layout/footer.php'; ?>

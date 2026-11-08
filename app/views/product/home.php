@@ -39,7 +39,7 @@ function renderProductStrip($title, $products, $link) {
                 <div class="carousel-item <?php echo $idx === 0 ? 'active' : ''; ?>">
                     <a href="<?php echo htmlspecialchars($banner->link ?: '/Product/index', ENT_QUOTES, 'UTF-8'); ?>" class="d-block position-relative text-decoration-none">
                         <img src="<?php echo htmlspecialchars($bannerImg, ENT_QUOTES, 'UTF-8'); ?>" class="d-block w-100" style="height:340px;object-fit:cover;">
-                        <div class="position-absolute bottom-0 start-0 end-0 p-4 text-white" style="background:linear-gradient(transparent,rgba(0,0,0,.75));">
+                        <div class="position-absolute bottom-0 start-0 end-0 p-4 text-white" style="background:linear-gradient(transparent,rgba(31,58,61,.75));">
                             <h2 class="fw-bold mb-1"><?php echo htmlspecialchars($banner->title, ENT_QUOTES, 'UTF-8'); ?></h2>
                             <p class="mb-0"><?php echo htmlspecialchars($banner->subtitle ?? '', ENT_QUOTES, 'UTF-8'); ?></p>
                         </div>

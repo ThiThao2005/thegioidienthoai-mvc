@@ -236,26 +236,26 @@ document.addEventListener('DOMContentLoaded', function () {
         cursor: pointer;
     }
     .btn-order {
-        background-color: #ffd400 !important;
+        background-color: var(--brand) !important;
         border: none;
         transition: all 0.2s ease-in-out;
     }
     .btn-order:hover {
-        background-color: #fccc00 !important;
+        background-color: var(--brand) !important;
         transform: translateY(-2px);
-        box-shadow: 0 4px 10px rgba(252, 204, 0, 0.4);
+        box-shadow: 0 4px 10px rgba(158,217,196, 0.4);
     }
     .checkout-product-list::-webkit-scrollbar {
         width: 4px;
     }
     .checkout-product-list::-webkit-scrollbar-thumb {
-        background: #ddd;
+        background: var(--line);
         border-radius: 4px;
     }
     .payment-method-option {
         transition: border-color 0.2s;
     }
     .payment-method-option:hover {
-        border-color: #ffd400 !important;
+        border-color: var(--brand) !important;
     }
 </style>

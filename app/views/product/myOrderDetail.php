@@ -13,26 +13,26 @@ $orderDate = isset($order->created_at) ? date('d/m/Y - H:i', strtotime($order->c
 ?>
 
 <style>
-.detail-card { border-radius: 16px; border: 1px solid #e9ecef; }
-.product-img { width: 74px; height: 74px; object-fit: contain; border-radius: 12px; border: 1px solid #eee; background: #fff; }
+.detail-card { border-radius: 16px; border: 1px solid var(--line); }
+.product-img { width: 74px; height: 74px; object-fit: contain; border-radius: 12px; border: 1px solid var(--line); background: #fff; }
 .badge-custom { font-size: 0.85rem; padding: 6px 14px; border-radius: 20px; font-weight: 700; }
 .text-info-dark { color: #0284c7; }
 .bg-info-subtle { background-color: #e0f2fe; }
 .step-icon { width: 40px; height: 40px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 1.1rem; }
-.review-box { background: #fff9db; border: 1px solid #ffe58a; }
+.review-box { background: var(--brand-soft); border: 1px solid var(--brand-light); }
 .order-item:last-child { border-bottom: 0 !important; padding-bottom: 0 !important; }
 /* ⭐ Badge thời gian */
 .order-time-badge {
     display: inline-flex;
     align-items: center;
     gap: 6px;
-    background: #fff9db;
-    border: 1px solid #ffe58a;
+    background: var(--brand-soft);
+    border: 1px solid var(--brand-light);
     border-radius: 20px;
     padding: 4px 12px;
     font-size: 0.8rem;
     font-weight: 600;
-    color: #856404;
+    color: var(--brand-strong-dark);
 }
 </style>
 
