@@ -150,6 +150,16 @@ $totalPrice = 0;
                         <span>Tạm tính:</span>
                         <span><?= number_format($totalPrice, 0, ',', '.') ?>đ</span>
                     </div>
+                    <?php
+                    $checkoutVoucher = $_SESSION['voucher'] ?? null;
+                    $checkoutDiscount = min($totalPrice, (float)($checkoutVoucher['discount'] ?? 0));
+                    ?>
+                    <?php if ($checkoutDiscount > 0): ?>
+                    <div class="d-flex justify-content-between mb-2 text-secondary small">
+                        <span>Giảm giá (<?= htmlspecialchars($checkoutVoucher['code'] ?? '', ENT_QUOTES, 'UTF-8') ?>):</span>
+                        <span class="text-success">-<?= number_format($checkoutDiscount, 0, ',', '.') ?>đ</span>
+                    </div>
+                    <?php endif; ?>
                     <div class="d-flex justify-content-between mb-2 text-secondary small">
                         <span>Phí vận chuyển:</span>
                         <span class="text-success">Miễn phí</span>
@@ -159,7 +169,7 @@ $totalPrice = 0;
                     
                     <div class="d-flex justify-content-between align-items-center mb-4">
                         <span class="fw-bold text-dark">Tổng tiền thanh toán:</span>
-                        <span class="fw-extrabold fs-4 text-danger"><?= number_format($totalPrice, 0, ',', '.') ?>đ</span>
+                        <span class="fw-extrabold fs-4 text-danger"><?= number_format(max(0, $totalPrice - $checkoutDiscount), 0, ',', '.') ?>đ</span>
                     </div>
 
                     <button type="submit" class="btn btn-warning w-full fw-bold py-3 text-uppercase shadow-sm rounded-pill btn-order d-block text-center text-dark">
