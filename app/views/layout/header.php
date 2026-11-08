@@ -9,548 +9,11 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" defer></script>
 
-    <style>
-        :root {
-            --yellow: #ffd400;
-            --yellow-dark: #f5c400;
-            --black: #111;
-            --red: #d70018;
-            --blue: #288ad6;
-            --bg: #f3f4f6;
-            --white: #fff;
-        }
-
-        * { box-sizing: border-box; }
-
-        body {
-            margin: 0;
-            background: var(--bg);
-            color: #111;
-            font-family: Arial, Helvetica, sans-serif;
-        }
-
-        a { text-decoration: none; }
-
-        /* ===== TOP BAR ===== */
-        .store-topbar {
-            background: #111;
-            color: #fff;
-            font-size: .78rem;
-            padding: 7px 0;
-        }
-
-        .store-topbar-inner {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .store-topbar-left,
-        .store-topbar-right {
-            display: flex;
-            align-items: center;
-            gap: 18px;
-            flex-wrap: wrap;
-        }
-
-        .store-topbar i {
-            color: var(--yellow);
-            margin-right: 5px;
-        }
-
-        .store-topbar a {
-            color: #fff;
-            font-weight: 700;
-        }
-
-        .store-topbar a:hover {
-            color: var(--yellow);
-        }
-
-        /* ===== MAIN HEADER ===== */
-        .store-header {
-            position: sticky;
-            top: 0;
-            z-index: 1030;
-            background: linear-gradient(180deg, #ffd400 0%, #f8c900 100%);
-            box-shadow: 0 4px 18px rgba(0,0,0,.12);
-        }
-
-        .store-mainnav {
-            padding: 12px 0;
-        }
-
-        .store-main-row {
-            display: flex;
-            align-items: center;
-            gap: 14px;
-        }
-
-        /* ===== LOGO ===== */
-        .store-logo {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            color: #111 !important;
-            min-width: max-content;
-        }
-
-        .store-logo-icon {
-            width: 44px;
-            height: 44px;
-            border-radius: 14px;
-            background: #111;
-            color: var(--yellow);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.25rem;
-            box-shadow: 0 8px 18px rgba(0,0,0,.22);
-        }
-
-        .store-logo-text {
-            display: flex;
-            flex-direction: column;
-            line-height: 1.05;
-        }
-
-        .store-logo-text strong {
-            font-size: 1.08rem;
-            font-weight: 950;
-            letter-spacing: -.4px;
-        }
-
-        .store-logo-text span {
-            font-size: .68rem;
-            font-weight: 800;
-            color: rgba(0,0,0,.62);
-        }
-
-        /* ===== LOCATION BUTTON ===== */
-        .store-location {
-            background: rgba(255,255,255,.55);
-            color: #111;
-            border-radius: 16px;
-            padding: 8px 12px;
-            font-size: .78rem;
-            font-weight: 800;
-            display: flex;
-            align-items: center;
-            gap: 7px;
-            min-width: max-content;
-            transition: .2s;
-        }
-
-        .store-location:hover {
-            background: #fff;
-            color: #111;
-        }
-
-        .store-location i {
-            color: #d70018;
-        }
-
-        /* ===== SEARCH ===== */
-        .store-search {
-            flex: 1;
-            max-width: 610px;
-            display: flex;
-            align-items: center;
-            background: #fff;
-            border-radius: 999px;
-            overflow: hidden;
-            box-shadow: 0 8px 22px rgba(0,0,0,.12);
-            border: 2px solid rgba(255,255,255,.8);
-        }
-
-        .store-search input {
-            flex: 1;
-            border: none;
-            outline: none;
-            padding: 12px 18px;
-            font-size: .92rem;
-        }
-
-        .store-search button {
-            width: 54px;
-            height: 46px;
-            border: none;
-            background: #111;
-            color: var(--yellow);
-            font-size: 1rem;
-            transition: .2s;
-        }
-
-        .store-search button:hover {
-            background: #000;
-        }
-
-        /* ===== ACTIONS ===== */
-        .store-actions {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            margin-left: auto;
-        }
-
-        .store-action-btn {
-            min-height: 42px;
-            border: none;
-            border-radius: 999px;
-            background: rgba(255,255,255,.55);
-            color: #111;
-            padding: 8px 13px;
-            font-size: .8rem;
-            font-weight: 900;
-            display: inline-flex;
-            align-items: center;
-            gap: 7px;
-            white-space: nowrap;
-            transition: .2s;
-            cursor: pointer;
-        }
-
-        .store-action-btn:hover {
-            background: #fff;
-            color: #111;
-            transform: translateY(-1px);
-            box-shadow: 0 6px 16px rgba(0,0,0,.11);
-        }
-
-        .store-action-btn i {
-            font-size: 1.05rem;
-        }
-
-        .cart-badge {
-            min-width: 19px;
-            height: 19px;
-            border-radius: 999px;
-            background: var(--red);
-            color: #fff;
-            font-size: .68rem;
-            font-weight: 950;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            padding: 0 6px;
-        }
-
-        .cart-badge.empty {
-            background: rgba(0,0,0,.22);
-            color: #555;
-        }
-
-        /* ===== USER ===== */
-        .user-dropdown {
-            position: relative;
-        }
-
-        .user-avatar {
-            width: 27px;
-            height: 27px;
-            border-radius: 50%;
-            background: #111;
-            color: var(--yellow);
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            font-size: .76rem;
-            font-weight: 950;
-        }
-
-        .user-menu {
-            position: absolute;
-            right: 0;
-            top: calc(100% + 10px);
-            width: 250px;
-            background: #fff;
-            border-radius: 18px;
-            padding: 8px;
-            box-shadow: 0 16px 42px rgba(0,0,0,.18);
-            border: 1px solid rgba(0,0,0,.06);
-            display: none;
-            z-index: 9999;
-            animation: menuFade .18s ease;
-        }
-
-        .user-menu.show {
-            display: block;
-        }
-
-        @keyframes menuFade {
-            from { opacity: 0; transform: translateY(-8px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .user-menu-item {
-            color: #222;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            padding: 11px 12px;
-            border-radius: 12px;
-            font-size: .86rem;
-            font-weight: 800;
-            transition: .15s;
-        }
-
-        .user-menu-item:hover {
-            background: #fff6cc;
-            color: #111;
-        }
-
-        .user-menu-item.admin {
-            color: #1565c0;
-        }
-
-        .user-menu-item.admin:hover {
-            background: #e3f2fd;
-        }
-
-        .user-menu-item.danger {
-            color: var(--red);
-        }
-
-        .user-menu-item.danger:hover {
-            background: #fff0f0;
-        }
-
-        .user-menu-divider {
-            height: 1px;
-            background: #eee;
-            margin: 6px 4px;
-        }
-
-        /* ===== CATEGORY NAV ===== */
-        .store-catnav {
-            background: #fff;
-            border-top: 1px solid rgba(0,0,0,.06);
-            border-bottom: 1px solid rgba(0,0,0,.07);
-        }
-
-        .store-cat-row {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            overflow-x: auto;
-            padding: 9px 0;
-            scrollbar-width: none;
-        }
-
-        .store-cat-row::-webkit-scrollbar {
-            display: none;
-        }
-
-        .store-cat-item {
-            flex: 1;
-            min-width: 125px;
-            color: #222;
-            border-radius: 16px;
-            padding: 10px 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 7px;
-            font-size: .8rem;
-            font-weight: 900;
-            transition: .2s;
-        }
-
-        .store-cat-item i {
-            font-size: 1.12rem;
-        }
-
-        .store-cat-item:hover,
-        .store-cat-item.active {
-            background: #fff2b0;
-            color: #111;
-            transform: translateY(-1px);
-        }
-
-        .store-cat-item.hot {
-            color: var(--red);
-        }
-
-        /* ===== MOBILE MENU ===== */
-        .mobile-menu {
-            display: none;
-            position: fixed;
-            inset: 0;
-            background: rgba(0,0,0,.52);
-            z-index: 2000;
-        }
-
-        .mobile-menu.open {
-            display: flex;
-        }
-
-        .mobile-panel {
-            width: 310px;
-            max-width: 88vw;
-            height: 100%;
-            background: #fff;
-            overflow-y: auto;
-            animation: slideIn .24s ease;
-        }
-
-        @keyframes slideIn {
-            from { transform: translateX(-100%); }
-            to { transform: translateX(0); }
-        }
-
-        .mobile-head {
-            background: var(--yellow);
-            padding: 15px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
-
-        .mobile-close {
-            width: 34px;
-            height: 34px;
-            border: none;
-            border-radius: 50%;
-            background: rgba(0,0,0,.12);
-        }
-
-        .mobile-section {
-            padding: 14px;
-            border-bottom: 1px solid #eee;
-        }
-
-        .mobile-title {
-            font-size: .72rem;
-            font-weight: 950;
-            color: #999;
-            text-transform: uppercase;
-            letter-spacing: .08em;
-            margin-bottom: 8px;
-        }
-
-        .mobile-search {
-            display: flex;
-        }
-
-        .mobile-search input {
-            flex: 1;
-            border: 1px solid #e5e5e5;
-            border-right: none;
-            border-radius: 13px 0 0 13px;
-            padding: 10px 12px;
-            outline: none;
-        }
-
-        .mobile-search button {
-            border: none;
-            background: #111;
-            color: var(--yellow);
-            border-radius: 0 13px 13px 0;
-            padding: 0 15px;
-        }
-
-        .mobile-link {
-            color: #222;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            padding: 11px 12px;
-            border-radius: 12px;
-            font-size: .88rem;
-            font-weight: 800;
-        }
-
-        .mobile-link:hover {
-            background: #fff6cc;
-            color: #111;
-        }
-
-        .mobile-link i {
-            width: 22px;
-            text-align: center;
-        }
-
-        /* ===== CONTENT ===== */
-        .tgdd-content {
-            padding: 26px 0 48px;
-        }
-
-        .tgdd-flash {
-            position: fixed;
-            top: 90px;
-            right: 20px;
-            z-index: 99999;
-            max-width: 330px;
-        }
-
-        .card-product {
-            border: none;
-            border-radius: 20px;
-            box-shadow: 0 6px 18px rgba(0,0,0,.08);
-            transition: .22s;
-            overflow: hidden;
-            background: #fff;
-        }
-
-        .card-product:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 14px 34px rgba(0,0,0,.14);
-        }
-
-        .price-text {
-            color: var(--red);
-            font-weight: 950;
-            font-size: 1.1rem;
-        }
-
-        @media (max-width: 1199px) {
-            .store-location {
-                display: none;
-            }
-        }
-
-        @media (max-width: 991px) {
-            .store-topbar {
-                display: none;
-            }
-
-            .store-mainnav {
-                padding: 10px 0;
-            }
-
-            .store-search {
-                display: none;
-            }
-
-            .store-logo-icon {
-                width: 39px;
-                height: 39px;
-            }
-
-            .store-action-btn {
-                padding: 8px 11px;
-            }
-
-            .store-catnav {
-                display: none;
-            }
-        }
-
-        @media (max-width: 575px) {
-            .store-logo-text strong {
-                font-size: .86rem;
-            }
-
-            .store-logo-text span {
-                display: none;
-            }
-
-            .store-action-btn span.action-text {
-                display: none;
-            }
-        }
-    </style>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/public/css/theme.css?v=<?php echo @filemtime(__DIR__ . '/../../../public/css/theme.css') ?: 1; ?>">
+    <meta name="theme-color" content="#1f3a3d">
 </head>
 
 <body>
@@ -666,6 +129,15 @@
                                 <a class="user-menu-item" href="/Account/profile">
                                     <i class="fas fa-user"></i> Tài khoản của tôi
                                 </a>
+                                <a class="user-menu-item" href="/Product/myOrders">
+                                    <i class="fas fa-box"></i> Đơn hàng của tôi
+                                </a>
+                                <a class="user-menu-item" href="/Product/wishlist">
+                                    <i class="fas fa-heart"></i> Sản phẩm yêu thích
+                                </a>
+                                <a class="user-menu-item" href="/Account/changePassword">
+                                    <i class="fas fa-key"></i> Đổi mật khẩu
+                                </a>
 
 
                       
@@ -703,9 +175,6 @@
                 <a href="/Product/index?category_id=4" class="store-cat-item">
                     <i class="fas fa-headphones"></i> Phụ kiện
                 </a>
-                <a href="/Product/index?category_id=5" class="store-cat-item">
-                    <i class="fas fa-volume-high"></i> Âm thanh
-                </a>
                 <a href="/Product/index?featured=1" class="store-cat-item hot">
                     <i class="fas fa-fire"></i> Hàng nổi bật
                 </a>
@@ -718,7 +187,7 @@
     <div class="mobile-panel">
         <div class="mobile-head">
             <a href="/Product/index" class="store-logo">
-                <span class="store-logo-icon" style="width:34px;height:34px;font-size:.95rem;">
+                <span class="store-logo-icon" style="width:36px;height:36px;font-size:.95rem;border-radius:11px;">
                     <i class="fas fa-mobile-alt"></i>
                 </span>
                 <span class="store-logo-text">
@@ -750,13 +219,13 @@
                         <div style="font-size:.9rem;font-weight:900;">
                             <?php echo htmlspecialchars($fullname, ENT_QUOTES, 'UTF-8'); ?>
                         </div>
-                        <div style="font-size:.72rem;color:#888;">Đã đăng nhập</div>
+                        <div style="font-size:.74rem;color:var(--muted);">Đã đăng nhập</div>
                     </div>
                 </div>
 
                 <?php if (SessionHelper::isAdmin()): ?>
                     <a class="mobile-link" href="/Product/dashboard">
-                        <i class="fas fa-user-shield" style="color:#1565c0;"></i> Quản trị hệ thống
+                        <i class="fas fa-user-shield"></i> Quản trị hệ thống
                     </a>
                 <?php endif; ?>
 
@@ -769,11 +238,11 @@
                 </a>
 
                 <a class="mobile-link" href="/Product/wishlist">
-                    <i class="fas fa-heart" style="color:#d70018;"></i> Sản phẩm yêu thích
+                    <i class="fas fa-heart" style="color:var(--accent);"></i> Sản phẩm yêu thích
                 </a>
 
-                <a class="mobile-link" href="/Account/logout" style="color:#d70018;">
-                    <i class="fas fa-sign-out-alt" style="color:#d70018;"></i> Đăng xuất
+                <a class="mobile-link danger" href="/Account/logout">
+                    <i class="fas fa-sign-out-alt"></i> Đăng xuất
                 </a>
             <?php else: ?>
                 <a class="mobile-link" href="/Account/login">
@@ -800,11 +269,8 @@
             <a class="mobile-link" href="/Product/index?category_id=4">
                 <i class="fas fa-headphones"></i> Phụ kiện
             </a>
-            <a class="mobile-link" href="/Product/index?category_id=5">
-                <i class="fas fa-volume-high"></i> Thiết bị âm thanh
-            </a>
-            <a class="mobile-link" href="/Product/index?featured=1" style="color:#d70018;">
-                <i class="fas fa-fire" style="color:#d70018;"></i> Hàng nổi bật
+            <a class="mobile-link danger" href="/Product/index?featured=1">
+                <i class="fas fa-fire"></i> Hàng nổi bật
             </a>
         </div>
 
@@ -830,6 +296,17 @@
     <div class="container">
 
 <script>
+// Ảnh bị lỗi/không tồn tại -> hiện ảnh thay thế thay vì icon ảnh vỡ
+document.addEventListener('error', function (e) {
+    const img = e.target;
+    if (!(img instanceof HTMLImageElement) || img.dataset.fallback) return;
+    img.dataset.fallback = '1';
+    img.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(
+        '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200"><rect width="200" height="200" fill="#eaf6f0"/>' +
+        '<rect x="70" y="40" width="60" height="110" rx="12" fill="none" stroke="#7cc6ab" stroke-width="6"/>' +
+        '<circle cx="100" cy="132" r="5" fill="#7cc6ab"/><circle cx="138" cy="44" r="8" fill="#ee8a6f"/></svg>');
+}, true);
+
 function toggleDropdown(e) {
     e.stopPropagation();
 
@@ -945,10 +422,10 @@ function showFlash(type, msg) {
     }
 
     const colors = {
-        success: '#2e7d32',
-        warning: '#e65100',
-        danger: '#d70018',
-        info: '#1565c0'
+        success: '#2f8f5b',
+        warning: '#c98a1b',
+        danger: '#c8493a',
+        info: '#2f7d6d'
     };
 
     const icons = {
@@ -970,7 +447,7 @@ function showFlash(type, msg) {
         display:flex;
         align-items:center;
         gap:8px;
-        box-shadow:0 8px 24px rgba(0,0,0,.18);
+        box-shadow:0 10px 30px rgba(31,58,61,.22);
         animation:flashIn .25s ease;
     `;
 
@@ -981,17 +458,5 @@ function showFlash(type, msg) {
 }
 </script>
 
-<style>
-@keyframes flashIn {
-    from {
-        opacity: 0;
-        transform: translateX(18px);
-    }
-    to {
-        opacity: 1;
-        transform: translateX(0);
-    }
-}
-</style>
 
 <div class="tgdd-flash" id="flashWrap"></div>

@@ -56,7 +56,7 @@
                                 </tr>
                             <?php else: ?>
                                 <?php foreach ($users as $u): ?>
-                                <tr style="transition: all 0.2s ease; border-bottom: 1px solid #f1f1f1;">
+                                <tr style="transition: all 0.2s ease; border-bottom: 1px solid var(--surface-2);">
                                     <td class="text-center py-3">
                                         <span class="badge bg-light text-dark border px-2 py-1 d-inline-block fw-bold" style="min-width: 45px;">
                                             #<?= $u->id ?>
@@ -102,7 +102,7 @@
                                                 <input type="hidden" name="role" value="user">
                                                 <button type="submit" class="btn p-0 border-0 bg-transparent">
                                                     <span class="badge rounded-pill fw-bold px-3 py-2 shadow-sm" 
-                                                          style="background-color: #fff1f0; color: #cf1322; border: 1px solid #ffa39e; font-size: 0.78rem;">
+                                                          style="background-color: var(--accent-soft); color: #cf1322; border: 1px solid #f3b8a8; font-size: 0.78rem;">
                                                         <i class="fas fa-shield-alt me-1"></i> Quản trị viên
                                                     </span>
                                                 </button>
@@ -110,7 +110,7 @@
                                                 <input type="hidden" name="role" value="admin">
                                                 <button type="submit" class="btn p-0 border-0 bg-transparent">
                                                     <span class="badge rounded-pill fw-bold px-3 py-2 shadow-sm" 
-                                                          style="background-color: #e6f7ff; color: #096dd9; border: 1px solid #91d5ff; font-size: 0.78rem;">
+                                                          style="background-color: var(--brand-soft); color: #096dd9; border: 1px solid #91d5ff; font-size: 0.78rem;">
                                                         <i class="fas fa-shopping-bag me-1"></i> Khách hàng
                                                     </span>
                                                 </button>

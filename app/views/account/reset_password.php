@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <title>Đặt lại mật khẩu</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/public/css/theme.css">
 </head>
 <body class="bg-light">
 

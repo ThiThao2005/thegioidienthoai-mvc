@@ -27,7 +27,7 @@ if (!empty($order->created_at) && $order->created_at !== '0000-00-00 00:00:00') 
     position: absolute;
     top: 20px; left: 0; right: 0;
     height: 4px;
-    background: #e9ecef;
+    background: var(--line);
     z-index: 0;
 }
 .order-steps::after {
@@ -35,7 +35,7 @@ if (!empty($order->created_at) && $order->created_at !== '0000-00-00 00:00:00') 
     position: absolute;
     top: 20px; left: 0;
     height: 4px;
-    background: <?= $isCancelled ? '#dc3545' : '#ffd400' ?>;
+    background: <?= $isCancelled ? 'var(--danger)' : 'var(--brand)' ?>;
     z-index: 1;
     width: <?= (($currentStep - 1) / 3) * 100 ?>%;
     transition: width .5s cubic-bezier(0.4, 0, 0.2, 1);
@@ -47,29 +47,29 @@ if (!empty($order->created_at) && $order->created_at !== '0000-00-00 00:00:00') 
     display: flex; align-items: center; justify-content: center;
     margin: 0 auto 10px;
     font-size: 14px;
-    border: 3px solid #e9ecef;
+    border: 3px solid var(--line);
     background: #fff;
     transition: all .4s ease;
 }
-.step-item.done .step-circle    { background: #ffd400; border-color: #ffd400; color: #212529; }
-.step-item.active .step-circle  { background: #fff; border-color: #ffd400; color: #d39e00; box-shadow: 0 0 0 5px rgba(255,212,0,.25); }
-.step-item.inactive .step-circle{ background: #f8f9fa; border-color: #e9ecef; color: #6c757d; }
+.step-item.done .step-circle    { background: var(--brand); border-color: var(--brand); color: var(--ink); }
+.step-item.active .step-circle  { background: #fff; border-color: var(--brand); color: var(--warning); box-shadow: 0 0 0 5px rgba(158,217,196,.25); }
+.step-item.inactive .step-circle{ background: var(--surface-2); border-color: var(--line); color: var(--muted); }
 .step-label { font-size: 0.8rem; font-weight: 600; transition: color .3s; }
-.step-item.done .step-label    { color: #212529; }
-.step-item.active .step-label  { color: #d39e00; }
-.step-item.inactive .step-label{ color: #6c757d; }
+.step-item.done .step-label    { color: var(--ink); }
+.step-item.active .step-label  { color: var(--warning); }
+.step-item.inactive .step-label{ color: var(--muted); }
 
 .order-time-badge {
     display: inline-flex;
     align-items: center;
     gap: 6px;
-    background: #fff9db;
-    border: 1px solid #ffe58a;
+    background: var(--brand-soft);
+    border: 1px solid var(--brand-light);
     border-radius: 20px;
     padding: 5px 14px;
     font-size: 0.82rem;
     font-weight: 600;
-    color: #856404;
+    color: var(--brand-strong-dark);
 }
 
 @media (max-width: 576px) {

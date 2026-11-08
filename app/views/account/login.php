@@ -6,6 +6,8 @@
     <title>Đăng nhập - Thế Giới Điện Thoại</title>
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/public/css/theme.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 
     <script src="https://accounts.google.com/gsi/client" async defer></script>
@@ -181,30 +183,30 @@ function handleCredentialResponse(response) {
 
 <style>
     .btn-login {
-        background-color: #ffd400 !important;
+        background-color: var(--brand) !important;
         border: none;
         transition: all 0.2s ease-in-out;
     }
 
     .btn-login:hover {
-        background-color: #fccc00 !important;
+        background-color: var(--brand) !important;
         transform: translateY(-1px);
     }
 
     .input-group:focus-within .input-group-text,
     .input-group:focus-within .form-control {
-        border-color: #ffd400 !important;
+        border-color: var(--brand) !important;
         box-shadow: none;
     }
 
     .form-check-input:checked {
-        background-color: #ffd400;
-        border-color: #ffd400;
+        background-color: var(--brand);
+        border-color: var(--brand);
     }
 
     .form-check-input:focus {
-        border-color: #ffd400;
-        box-shadow: 0 0 0 .2rem rgba(255, 212, 0, .25);
+        border-color: var(--brand);
+        box-shadow: 0 0 0 .2rem rgba(158,217,196, .25);
     }
 </style>
 

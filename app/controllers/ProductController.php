@@ -29,6 +29,12 @@ class ProductController
         require_once 'app/views/layout/footer.php';
     }
 
+    private function renderBare($viewPath, $data = [])
+    {
+        extract($data);
+        require_once 'app/views/' . $viewPath . '.php';
+    }
+
     private function cleanText($value)
     {
         return trim((string) $value);
@@ -856,7 +862,8 @@ class ProductController
         $totalUsers = $this->productModel->countUsers();
         $dashboardStats = $this->productModel->getDashboardStats();
 
-        $this->render('product/dashboard', [
+        // Trang quản trị có layout riêng (sidebar) nên không dùng header/footer của cửa hàng
+        $this->renderBare('product/dashboard', [
             'products'         => $products,
             'totalCategories'  => $totalCategories,
             'totalOrders'      => $totalOrders,

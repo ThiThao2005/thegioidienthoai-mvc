@@ -16,8 +16,8 @@ if ($currentTab !== 'all') {
 
 <style>
 .nav-pills .nav-link { color: #495057; font-weight: 700; font-size: .9rem; padding: 10px 18px; border-radius: 999px; transition: all .2s ease; }
-.nav-pills .nav-link.active { background-color: #ffd400 !important; color: #000 !important; box-shadow: 0 6px 18px rgba(255, 212, 0, .28); }
-.order-card { border-radius: 16px; transition: transform .2s ease, box-shadow .2s ease; border: 1px solid #edf0f2; }
+.nav-pills .nav-link.active { background-color: var(--brand) !important; color: var(--ink) !important; box-shadow: 0 6px 18px rgba(158,217,196, .28); }
+.order-card { border-radius: 16px; transition: transform .2s ease, box-shadow .2s ease; border: 1px solid var(--line); }
 .order-card:hover { transform: translateY(-2px); box-shadow: 0 10px 28px rgba(15,23,42,.07) !important; }
 .badge-custom { font-size: .8rem; padding: 6px 14px; border-radius: 20px; font-weight: 700; }
 .text-info-dark { color: #0284c7; }

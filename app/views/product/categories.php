@@ -64,7 +64,7 @@
                                 </tr>
                             <?php else: ?>
                                 <?php foreach ($categories as $cat): ?>
-                                <tr style="transition: all 0.2s ease; border-bottom: 1px solid #f1f1f1;">
+                                <tr style="transition: all 0.2s ease; border-bottom: 1px solid var(--surface-2);">
                                     <td class="text-center fw-bold text-secondary py-3">
                                         <span class="badge bg-light text-dark border px-2 py-1" style="min-width: 45px;">
                                             #<?= $cat->id ?>

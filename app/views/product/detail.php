@@ -46,12 +46,12 @@ $priceSaved  = $priceOrig - $priceFinal;
 <style>
 /* ===== RESET & BASE ===== */
 .pd-wrap * { box-sizing: border-box; }
-.pd-wrap { font-family: 'Segoe UI', system-ui, sans-serif; color: #1a1a1a; }
+.pd-wrap { font-family: var(--font); color: var(--ink); }
 
 /* ===== BREADCRUMB ===== */
-.pd-breadcrumb { font-size: .82rem; color: #888; margin-bottom: 1.5rem; }
-.pd-breadcrumb a { color: #555; text-decoration: none; }
-.pd-breadcrumb a:hover { color: #d70018; }
+.pd-breadcrumb { font-size: .82rem; color: var(--muted); margin-bottom: 1.5rem; }
+.pd-breadcrumb a { color: var(--muted); text-decoration: none; }
+.pd-breadcrumb a:hover { color: var(--price); }
 .pd-breadcrumb span { margin: 0 .4rem; }
 
 /* ===== GRID LAYOUT ===== */
@@ -77,7 +77,7 @@ $priceSaved  = $priceOrig - $priceFinal;
     align-items: center;
     justify-content: center;
     margin-bottom: 12px;
-    border: 1px solid #eee;
+    border: 1px solid var(--line);
     cursor: zoom-in;
 }
 .pd-gallery-main img {
@@ -91,20 +91,20 @@ $priceSaved  = $priceOrig - $priceFinal;
 /* Nút prev/next gallery */
 .pd-gallery-btn {
     position: absolute; top: 50%; transform: translateY(-50%);
-    background: rgba(255,255,255,.92); border: 1px solid #ddd;
+    background: rgba(255,255,255,.92); border: 1px solid var(--line);
     border-radius: 50%; width: 36px; height: 36px;
     display: flex; align-items: center; justify-content: center;
-    cursor: pointer; font-size: 1rem; color: #333;
+    cursor: pointer; font-size: 1rem; color: var(--ink-soft);
     transition: all .2s; z-index: 2; line-height: 1;
 }
-.pd-gallery-btn:hover { background: #fff; box-shadow: 0 2px 8px rgba(0,0,0,.12); }
+.pd-gallery-btn:hover { background: #fff; box-shadow: 0 2px 8px rgba(31,58,61,.12); }
 .pd-gallery-btn.prev { left: 10px; }
 .pd-gallery-btn.next { right: 10px; }
 
 /* Badge giảm giá trên gallery */
 .pd-discount-badge {
     position: absolute; top: 12px; left: 12px;
-    background: #d70018; color: #fff;
+    background: var(--price); color: #fff;
     font-size: .75rem; font-weight: 700;
     padding: 4px 10px; border-radius: 20px; z-index: 2;
 }
@@ -119,13 +119,13 @@ $priceSaved  = $priceOrig - $priceFinal;
     flex: 0 0 60px; height: 60px;
     border: 2px solid transparent;
     border-radius: 10px; overflow: hidden;
-    background: #f5f5f5; cursor: pointer;
+    background: var(--surface-2); cursor: pointer;
     transition: all .2s;
     display: flex; align-items: center; justify-content: center;
 }
 .pd-thumb img { max-width: 100%; max-height: 100%; object-fit: contain; padding: 4px; }
-.pd-thumb.active { border-color: #d70018; }
-.pd-thumb:hover { border-color: #aaa; }
+.pd-thumb.active { border-color: var(--price); }
+.pd-thumb:hover { border-color: #a5b1b2; }
 
 /* ===== PRODUCT INFO PANEL ===== */
 .pd-info { display: flex; flex-direction: column; gap: 1rem; }
@@ -135,64 +135,64 @@ $priceSaved  = $priceOrig - $priceFinal;
     font-size: .75rem; font-weight: 600; padding: 4px 12px;
     border-radius: 20px; display: inline-flex; align-items: center; gap: 5px;
 }
-.pd-badge-brand  { background: #1a1a1a; color: #fff; }
-.pd-badge-cat    { background: #f0f0f0; color: #555; }
-.pd-badge-warr   { background: #e8f5e9; color: #2e7d32; }
-.pd-badge-feat   { background: #fff8e1; color: #e65100; }
+.pd-badge-brand  { background: var(--ink); color: #fff; }
+.pd-badge-cat    { background: var(--surface-2); color: var(--muted); }
+.pd-badge-warr   { background: #e7f4ec; color: var(--success); }
+.pd-badge-feat   { background: var(--brand-soft); color: var(--warning); }
 
-.pd-title { font-size: 1.5rem; font-weight: 700; line-height: 1.35; margin: 0; color: #111; }
+.pd-title { font-size: 1.5rem; font-weight: 700; line-height: 1.35; margin: 0; color: var(--ink); }
 
 /* Rating tóm tắt */
 .pd-rating-row { display: flex; align-items: center; gap: 10px; }
 .pd-stars-display { color: #f5a623; font-size: 1rem; letter-spacing: 2px; }
 .pd-rating-avg { font-size: 1.1rem; font-weight: 700; color: #f5a623; }
-.pd-rating-count { font-size: .82rem; color: #888; }
+.pd-rating-count { font-size: .82rem; color: var(--muted); }
 
 /* Giá */
 .pd-price-block {
-    background: linear-gradient(135deg, #fff5f5 0%, #fff9e6 100%);
+    background: linear-gradient(135deg, var(--accent-soft) 0%, #fff9e6 100%);
     border: 1px solid #fdd; border-radius: 14px; padding: 1rem 1.25rem;
 }
-.pd-price-main { font-size: 2rem; font-weight: 800; color: #d70018; line-height: 1; }
-.pd-price-orig { font-size: .9rem; color: #aaa; text-decoration: line-through; margin-left: 8px; }
-.pd-price-saved { font-size: .78rem; color: #2e7d32; font-weight: 600; margin-top: 4px; }
+.pd-price-main { font-size: 2rem; font-weight: 800; color: var(--price); line-height: 1; }
+.pd-price-orig { font-size: .9rem; color: #a5b1b2; text-decoration: line-through; margin-left: 8px; }
+.pd-price-saved { font-size: .78rem; color: var(--success); font-weight: 600; margin-top: 4px; }
 .pd-installment {
     display: inline-flex; align-items: center; gap: 5px;
     font-size: .75rem; font-weight: 700;
-    background: #fff; border: 1.5px solid #d70018; color: #d70018;
+    background: #fff; border: 1.5px solid var(--price); color: var(--price);
     padding: 3px 10px; border-radius: 20px; margin-top: 8px;
 }
 
 /* Khuyến mãi */
 .pd-promo {
-    border: 1.5px solid #ffd400; border-radius: 14px; overflow: hidden;
+    border: 1.5px solid var(--brand); border-radius: 14px; overflow: hidden;
 }
 .pd-promo-header {
-    background: #ffd400; color: #111;
+    background: var(--brand); color: var(--ink);
     font-size: .8rem; font-weight: 700;
     padding: 8px 14px; display: flex; align-items: center; gap: 6px;
 }
-.pd-promo-body { background: #fffdf0; padding: 10px 14px; }
+.pd-promo-body { background: var(--brand-soft); padding: 10px 14px; }
 .pd-promo-item {
-    font-size: .82rem; color: #333;
+    font-size: .82rem; color: var(--ink-soft);
     padding: 3px 0; display: flex; align-items: flex-start; gap: 8px; line-height: 1.5;
 }
-.pd-promo-item i { color: #2e7d32; font-size: 1rem; flex-shrink: 0; margin-top: 1px; }
+.pd-promo-item i { color: var(--success); font-size: 1rem; flex-shrink: 0; margin-top: 1px; }
 
 /* Biến thể */
 .pd-variants-block {}
-.pd-variants-label { font-size: .82rem; font-weight: 700; color: #555; text-transform: uppercase; letter-spacing: .05em; margin-bottom: 8px; }
+.pd-variants-label { font-size: .82rem; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: .05em; margin-bottom: 8px; }
 .pd-variant-grid { display: flex; flex-wrap: wrap; gap: 8px; }
 .pd-variant-btn {
-    border: 1.5px solid #ddd; border-radius: 10px;
+    border: 1.5px solid var(--line); border-radius: 10px;
     padding: 8px 12px; background: #fff; cursor: pointer;
     transition: all .2s; text-align: left; min-width: 100px;
 }
-.pd-variant-btn:hover { border-color: #aaa; }
-.pd-variant-btn.active { border-color: #d70018; background: #fff5f5; }
-.pd-variant-name { font-size: .78rem; font-weight: 600; color: #222; display: block; }
-.pd-variant-price { font-size: .78rem; color: #d70018; font-weight: 700; display: block; margin-top: 2px; }
-.pd-variant-stock { font-size: .7rem; color: #888; display: block; }
+.pd-variant-btn:hover { border-color: #a5b1b2; }
+.pd-variant-btn.active { border-color: var(--price); background: var(--accent-soft); }
+.pd-variant-name { font-size: .78rem; font-weight: 600; color: var(--ink); display: block; }
+.pd-variant-price { font-size: .78rem; color: var(--price); font-weight: 700; display: block; margin-top: 2px; }
+.pd-variant-stock { font-size: .7rem; color: var(--muted); display: block; }
 
 /* Actions */
 .pd-actions { display: flex; flex-direction: column; gap: 10px; }
@@ -203,126 +203,126 @@ $priceSaved  = $priceOrig - $priceFinal;
     transition: all .25s; text-decoration: none; width: 100%;
 }
 .pd-btn-primary {
-    background: #ffd400; color: #111;
-    box-shadow: 0 4px 16px rgba(255,212,0,.3);
+    background: var(--brand); color: var(--ink);
+    box-shadow: 0 4px 16px rgba(158,217,196,.3);
 }
 .pd-btn-primary:hover {
-    background: #e6be00; transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(255,212,0,.4); color: #111;
+    background: var(--brand-deep); transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(158,217,196,.4); color: var(--ink);
 }
 .pd-btn-primary .pd-btn-sub { font-size: .72rem; font-weight: 400; opacity: .75; display: block; margin-top: 2px; }
 .pd-btn-secondary {
-    background: #fff; border: 1.5px solid #ddd; color: #333;
+    background: #fff; border: 1.5px solid var(--line); color: var(--ink-soft);
 }
-.pd-btn-secondary:hover { border-color: #aaa; background: #fafafa; color: #111; }
+.pd-btn-secondary:hover { border-color: #a5b1b2; background: var(--surface-2); color: var(--ink); }
 .pd-btn-wishlist { border-color: #e91e63; color: #e91e63; }
 .pd-btn-wishlist:hover { background: #fce4ec; border-color: #e91e63; color: #e91e63; }
-.pd-btn-compare  { border-color: #333; color: #333; }
-.pd-btn-compare:hover  { background: #f5f5f5; }
+.pd-btn-compare  { border-color: var(--ink-soft); color: var(--ink-soft); }
+.pd-btn-compare:hover  { background: var(--surface-2); }
 
 /* Admin bar */
 .pd-admin-bar {
     display: flex; gap: 8px; align-items: center; flex-wrap: wrap;
-    border-top: 1px solid #eee; padding-top: .75rem; margin-top: .5rem;
+    border-top: 1px solid var(--line); padding-top: .75rem; margin-top: .5rem;
 }
-.pd-admin-label { font-size: .75rem; color: #888; margin-right: auto; display: flex; align-items: center; gap: 5px; }
+.pd-admin-label { font-size: .75rem; color: var(--muted); margin-right: auto; display: flex; align-items: center; gap: 5px; }
 
 /* ===== TABS ===== */
 .pd-tabs { margin-top: 2.5rem; }
 .pd-tab-nav {
-    display: flex; border-bottom: 2px solid #eee;
+    display: flex; border-bottom: 2px solid var(--line);
     overflow-x: auto; gap: 0; scrollbar-width: none;
 }
 .pd-tab-nav::-webkit-scrollbar { display: none; }
 .pd-tab-btn {
-    padding: 12px 20px; font-size: .875rem; font-weight: 600; color: #888;
+    padding: 12px 20px; font-size: .875rem; font-weight: 600; color: var(--muted);
     border: none; background: none; cursor: pointer; white-space: nowrap;
     border-bottom: 2.5px solid transparent; margin-bottom: -2px;
     transition: all .2s;
 }
-.pd-tab-btn.active { color: #d70018; border-bottom-color: #d70018; }
-.pd-tab-btn:hover:not(.active) { color: #333; }
+.pd-tab-btn.active { color: var(--price); border-bottom-color: var(--price); }
+.pd-tab-btn:hover:not(.active) { color: var(--ink-soft); }
 .pd-tab-content { display: none; padding: 1.5rem 0; }
 .pd-tab-content.active { display: block; }
 
 /* ===== DESCRIPTION ===== */
 .pd-desc-block {
-    background: #fafafa; border: 1px solid #eee; border-radius: 14px;
-    padding: 1.5rem; font-size: .93rem; color: #444;
+    background: var(--surface-2); border: 1px solid var(--line); border-radius: 14px;
+    padding: 1.5rem; font-size: .93rem; color: var(--ink-soft);
     line-height: 1.85; white-space: pre-line;
 }
 
 /* ===== SPECS TABLE ===== */
 .pd-specs-table { width: 100%; border-collapse: collapse; font-size: .88rem; }
 .pd-specs-table tr:nth-child(even) td,
-.pd-specs-table tr:nth-child(even) th { background: #f9f9f9; }
+.pd-specs-table tr:nth-child(even) th { background: var(--surface-2); }
 .pd-specs-table th {
-    width: 32%; padding: 10px 14px; color: #555; font-weight: 600;
-    text-align: left; border-bottom: 1px solid #eee;
+    width: 32%; padding: 10px 14px; color: var(--muted); font-weight: 600;
+    text-align: left; border-bottom: 1px solid var(--line);
 }
 .pd-specs-table td {
-    padding: 10px 14px; color: #222;
-    border-bottom: 1px solid #eee;
+    padding: 10px 14px; color: var(--ink);
+    border-bottom: 1px solid var(--line);
 }
 
 /* ===== Q&A ===== */
-.pd-qa-form { background: #f9f9f9; border: 1px solid #eee; border-radius: 14px; padding: 1.25rem; margin-bottom: 1.5rem; }
-.pd-qa-form .form-control { border-radius: 10px; border: 1px solid #ddd; font-size: .875rem; }
-.pd-qa-form .form-control:focus { border-color: #ffd400; box-shadow: 0 0 0 3px rgba(255,212,0,.15); outline: none; }
-.pd-qa-item { border-bottom: 1px solid #f0f0f0; padding: 1rem 0; }
+.pd-qa-form { background: var(--surface-2); border: 1px solid var(--line); border-radius: 14px; padding: 1.25rem; margin-bottom: 1.5rem; }
+.pd-qa-form .form-control { border-radius: 10px; border: 1px solid var(--line); font-size: .875rem; }
+.pd-qa-form .form-control:focus { border-color: var(--brand); box-shadow: 0 0 0 3px rgba(158,217,196,.15); outline: none; }
+.pd-qa-item { border-bottom: 1px solid var(--surface-2); padding: 1rem 0; }
 .pd-qa-item:last-child { border-bottom: none; }
-.pd-qa-user { font-weight: 700; font-size: .88rem; color: #222; }
-.pd-qa-text { color: #555; font-size: .88rem; margin: 4px 0 0; line-height: 1.6; }
+.pd-qa-user { font-weight: 700; font-size: .88rem; color: var(--ink); }
+.pd-qa-text { color: var(--muted); font-size: .88rem; margin: 4px 0 0; line-height: 1.6; }
 .pd-qa-answer {
-    background: #fffdf0; border-left: 3px solid #ffd400;
+    background: var(--brand-soft); border-left: 3px solid var(--brand);
     border-radius: 0 8px 8px 0; padding: 8px 12px;
-    font-size: .85rem; color: #333; margin-top: 8px;
+    font-size: .85rem; color: var(--ink-soft); margin-top: 8px;
 }
-.pd-qa-answer strong { color: #e65100; }
+.pd-qa-answer strong { color: var(--warning); }
 .pd-qa-answer-form { display: flex; gap: 8px; margin-top: 8px; }
-.pd-qa-answer-form input { border-radius: 8px; border: 1px solid #ddd; font-size: .82rem; flex: 1; padding: 6px 10px; }
+.pd-qa-answer-form input { border-radius: 8px; border: 1px solid var(--line); font-size: .82rem; flex: 1; padding: 6px 10px; }
 
 /* ===== REVIEWS ===== */
 .pd-review-summary {
     display: flex; align-items: center; gap: 1.5rem;
-    background: #fafafa; border: 1px solid #eee; border-radius: 14px;
+    background: var(--surface-2); border: 1px solid var(--line); border-radius: 14px;
     padding: 1.25rem 1.5rem; margin-bottom: 1.5rem; flex-wrap: wrap;
 }
 .pd-review-big { font-size: 3rem; font-weight: 800; color: #f5a623; line-height: 1; }
 .pd-review-stars-big { font-size: 1.4rem; color: #f5a623; letter-spacing: 4px; }
-.pd-review-count { font-size: .82rem; color: #888; margin-top: 4px; }
+.pd-review-count { font-size: .82rem; color: var(--muted); margin-top: 4px; }
 
 /* Progress bars phân phối sao */
 .pd-star-bars { flex: 1; min-width: 160px; }
 .pd-star-bar-row { display: flex; align-items: center; gap: 8px; margin-bottom: 4px; font-size: .75rem; }
-.pd-star-bar-row span { min-width: 30px; color: #888; }
-.pd-star-bar-track { flex: 1; height: 6px; background: #eee; border-radius: 3px; overflow: hidden; }
+.pd-star-bar-row span { min-width: 30px; color: var(--muted); }
+.pd-star-bar-track { flex: 1; height: 6px; background: var(--line); border-radius: 3px; overflow: hidden; }
 .pd-star-bar-fill  { height: 100%; background: #f5a623; border-radius: 3px; transition: width .6s; }
 
 /* Interactive star rating */
 .pd-star-rating { display: flex; gap: 4px; cursor: pointer; }
 .pd-star-rating .star {
-    font-size: 1.6rem; color: #ddd;
+    font-size: 1.6rem; color: var(--line);
     transition: color .1s, transform .1s;
     user-select: none;
 }
 .pd-star-rating .star.lit    { color: #f5a623; }
 .pd-star-rating .star:hover  { transform: scale(1.2); }
 
-.pd-review-form { background: #f9f9f9; border: 1px solid #eee; border-radius: 14px; padding: 1.25rem; margin-bottom: 1.5rem; }
-.pd-review-form .form-control { border-radius: 10px; border: 1px solid #ddd; font-size: .875rem; }
-.pd-review-form .form-control:focus { border-color: #ffd400; box-shadow: 0 0 0 3px rgba(255,212,0,.15); outline: none; }
+.pd-review-form { background: var(--surface-2); border: 1px solid var(--line); border-radius: 14px; padding: 1.25rem; margin-bottom: 1.5rem; }
+.pd-review-form .form-control { border-radius: 10px; border: 1px solid var(--line); font-size: .875rem; }
+.pd-review-form .form-control:focus { border-color: var(--brand); box-shadow: 0 0 0 3px rgba(158,217,196,.15); outline: none; }
 
-.pd-review-item { border-bottom: 1px solid #f0f0f0; padding: 1rem 0; }
+.pd-review-item { border-bottom: 1px solid var(--surface-2); padding: 1rem 0; }
 .pd-review-item:last-child { border-bottom: none; }
 .pd-review-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; }
 .pd-review-author { font-weight: 700; font-size: .9rem; }
-.pd-review-date { font-size: .75rem; color: #aaa; }
+.pd-review-date { font-size: .75rem; color: #a5b1b2; }
 .pd-review-stars-sm { color: #f5a623; font-size: .82rem; letter-spacing: 1px; }
-.pd-review-comment { font-size: .875rem; color: #555; line-height: 1.65; margin-top: 4px; }
+.pd-review-comment { font-size: .875rem; color: var(--muted); line-height: 1.65; margin-top: 4px; }
 
 /* ===== EMPTY STATE ===== */
-.pd-empty { text-align: center; padding: 2rem; color: #aaa; font-size: .9rem; }
+.pd-empty { text-align: center; padding: 2rem; color: #a5b1b2; font-size: .9rem; }
 .pd-empty i { font-size: 2rem; display: block; margin-bottom: .5rem; }
 
 /* ===== BUTTONS chung ===== */
@@ -331,19 +331,19 @@ $priceSaved  = $priceOrig - $priceFinal;
     padding: 8px 18px; border-radius: 50px; border: none;
     font-size: .82rem; font-weight: 700; cursor: pointer; transition: all .2s;
 }
-.btn-pd-yellow { background: #ffd400; color: #111; }
-.btn-pd-yellow:hover { background: #e6be00; }
-.btn-pd-dark { background: #1a1a1a; color: #fff; }
-.btn-pd-dark:hover { background: #333; }
-.btn-pd-outline { background: #fff; border: 1.5px solid #ddd; color: #333; }
-.btn-pd-outline:hover { border-color: #aaa; }
-.btn-pd-danger { background: #fff; border: 1.5px solid #d70018; color: #d70018; }
-.btn-pd-danger:hover { background: #fff5f5; }
+.btn-pd-yellow { background: var(--brand); color: var(--ink); }
+.btn-pd-yellow:hover { background: var(--brand-deep); }
+.btn-pd-dark { background: var(--ink); color: #fff; }
+.btn-pd-dark:hover { background: var(--ink-soft); }
+.btn-pd-outline { background: #fff; border: 1.5px solid var(--line); color: var(--ink-soft); }
+.btn-pd-outline:hover { border-color: #a5b1b2; }
+.btn-pd-danger { background: #fff; border: 1.5px solid var(--price); color: var(--price); }
+.btn-pd-danger:hover { background: var(--accent-soft); }
 
 /* Toast */
 .pd-toast {
     position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(20px);
-    background: #222; color: #fff; padding: 10px 22px; border-radius: 30px;
+    background: var(--ink); color: #fff; padding: 10px 22px; border-radius: 30px;
     font-size: .85rem; font-weight: 600; opacity: 0;
     transition: all .35s; z-index: 9999; pointer-events: none; white-space: nowrap;
 }
@@ -362,7 +362,7 @@ $priceSaved  = $priceOrig - $priceFinal;
                 <?php echo htmlspecialchars($product->category_name, ENT_QUOTES, 'UTF-8'); ?>
             </a><span>›</span>
         <?php endif; ?>
-        <span style="color:#333;"><?php echo htmlspecialchars($product->name, ENT_QUOTES, 'UTF-8'); ?></span>
+        <span style="color:var(--ink-soft);"><?php echo htmlspecialchars($product->name, ENT_QUOTES, 'UTF-8'); ?></span>
     </div>
 
     <!-- Main grid -->
@@ -433,7 +433,7 @@ $priceSaved  = $priceOrig - $priceFinal;
                         <?php echo $i <= round($avgRating) ? '★' : '☆'; ?>
                     <?php endfor; ?>
                 </span>
-                <a href="#tab-reviews" class="pd-rating-count" onclick="openTab('reviews')" style="text-decoration:none; color:#888;">
+                <a href="#tab-reviews" class="pd-rating-count" onclick="openTab('reviews')" style="text-decoration:none; color:var(--muted);">
                     (<?php echo $totalReview; ?> đánh giá)
                 </a>
             </div>
@@ -597,7 +597,7 @@ $priceSaved  = $priceOrig - $priceFinal;
                 <?php if (!empty($product->description)): ?>
                     <?php echo htmlspecialchars($product->description, ENT_QUOTES, 'UTF-8'); ?>
                 <?php else: ?>
-                    <span style="color:#aaa;">Thông tin chi tiết của sản phẩm đang được cập nhật.</span>
+                    <span style="color:#a5b1b2;">Thông tin chi tiết của sản phẩm đang được cập nhật.</span>
                 <?php endif; ?>
             </div>
         </div>
@@ -650,18 +650,18 @@ $priceSaved  = $priceOrig - $priceFinal;
             <?php if (!SessionHelper::isLoggedIn()): ?>
                 <div class="alert alert-light border rounded-3 text-center" style="font-size:.88rem;">
                     <i class="fas fa-lock text-muted me-1"></i>
-                    <a href="/User/login" style="color:#d70018; font-weight:700;">Đăng nhập</a>
+                    <a href="/User/login" style="color:var(--price); font-weight:700;">Đăng nhập</a>
                     để thêm sản phẩm vào danh sách yêu thích và đánh giá sau khi mua hàng.
                 </div>
             <?php elseif (!empty($canReview)): ?>
                 <div class="pd-review-form">
-                    <h6 class="fw-bold mb-3" style="font-size:.88rem; color:#444;">✍️ Viết đánh giá của bạn</h6>
+                    <h6 class="fw-bold mb-3" style="font-size:.88rem; color:var(--ink-soft);">✍️ Viết đánh giá của bạn</h6>
                     <form method="POST" action="/Product/saveReview">
                         <input type="hidden" name="product_id" value="<?php echo $product->id; ?>">
 
                         <!-- Interactive star picker -->
                         <div style="margin-bottom:12px;">
-                            <label style="font-size:.8rem; color:#888; display:block; margin-bottom:6px;">Chọn số sao</label>
+                            <label style="font-size:.8rem; color:var(--muted); display:block; margin-bottom:6px;">Chọn số sao</label>
                             <div class="pd-star-rating" id="starPicker">
                                 <?php for ($i = 1; $i <= 5; $i++): ?>
                                     <span class="star <?php echo $i <= 5 ? 'lit' : ''; ?>"
@@ -675,7 +675,7 @@ $priceSaved  = $priceOrig - $priceFinal;
                         </div>
 
                         <div style="margin-bottom:10px;">
-                            <label style="font-size:.8rem; color:#888; display:block; margin-bottom:5px;">Bình luận</label>
+                            <label style="font-size:.8rem; color:var(--muted); display:block; margin-bottom:5px;">Bình luận</label>
                             <textarea name="comment" class="form-control" rows="3"
                                       minlength="5" maxlength="1000" required
                                       placeholder="Chia sẻ trải nghiệm của bạn về sản phẩm..."></textarea>
@@ -698,7 +698,7 @@ $priceSaved  = $priceOrig - $priceFinal;
             <!-- Danh sách review -->
             <?php if (empty($reviews)): ?>
                 <div class="pd-empty">
-                    <i class="fas fa-star" style="color:#ddd;"></i>
+                    <i class="fas fa-star" style="color:var(--line);"></i>
                     Chưa có đánh giá nào cho sản phẩm này.
                 </div>
             <?php else: ?>
@@ -728,7 +728,7 @@ $priceSaved  = $priceOrig - $priceFinal;
 
             <!-- Form đặt câu hỏi -->
             <div class="pd-qa-form">
-                <h6 class="fw-bold mb-3" style="font-size:.88rem; color:#444;">💬 Đặt câu hỏi về sản phẩm</h6>
+                <h6 class="fw-bold mb-3" style="font-size:.88rem; color:var(--ink-soft);">💬 Đặt câu hỏi về sản phẩm</h6>
                 <form method="POST" action="/Product/askQuestion">
                     <input type="hidden" name="product_id" value="<?php echo $product->id; ?>">
                     <?php if (!SessionHelper::isLoggedIn()): ?>
@@ -747,7 +747,7 @@ $priceSaved  = $priceOrig - $priceFinal;
             <!-- Danh sách hỏi đáp -->
             <?php if (empty($productQuestions)): ?>
                 <div class="pd-empty">
-                    <i class="fas fa-comments" style="color:#ddd;"></i>
+                    <i class="fas fa-comments" style="color:var(--line);"></i>
                     Chưa có câu hỏi nào.
                 </div>
             <?php else: ?>
@@ -806,7 +806,7 @@ function galleryNav(dir) { gallerySet(currentImg + dir); }
 /* Click vào ảnh chính → zoom modal nhẹ (dùng window.open) */
 document.getElementById('pdMainImg').addEventListener('click', function () {
     const w = window.open('', '_blank', 'width=800,height=700');
-    w.document.write(`<style>body{margin:0;background:#111;display:flex;align-items:center;justify-content:center;min-height:100vh;}</style>
+    w.document.write(`<style>body{margin:0;background:var(--ink);display:flex;align-items:center;justify-content:center;min-height:100vh;}</style>
                       <img src="${this.src}" style="max-width:100%;max-height:100vh;object-fit:contain;">`);
     w.document.close();
 });

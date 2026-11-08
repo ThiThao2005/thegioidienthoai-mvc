@@ -10,17 +10,17 @@ $discount = (float)($voucher['discount'] ?? 0);
 
 <style>
 .cart-shell { max-width: 1180px; }
-.cart-hero { background: #ffd400; border-radius: 18px; }
-.cart-card { border: 1px solid #edf0f2; border-radius: 16px; }
-.cart-item { border: 1px solid #edf0f2; border-radius: 14px; transition: box-shadow .2s ease, transform .2s ease; }
+.cart-hero { background: var(--brand); border-radius: 18px; }
+.cart-card { border: 1px solid var(--line); border-radius: 16px; }
+.cart-item { border: 1px solid var(--line); border-radius: 14px; transition: box-shadow .2s ease, transform .2s ease; }
 .cart-item:hover { box-shadow: 0 10px 28px rgba(15, 23, 42, .07); transform: translateY(-1px); }
 .cart-img { width: 88px; height: 88px; object-fit: contain; border-radius: 12px; background: #fff; border: 1px solid #eef2f5; }
 .qty-control .btn { width: 34px; height: 34px; display: inline-flex; align-items: center; justify-content: center; }
 .qty-control input { width: 48px; height: 34px; }
 .summary-card { position: sticky; top: 18px; }
-.checkout-btn { background: #ffd400; border: 0; }
-.checkout-btn:hover { background: #f6c900; }
-.empty-cart-icon { width: 96px; height: 96px; border-radius: 50%; background: #fff7cc; display: inline-flex; align-items: center; justify-content: center; }
+.checkout-btn { background: var(--brand); border: 0; }
+.checkout-btn:hover { background: var(--brand); }
+.empty-cart-icon { width: 96px; height: 96px; border-radius: 50%; background: var(--brand-soft); display: inline-flex; align-items: center; justify-content: center; }
 </style>
 
 <div class="container cart-shell py-4">
