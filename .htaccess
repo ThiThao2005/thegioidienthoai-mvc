@@ -7,6 +7,8 @@ RewriteEngine On
 RewriteRule ^(app|database|docker)(/|$) - [F,L]
 RewriteRule ^(seed_[^/]*\.php|[^/]*\.sql|docker-compose\.yml|Dockerfile|README\.md)$ - [F,L,NC]
 RewriteRule (^|/)\. - [F,L]
+# Không cho chạy file PHP trong thư mục ảnh/upload
+RewriteRule ^public/.*\.(php[0-9]?|phtml|phar)$ - [F,L,NC]
 
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d

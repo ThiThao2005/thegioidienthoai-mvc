@@ -224,9 +224,16 @@ if (!empty($order->created_at) && $order->created_at !== '0000-00-00 00:00:00') 
                                 <td class="text-end fw-bold text-dark"><?= number_format($subtotal, 0, ',', '.') ?>đ</td>
                             </tr>
                             <?php endforeach; ?>
+                            <?php $orderDiscount = (float)($order->discount_amount ?? 0); ?>
+                            <?php if ($orderDiscount > 0): ?>
+                            <tr>
+                                <td colspan="3" class="text-end text-muted py-2">Giảm giá (<?= htmlspecialchars($order->voucher_code ?? '', ENT_QUOTES, 'UTF-8') ?>):</td>
+                                <td class="text-end fw-semibold text-success py-2">-<?= number_format($orderDiscount, 0, ',', '.') ?>đ</td>
+                            </tr>
+                            <?php endif; ?>
                             <tr class="table-light">
                                 <td colspan="3" class="text-end fw-bold fs-5 py-3">Tổng giá trị đơn hàng:</td>
-                                <td class="text-end fw-bold text-danger fs-4 py-3"><?= number_format($total_order, 0, ',', '.') ?>đ</td>
+                                <td class="text-end fw-bold text-danger fs-4 py-3"><?= number_format(max(0, $total_order - $orderDiscount), 0, ',', '.') ?>đ</td>
                             </tr>
                         </tbody>
                     </table>

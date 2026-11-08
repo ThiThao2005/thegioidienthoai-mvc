@@ -186,16 +186,15 @@ class AccountModel
         return $stmt->execute();
     }
 
-    public function saveResetToken($email, $token, $expire)
+    public function saveResetToken($email, $token)
     {
         $query = "UPDATE account
                   SET reset_token = :token,
-                      reset_token_expire = :expire
+                      reset_token_expire = DATE_ADD(NOW(), INTERVAL 30 MINUTE)
                   WHERE email = :email";
 
         $stmt = $this->db->prepare($query);
         $stmt->bindParam(':token', $token);
-        $stmt->bindParam(':expire', $expire);
         $stmt->bindParam(':email', $email);
 
         return $stmt->execute();

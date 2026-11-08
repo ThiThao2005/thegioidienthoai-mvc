@@ -152,6 +152,13 @@ $orderDate = isset($order->created_at) ? date('d/m/Y - H:i', strtotime($order->c
                         <span class="text-muted">Tạm tính:</span>
                         <span class="fw-semibold text-dark"><?= number_format($subTotal, 0, ',', '.') ?>đ</span>
                     </div>
+                    <?php $orderDiscount = (float)($order->discount_amount ?? 0); ?>
+                    <?php if ($orderDiscount > 0): ?>
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <span class="text-muted">Giảm giá (<?= htmlspecialchars($order->voucher_code ?? '', ENT_QUOTES, 'UTF-8') ?>):</span>
+                        <span class="fw-semibold text-success">-<?= number_format($orderDiscount, 0, ',', '.') ?>đ</span>
+                    </div>
+                    <?php endif; ?>
                     <div class="d-flex justify-content-between align-items-center mb-2">
                         <span class="text-muted">Phí vận chuyển:</span>
                         <span class="fw-semibold text-success">Miễn phí</span>
@@ -159,7 +166,7 @@ $orderDate = isset($order->created_at) ? date('d/m/Y - H:i', strtotime($order->c
                     <hr class="my-3 text-muted opacity-25">
                     <div class="d-flex justify-content-between align-items-center">
                         <span class="fw-bold text-dark fs-5">Tổng số tiền:</span>
-                        <span class="fw-bold text-danger fs-4"><?= number_format($order->total_price ?? $subTotal, 0, ',', '.') ?><span class="fs-6 fw-normal text-muted"> đ</span></span>
+                        <span class="fw-bold text-danger fs-4"><?= number_format(max(0, $subTotal - $orderDiscount), 0, ',', '.') ?><span class="fs-6 fw-normal text-muted"> đ</span></span>
                     </div>
                 </div>
             </div>

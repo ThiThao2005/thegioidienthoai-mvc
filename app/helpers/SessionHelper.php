@@ -63,8 +63,13 @@ class SessionHelper {
     // Hàm xử lý lưu thông tin người dùng khi đăng nhập thành công
     public static function login($user) {
         self::start();
-        // Lưu toàn bộ mảng thông tin user (id, username, role, fullname...) từ DB vào Session
-        $_SESSION['user'] = $user; 
+        // Đổi session id khi đăng nhập để chống chiếm phiên (session fixation)
+        session_regenerate_id(true);
+        // Không lưu mật khẩu/token vào session
+        if (is_array($user)) {
+            unset($user['password'], $user['remember_token'], $user['reset_token'], $user['email_verify_token']);
+        }
+        $_SESSION['user'] = $user;
     }
 
     // ==========================================

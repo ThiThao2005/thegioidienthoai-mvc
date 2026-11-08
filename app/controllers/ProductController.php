@@ -2,7 +2,8 @@
 require_once 'app/config/Database.php';
 require_once 'app/models/ProductModel.php';
 require_once 'app/models/CategoryModel.php';
-require_once 'app/helpers/SessionHelper.php'; 
+require_once 'app/helpers/SessionHelper.php';
+require_once 'app/helpers/UploadHelper.php';
 
 class ProductController
 {
@@ -62,11 +63,7 @@ class ProductController
         if ($file['size'] > 5 * 1024 * 1024) {
             return ['Anh san pham khong duoc vuot qua 5MB.'];
         }
-        $allowed = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
-        $mime = mime_content_type($file['tmp_name']);
-        $extension = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
-        $allowedExtensions = ['jpg', 'jpeg', 'png', 'webp', 'gif'];
-        if (!in_array($mime, $allowed, true) && !in_array($extension, $allowedExtensions, true)) {
+        if (UploadHelper::imageExtension($file['tmp_name']) === null) {
             return ['Chi chap nhan anh JPG, PNG, WEBP hoac GIF.'];
         }
         return [];
@@ -78,7 +75,10 @@ class ProductController
         if (!is_dir($uploadDir) || !is_writable($uploadDir)) {
             return null;
         }
-        $extension = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
+        $extension = UploadHelper::imageExtension($file['tmp_name']);
+        if ($extension === null) {
+            return null;
+        }
         $safeName = time() . '_' . bin2hex(random_bytes(4)) . '.' . $extension;
         return move_uploaded_file($file['tmp_name'], $uploadDir . $safeName) ? $safeName : null;
     }
@@ -587,9 +587,10 @@ class ProductController
         if (isset($_SESSION['cart'][$id])) {
             $_SESSION['cart'][$id]['quantity']++;
         } else {
+            $salePercent = min(90, max(0, (int) ($product->sale_percent ?? 0)));
             $_SESSION['cart'][$id] = [
                 'name' => $product->name,
-                'price' => $product->price,
+                'price' => round((float) $product->price * (100 - $salePercent) / 100),
                 'quantity' => 1,
                 'image' => $product->image
             ];
@@ -728,8 +729,24 @@ class ProductController
             $this->db->beginTransaction();
             try {
                 $payment_status = $payment_method === 'COD' ? 'unpaid' : 'pending_verify';
-                $query = "INSERT INTO orders (user_id, name, phone, address, email, payment_method, payment_status, transaction_code, status)
-                          VALUES (:user_id, :name, :phone, :address, :email, :payment_method, :payment_status, :transaction_code, 'pending')";
+
+                // Tính lại voucher theo giỏ hàng hiện tại (giỏ có thể đã đổi sau khi áp mã)
+                $subtotal = 0;
+                foreach ($_SESSION['cart'] as $item) {
+                    $subtotal += ((float) ($item['price'] ?? 0)) * ((int) ($item['quantity'] ?? 1));
+                }
+                $voucher_code = null;
+                $discount_amount = 0;
+                if (!empty($_SESSION['voucher']['code'])) {
+                    [$vDiscount, $vVoucher, $vError] = $this->productModel->calculateVoucherDiscount($_SESSION['voucher']['code'], $subtotal);
+                    if (!$vError && $vVoucher) {
+                        $voucher_code = $vVoucher->code;
+                        $discount_amount = $vDiscount;
+                    }
+                }
+
+                $query = "INSERT INTO orders (user_id, name, phone, address, email, payment_method, payment_status, transaction_code, voucher_code, discount_amount, status)
+                          VALUES (:user_id, :name, :phone, :address, :email, :payment_method, :payment_status, :transaction_code, :voucher_code, :discount_amount, 'pending')";
                 $stmt = $this->db->prepare($query);
                 $stmt->bindParam(':user_id', $user_id, PDO::PARAM_INT);
                 $stmt->bindParam(':name', $name);
@@ -739,6 +756,8 @@ class ProductController
                 $stmt->bindParam(':payment_method', $payment_method);
                 $stmt->bindParam(':payment_status', $payment_status);
                 $stmt->bindParam(':transaction_code', $transaction_code);
+                $stmt->bindValue(':voucher_code', $voucher_code);
+                $stmt->bindValue(':discount_amount', $discount_amount);
                 $stmt->execute();
                 
                 $order_id = $this->db->lastInsertId();
@@ -760,6 +779,11 @@ class ProductController
                     $stmtDetail->execute();
                     $this->productModel->decrementStockForProduct($product_id, $qty);
                 }
+
+                if ($voucher_code) {
+                    $this->productModel->markVoucherUsed($voucher_code);
+                }
+                $total = max(0, $total - $discount_amount);
 
                 unset($_SESSION['cart']);
                 unset($_SESSION['voucher']);
@@ -903,7 +927,11 @@ class ProductController
             $order_id = $_POST['order_id'] ?? null;
             $status   = $_POST['status']   ?? null;
             if ($order_id && $status) {
-                $this->productModel->updateOrderStatus($order_id, $status);
+                $before = $this->productModel->getOrderById($order_id);
+                $changed = $this->productModel->updateOrderStatus($order_id, $status);
+                if ($changed && $status === 'cancelled' && $before && !in_array($before->status, ['cancelled', 'done'], true)) {
+                    $this->productModel->restoreStockForOrder($order_id);
+                }
             }
         }
         $filter = $_GET['filter'] ?? $_POST['filter'] ?? 'all';
@@ -943,15 +971,13 @@ class ProductController
             $currentTab = $_POST['current_tab'] ?? 'all'; 
 
             if ($order_id) {
-                $order = $this->productModel->getOrderById($order_id);
-                $this->productModel->clientCancelOrder($order_id, $user_id);
-                if ($order && ($order->status ?? '') === 'pending') {
+                if ($this->productModel->clientCancelOrder($order_id, $user_id)) {
                     $this->productModel->restoreStockForOrder($order_id);
                 }
             }
         }
         
-        header('Location: /Product/myOrders?tab=' . $currentTab);
+        header('Location: /Product/myOrders?tab=' . urlencode($currentTab));
         exit();
     }
 

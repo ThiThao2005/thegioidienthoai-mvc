@@ -27,7 +27,9 @@ class ProductModel
                 'payment_status' => "ALTER TABLE `orders` ADD `payment_status` VARCHAR(30) NOT NULL DEFAULT 'unpaid'",
                 'transaction_code' => "ALTER TABLE `orders` ADD `transaction_code` VARCHAR(120) NULL",
                 'email' => "ALTER TABLE `orders` ADD `email` VARCHAR(160) NULL",
-                'created_at' => "ALTER TABLE `orders` ADD `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP"
+                'created_at' => "ALTER TABLE `orders` ADD `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP",
+                'voucher_code' => "ALTER TABLE `orders` ADD `voucher_code` VARCHAR(60) NULL",
+                'discount_amount' => "ALTER TABLE `orders` ADD `discount_amount` DECIMAL(15,2) NOT NULL DEFAULT 0"
             ] as $column => $sql) {
                 if (!$this->columnExists('orders', $column)) {
                     $this->conn->exec($sql);
@@ -299,6 +301,12 @@ class ProductModel
         $stmt = $this->conn->prepare("SELECT * FROM vouchers WHERE code = :code AND is_active = 1 LIMIT 1");
         $stmt->execute([':code' => strtoupper(trim($code))]);
         return $stmt->fetch(PDO::FETCH_OBJ);
+    }
+
+    public function markVoucherUsed($code)
+    {
+        $stmt = $this->conn->prepare("UPDATE vouchers SET used_count = used_count + 1 WHERE code = :code");
+        return $stmt->execute([':code' => $code]);
     }
 
     public function calculateVoucherDiscount($code, $total)
@@ -686,6 +694,9 @@ class ProductModel
         if (!$current) return false;
         $flow = ['pending' => 1, 'processing' => 2, 'shipped' => 3, 'done' => 4, 'cancelled' => 99];
         $currentStatus = $current->status ?? 'pending';
+        if ($status === $currentStatus || $currentStatus === 'cancelled') {
+            return false;
+        }
         if ($status !== 'cancelled' && ($flow[$status] ?? 0) < ($flow[$currentStatus] ?? 1)) {
             return false;
         }
@@ -728,7 +739,7 @@ class ProductModel
      */
     public function getOrdersByUserId($userId) {
         // Tự động tính tổng tiền (total_price) bằng phép tính SUM toán học từ bảng order_details
-        $query = "SELECT o.*, SUM(od.quantity * od.price) as total_price 
+        $query = "SELECT o.*, GREATEST(0, COALESCE(SUM(od.quantity * od.price), 0) - COALESCE(o.discount_amount, 0)) as total_price 
                   FROM orders o
                   LEFT JOIN order_details od ON o.id = od.order_id
                   WHERE o.user_id = :user_id
@@ -754,7 +765,8 @@ class ProductModel
         $stmt = $this->conn->prepare($query);
         $stmt->bindParam(':id', $order_id, PDO::PARAM_INT);
         $stmt->bindParam(':user_id', $user_id, PDO::PARAM_INT);
-        return $stmt->execute();
+        $stmt->execute();
+        return $stmt->rowCount() > 0; // true chỉ khi thật sự hủy được đơn
     }
 
     public function getProductReviews($product_id) {
@@ -893,13 +905,17 @@ class ProductModel
             if ($row) {
                 $this->conn->prepare("UPDATE product_variants SET stock = stock + :quantity WHERE id = :id")->execute([':quantity' => (int)$item->quantity, ':id' => (int)$row->id]);
             }
+            $this->conn->prepare("UPDATE product SET sold_count = GREATEST(0, sold_count - :quantity) WHERE id = :id")->execute([':quantity' => (int)$item->quantity, ':id' => (int)$item->product_id]);
         }
     }
 
     public function getDashboardStats()
     {
-        $revenue = $this->conn->query("SELECT COALESCE(SUM(od.quantity * od.price), 0) FROM order_details od JOIN orders o ON o.id = od.order_id WHERE o.status IN ('processing','shipped','done')")->fetchColumn();
-        $today = $this->conn->query("SELECT COALESCE(SUM(od.quantity * od.price), 0) FROM order_details od JOIN orders o ON o.id = od.order_id WHERE DATE(o.created_at) = CURDATE()")->fetchColumn();
+        $revenue = $this->conn->query("SELECT COALESCE(SUM(od.quantity * od.price), 0) FROM order_details od JOIN orders o ON o.id = od.order_id WHERE o.status IN ('processing','shipped','done')")->fetchColumn()
+                 - $this->conn->query("SELECT COALESCE(SUM(discount_amount), 0) FROM orders WHERE status IN ('processing','shipped','done')")->fetchColumn();
+        // Doanh thu hôm nay: bỏ qua đơn đã hủy
+        $today = $this->conn->query("SELECT COALESCE(SUM(od.quantity * od.price), 0) FROM order_details od JOIN orders o ON o.id = od.order_id WHERE DATE(o.created_at) = CURDATE() AND o.status <> 'cancelled'")->fetchColumn()
+               - $this->conn->query("SELECT COALESCE(SUM(discount_amount), 0) FROM orders WHERE DATE(created_at) = CURDATE() AND status <> 'cancelled'")->fetchColumn();
         $lowStock = $this->conn->query("SELECT COUNT(*) FROM product_variants WHERE stock <= 3")->fetchColumn();
         $topProducts = $this->conn->query("SELECT id, name, sold_count FROM product ORDER BY sold_count DESC, id DESC LIMIT 5")->fetchAll(PDO::FETCH_OBJ);
         return [

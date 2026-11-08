@@ -8,6 +8,9 @@ return [
     'user'     => 'if0_XXXXXXXX',            // MySQL Username
     'password' => 'MAT_KHAU_VPANEL',         // MySQL Password (mật khẩu tài khoản hosting)
 
+    // Địa chỉ website (dùng để tạo link trong email)
+    'app_url' => 'https://ten-ban.infinityfreeapp.com',
+
     // API key gửi email xác thực (tạo ở https://resend.com/api-keys)
     'resend_api_key' => 're_XXXXXXXXXXXX',
 ];
