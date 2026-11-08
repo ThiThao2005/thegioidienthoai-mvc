@@ -6,6 +6,7 @@ function statusBadge($status) {
         'processing' => ['bg' => 'bg-primary',        'icon' => 'fa-spinner fa-spin', 'label' => 'Đang xử lý'],
         'shipped'    => ['bg' => 'bg-info text-dark', 'icon' => 'fa-truck',           'label' => 'Đang giao'],
         'done'       => ['bg' => 'bg-success',        'icon' => 'fa-check-circle',    'label' => 'Hoàn thành'],
+        'cancelled'  => ['bg' => 'bg-danger',         'icon' => 'fa-times-circle',    'label' => 'Đã hủy'], // ⭐ THÊM
     ];
     return $map[$status] ?? $map['pending'];
 }
@@ -23,17 +24,17 @@ function statusBadge($status) {
         <div class="col-lg-3 col-md-4">
             <div class="card border-0 shadow-sm p-3" style="border-radius: 12px;">
                 <div class="d-flex flex-column gap-2">
-                    <a href="/project1/Product/dashboard" class="nav-link p-3 text-secondary fw-semibold">
+                    <a href="/Product/dashboard" class="nav-link p-3 text-secondary fw-semibold">
                         <i class="fas fa-chart-pie me-2 text-warning"></i>Tổng quan hệ thống
                     </a>
-                    <a href="/project1/Product/categories" class="nav-link p-3 text-secondary fw-semibold">
+                    <a href="/Product/categories" class="nav-link p-3 text-secondary fw-semibold">
                         <i class="fas fa-tags me-2 text-success"></i>Quản lý danh mục
                     </a>
-                    <a href="/project1/Product/orders" class="nav-link p-3 bg-light text-dark fw-bold active border-start border-warning border-3">
+                    <a href="/Product/orders" class="nav-link p-3 bg-light text-dark fw-bold active border-start border-warning border-3">
                         <i class="fas fa-shopping-bag me-2 text-danger"></i>Quản lý đơn hàng
                     </a>
                     <hr class="my-2 opacity-50">
-                    <a href="/project1/Product/dashboard" class="nav-link p-3 text-dark fw-semibold">
+                    <a href="/Product/dashboard" class="nav-link p-3 text-dark fw-semibold">
                         <i class="fas fa-arrow-left me-2"></i>Quay lại trang chủ
                     </a>
                 </div>
@@ -46,22 +47,23 @@ function statusBadge($status) {
                 <i class="fas fa-shopping-bag text-warning me-2"></i>Danh sách đơn hàng hệ thống
             </h3>
 
-            <!-- Bộ lọc trạng thái (Đã sửa lại đường dẫn đồng bộ hệ thống) -->
+            <!-- ⭐ Bộ lọc trạng thái - ĐÃ THÊM cancelled -->
             <div class="mb-3 d-flex gap-2 flex-wrap align-items-center">
                 <span class="text-muted small fw-semibold me-1">Lọc theo:</span>
                 <?php
                 $filterStatus = $_GET['filter'] ?? 'all';
                 $filters = [
-                    'all'        => ['label' => 'Tất cả đơn',     'class' => 'btn-dark'],
-                    'pending'    => ['label' => 'Chờ xác nhận',   'class' => 'btn-secondary'],
-                    'processing' => ['label' => 'Đang xử lý',     'class' => 'btn-primary'],
-                    'shipped'    => ['label' => 'Đang giao',       'class' => 'btn-info'],
-                    'done'       => ['label' => 'Hoàn thành',      'class' => 'btn-success'],
+                    'all'        => ['label' => 'Tất cả đơn',   'class' => 'btn-dark'],
+                    'pending'    => ['label' => 'Chờ xác nhận', 'class' => 'btn-secondary'],
+                    'processing' => ['label' => 'Đang xử lý',   'class' => 'btn-primary'],
+                    'shipped'    => ['label' => 'Đang giao',     'class' => 'btn-info'],
+                    'done'       => ['label' => 'Hoàn thành',    'class' => 'btn-success'],
+                    'cancelled'  => ['label' => 'Đã hủy',        'class' => 'btn-danger'],  // ⭐ THÊM
                 ];
                 foreach ($filters as $key => $f):
                     $active = ($filterStatus === $key) ? 'active fw-bold' : 'opacity-75';
                 ?>
-                <a href="/project1/Product/orders?filter=<?= $key ?>"
+                <a href="/Product/orders?filter=<?= $key ?>"
                    class="btn btn-sm <?= $f['class'] ?> rounded-pill px-3 <?= $active ?>">
                     <?= $f['label'] ?>
                 </a>
@@ -87,7 +89,6 @@ function statusBadge($status) {
                         </thead>
                         <tbody>
                             <?php
-                            // Thực hiện lọc mảng đơn hàng dựa trên trạng thái đã chọn
                             $displayOrders = $orders;
                             if ($filterStatus !== 'all') {
                                 $displayOrders = array_filter($orders, fn($o) => ($o->status ?? 'pending') === $filterStatus);
@@ -114,20 +115,17 @@ function statusBadge($status) {
                                     <td>
                                         <span class="badge bg-light text-dark border px-2 py-1"><?= htmlspecialchars($ord->phone, ENT_QUOTES, 'UTF-8') ?></span>
                                     </td>
-                                    <!-- Cột hiển thị Badge hiện tại -->
                                     <td>
                                         <span class="badge badge-status <?= $badge['bg'] ?>">
                                             <i class="fas <?= $badge['icon'] ?> me-1"></i><?= $badge['label'] ?>
                                         </span>
                                     </td>
-                                    <!-- Cột form xử lý chuyển đổi trạng thái -->
                                     <td>
-                                        <?php if ($currentStatus !== 'done'): ?>
-                                        <!-- Đã truyền kèm tham số ?filter vào action của form để giữ bộ lọc sau khi redirect -->
-                                        <form method="POST" action="/project1/Product/updateOrderStatus?filter=<?= $filterStatus ?>"
+                                        <!-- ⭐ Đơn cancelled cũng khóa như done -->
+                                        <?php if ($currentStatus !== 'done' && $currentStatus !== 'cancelled'): ?>
+                                        <form method="POST" action="/Product/updateOrderStatus?filter=<?= $filterStatus ?>"
                                               class="d-flex align-items-center gap-2"
                                               onsubmit="return confirm('Xác nhận cập nhật trạng thái đơn #<?= $ord->id ?>?')">
-                                            
                                             <input type="hidden" name="order_id" value="<?= $ord->id ?>">
                                             <select name="status" class="form-select form-select-sm status-select">
                                                 <option value="pending"    <?= $currentStatus === 'pending'    ? 'selected' : '' ?>>⏳ Chờ xác nhận</option>
@@ -139,13 +137,14 @@ function statusBadge($status) {
                                                 Lưu
                                             </button>
                                         </form>
+                                        <?php elseif ($currentStatus === 'cancelled'): ?>
+                                            <span class="text-danger small fw-semibold"><i class="fas fa-times-circle me-1"></i>Khách đã hủy đơn</span>
                                         <?php else: ?>
                                             <span class="text-success small fw-semibold"><i class="fas fa-lock me-1"></i>Đã đóng đơn hoàn thành</span>
                                         <?php endif; ?>
                                     </td>
-                                    <!-- Nút xem chi tiết sản phẩm đơn hàng -->
                                     <td class="text-center">
-                                        <a href="/project1/Product/orderDetail?id=<?= $ord->id ?>"
+                                        <a href="/Product/orderDetail?id=<?= $ord->id ?>"
                                            class="btn btn-sm btn-warning fw-bold rounded-pill px-3 shadow-sm">
                                             <i class="fas fa-eye me-1"></i>Xem đơn
                                         </a>
@@ -161,7 +160,7 @@ function statusBadge($status) {
                         <ul class="pagination justify-content-center mb-0">
                             <?php for ($i = 1; $i <= $totalPages; $i++): ?>
                                 <li class="page-item <?php echo $i == ($page ?? 1) ? 'active' : ''; ?>">
-                                    <a class="page-link" href="/project1/Product/orders?filter=<?php echo urlencode($filterStatus); ?>&page=<?php echo $i; ?>"><?php echo $i; ?></a>
+                                    <a class="page-link" href="/Product/orders?filter=<?php echo urlencode($filterStatus); ?>&page=<?php echo $i; ?>"><?php echo $i; ?></a>
                                 </li>
                             <?php endfor; ?>
                         </ul>

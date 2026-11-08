@@ -3,23 +3,23 @@
         <div class="col-lg-3 col-md-4">
             <div class="card border-0 shadow-sm p-3" style="border-radius: 12px;">
                 <div class="d-flex flex-column gap-2">
-                    <a href="/project1/Product/dashboard" class="nav-link p-3 text-secondary fw-semibold">
+                    <a href="/Product/dashboard" class="nav-link p-3 text-secondary fw-semibold">
                         <i class="fas fa-chart-pie me-2 text-warning"></i>Tổng quan hệ thống
                     </a>
-                    <a href="/project1/Product/index" class="nav-link p-3 text-secondary fw-semibold">
+                    <a href="/Product/index" class="nav-link p-3 text-secondary fw-semibold">
                         <i class="fas fa-box me-2 text-primary"></i>Quản lý sản phẩm
                     </a>
-                    <a href="/project1/Product/categories" class="nav-link p-3 text-secondary fw-semibold">
+                    <a href="/Product/categories" class="nav-link p-3 text-secondary fw-semibold">
                         <i class="fas fa-tags me-2 text-success"></i>Quản lý danh mục
                     </a>
-                    <a href="/project1/Product/orders" class="nav-link p-3 text-secondary fw-semibold">
+                    <a href="/Product/orders" class="nav-link p-3 text-secondary fw-semibold">
                         <i class="fas fa-shopping-bag me-2 text-danger"></i>Quản lý đơn hàng
                     </a>
-                    <a href="/project1/Product/users" class="nav-link p-3 bg-light text-dark fw-bold active border-start border-warning border-3">
+                    <a href="/Product/users" class="nav-link p-3 bg-light text-dark fw-bold active border-start border-warning border-3">
                         <i class="fas fa-users me-2 text-info"></i>Quản lý người dùng
                     </a>
                     <hr class="my-2 opacity-50">
-                  <a href="/project1/Product/dashboard" class="nav-link p-3 text-dark fw-semibold">
+                  <a href="/Product/dashboard" class="nav-link p-3 text-dark fw-semibold">
                         <i class="fas fa-arrow-left me-2"></i>Quay lại trang chủ
                     </a>
                 </div>
@@ -95,7 +95,7 @@
                                     </td>
                                     
                                     <td class="text-center py-3">
-                                        <form action="/project1/Product/changeRole" method="POST" onsubmit="return confirm('Bạn có chắc chắn muốn thay đổi quyền của tài khoản này không?');">
+                                        <form action="/Product/changeRole" method="POST" onsubmit="return confirm('Bạn có chắc chắn muốn thay đổi quyền của tài khoản này không?');">
                                             <input type="hidden" name="user_id" value="<?= $u->id ?>">
                                             
                                             <?php if (strtolower($u->role) === 'admin'): ?>
@@ -119,7 +119,7 @@
                                     </td>
                                     
                                     <td class="text-center py-3">
-                                        <a href="/project1/Product/deleteUser?id=<?= $u->id ?>" 
+                                        <a href="/Product/deleteUser?id=<?= $u->id ?>" 
                                            class="btn btn-sm btn-outline-danger rounded-pill px-3 py-1.5"
                                            style="font-size: 0.82rem; transition: all 0.2s;"
                                            onclick="return confirm('Bạn có chắc chắn muốn gỡ tài khoản này khỏi hệ thống không? Hành động này không thể hoàn tác!');">

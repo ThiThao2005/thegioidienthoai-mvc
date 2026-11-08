@@ -6,15 +6,15 @@ $totalPrice = 0;
     <div class="col-12">
         <nav aria-label="breadcrumb">
             <ol class="breadcrumb">
-                <li class="breadcrumb-item"><a href="/project1/Product/index" class="text-decoration-none text-dark">Trang chủ</a></li>
-                <li class="breadcrumb-item"><a href="/project1/Product/cart" class="text-decoration-none text-dark">Giỏ hàng</a></li>
+                <li class="breadcrumb-item"><a href="/Product/index" class="text-decoration-none text-dark">Trang chủ</a></li>
+                <li class="breadcrumb-item"><a href="/Product/cart" class="text-decoration-none text-dark">Giỏ hàng</a></li>
                 <li class="breadcrumb-item active" aria-current="page">Thanh toán đơn hàng</li>
             </ol>
         </nav>
     </div>
 </div>
 
-<form action="/project1/Product/processCheckout" method="POST">
+<form action="/Product/processCheckout" method="POST">
     <?php if (!empty($errors)): ?>
         <div class="alert alert-danger">
             <ul class="mb-0">
@@ -78,7 +78,7 @@ $totalPrice = 0;
                         <div id="momo-qr-container" class="border rounded-3 p-4 text-center bg-white shadow-sm mt-2 d-none">
                             <p class="text-secondary small mb-2">Vui lòng mở ứng dụng <strong>MoMo</strong> hoặc <strong>Ngân hàng</strong> để quét mã VietQR dưới đây:</p>
                             
-                            <img src="/project1/public/images/momo_qr.png" alt="Mã QR MoMo Nguyễn Thị Thảo" class="img-fluid border rounded p-2 mb-3 shadow-sm" style="max-width: 250px;">
+                            <img src="/public/images/momo_qr.png" alt="Mã QR MoMo Nguyễn Thị Thảo" class="img-fluid border rounded p-2 mb-3 shadow-sm" style="max-width: 250px;">
                             
                             <div class="bg-light p-3 rounded-3 text-start mx-auto" style="max-width: 320px;">
                                 <div class="d-flex justify-content-between mb-1 small text-secondary">
@@ -125,8 +125,8 @@ $totalPrice = 0;
                             $subTotal = $item['price'] * $item['quantity'];
                             $totalPrice += $subTotal;
                             $imagePath = (strpos($item['image'], 'public/images/') !== false || strpos($item['image'], 'uploads/') !== false) 
-                                ? '/project1/' . $item['image'] 
-                                : '/project1/public/images/' . $item['image'];
+                                ? '/' . $item['image'] 
+                                : '/public/images/' . $item['image'];
                         ?>
                             <div class="d-flex align-items-center justify-content-between mb-3 pb-2 border-bottom border-opacity-10">
                                 <div class="d-flex align-items-center">
@@ -166,7 +166,7 @@ $totalPrice = 0;
                         <i class="fas fa-check-circle me-1"></i> Xác nhận đặt hàng
                     </button>
                     
-                    <a href="/project1/Product/cart" class="btn btn-link text-decoration-none text-secondary text-center d-block w-full mt-3 small">
+                    <a href="/Product/cart" class="btn btn-link text-decoration-none text-secondary text-center d-block w-full mt-3 small">
                         <i class="fas fa-chevron-left me-1"></i> Quay lại sửa giỏ hàng
                     </a>
                 </div>

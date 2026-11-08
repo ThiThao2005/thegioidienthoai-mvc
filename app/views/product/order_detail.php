@@ -3,17 +3,24 @@ $statusSteps = [
     'pending'    => ['label' => 'Chờ xác nhận', 'icon' => 'fa-clock',         'step' => 1],
     'processing' => ['label' => 'Đang xử lý',   'icon' => 'fa-cog',           'step' => 2],
     'shipped'    => ['label' => 'Đang giao',     'icon' => 'fa-truck',         'step' => 3],
-    'done'       => ['label' => 'Hoàn thành',    'icon' => 'fa-check-circle', 'step' => 4],
+    'done'       => ['label' => 'Hoàn thành',    'icon' => 'fa-check-circle',  'step' => 4],
 ];
 $currentStatus = $order->status ?? 'pending';
 $currentStep   = $statusSteps[$currentStatus]['step'] ?? 1;
 
-// Lấy bộ lọc hiện tại truyền từ trang danh sách (nếu có) để xử lý nút Quay lại
+// ⭐ Nếu đơn bị hủy, đặt step = 0 để thanh tiến trình không tô màu
+$isCancelled = ($currentStatus === 'cancelled');
+if ($isCancelled) $currentStep = 0;
+
 $activeFilter = $_GET['filter'] ?? 'all';
+
+$orderDate = 'Đang cập nhật';
+if (!empty($order->created_at) && $order->created_at !== '0000-00-00 00:00:00') {
+    $orderDate = date('d/m/Y - H:i', strtotime($order->created_at));
+}
 ?>
 
 <style>
-/* ── Thanh tiến trình trạng thái Responsive ── */
 .order-steps { display: flex; align-items: flex-start; justify-content: space-between; position: relative; margin: 15px 0 25px; }
 .order-steps::before {
     content: '';
@@ -28,9 +35,8 @@ $activeFilter = $_GET['filter'] ?? 'all';
     position: absolute;
     top: 20px; left: 0;
     height: 4px;
-    background: #ffd400;
+    background: <?= $isCancelled ? '#dc3545' : '#ffd400' ?>;
     z-index: 1;
-    /* Tính toán chính xác vị trí chạy từ tâm điểm này sang tâm điểm khác */
     width: <?= (($currentStep - 1) / 3) * 100 ?>%;
     transition: width .5s cubic-bezier(0.4, 0, 0.2, 1);
 }
@@ -53,6 +59,19 @@ $activeFilter = $_GET['filter'] ?? 'all';
 .step-item.active .step-label  { color: #d39e00; }
 .step-item.inactive .step-label{ color: #6c757d; }
 
+.order-time-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: #fff9db;
+    border: 1px solid #ffe58a;
+    border-radius: 20px;
+    padding: 5px 14px;
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: #856404;
+}
+
 @media (max-width: 576px) {
     .step-label { font-size: 0.7rem; }
     .step-circle { width: 34px; height: 34px; font-size: 12px; top: -3px; }
@@ -61,18 +80,40 @@ $activeFilter = $_GET['filter'] ?? 'all';
 </style>
 
 <div class="container py-4">
-    <!-- Nút Quay lại thông minh: Giữ trạng thái bộ lọc của Admin trước đó -->
     <div class="mb-4">
-        <a href="/project1/Product/orders?filter=<?= $activeFilter ?>" class="btn btn-light border rounded-pill px-3 fw-semibold text-secondary shadow-sm">
+        <a href="/Product/orders?filter=<?= $activeFilter ?>" class="btn btn-light border rounded-pill px-3 fw-semibold text-secondary shadow-sm">
             <i class="fas fa-arrow-left me-2"></i>Quay lại danh sách đơn hàng
         </a>
     </div>
 
-    <!-- ── Thanh tiến trình ── -->
     <div class="card border-0 shadow-sm p-4 mb-4" style="border-radius:12px;">
-        <h6 class="fw-bold text-dark mb-4">
-            <i class="fas fa-route text-warning me-2"></i>Trạng thái đơn hàng #<?= $order->id ?>
-        </h6>
+        <div class="d-flex align-items-start justify-content-between flex-wrap gap-2 mb-4">
+            <div>
+                <h6 class="fw-bold text-dark mb-1">
+                    <i class="fas fa-route text-warning me-2"></i>Trạng thái đơn hàng #<?= $order->id ?>
+                </h6>
+                <span class="order-time-badge">
+                    <i class="fas fa-calendar-alt"></i>
+                    Đặt lúc: <?= $orderDate ?>
+                </span>
+            </div>
+            <?php if ($isCancelled): ?>
+            <span class="badge bg-danger rounded-pill px-3 py-2 fw-semibold">
+                <i class="fas fa-times-circle me-1"></i>Đơn hàng đã bị hủy
+            </span>
+            <?php endif; ?>
+        </div>
+
+        <?php if ($isCancelled): ?>
+        <!-- ⭐ Thanh tiến trình riêng cho đơn bị hủy -->
+        <div class="alert alert-danger rounded-3 d-flex align-items-center gap-3 mb-3">
+            <i class="fas fa-times-circle fa-2x"></i>
+            <div>
+                <div class="fw-bold">Đơn hàng này đã bị hủy</div>
+                <div class="small opacity-75">Khách hàng đã hủy đơn trước khi được xử lý.</div>
+            </div>
+        </div>
+        <?php else: ?>
         <div class="order-steps">
             <?php foreach ($statusSteps as $key => $s):
                 $stepNum = $s['step'];
@@ -88,14 +129,12 @@ $activeFilter = $_GET['filter'] ?? 'all';
             </div>
             <?php endforeach; ?>
         </div>
+        <?php endif; ?>
 
-        <!-- Nút cập nhật trạng thái dành riêng cho Admin -->
-        <?php if (function_exists('session_start') && isset($_SESSION['role']) && $_SESSION['role'] === 'admin' && $currentStatus !== 'done'): ?>
-        <!-- Gửi kèm id và filter lên action của form để Controller biết đường điều hướng quay lại -->
-        <form method="POST" action="/project1/Product/updateOrderStatus?id=<?= $order->id ?>&filter=<?= $activeFilter ?>" class="d-flex align-items-center gap-2 mt-3 pt-3 border-top"
+        <?php if (!$isCancelled && isset($_SESSION['role']) && $_SESSION['role'] === 'admin' && $currentStatus !== 'done'): ?>
+        <form method="POST" action="/Product/updateOrderStatus?id=<?= $order->id ?>&filter=<?= $activeFilter ?>" class="d-flex align-items-center gap-2 mt-3 pt-3 border-top"
               onsubmit="return confirm('Xác nhận cập nhật trạng thái cho đơn hàng này?')">
             <input type="hidden" name="order_id" value="<?= $order->id ?>">
-            
             <label class="text-muted small fw-semibold me-1">Thay đổi trạng thái:</label>
             <select name="status" class="form-select form-select-sm" style="max-width:200px; border-radius:20px;">
                 <option value="pending"    <?= $currentStatus==='pending'    ?'selected':'' ?>>⏳ Chờ xác nhận</option>
@@ -110,14 +149,13 @@ $activeFilter = $_GET['filter'] ?? 'all';
         <?php elseif ($currentStatus === 'done'): ?>
         <div class="mt-2 pt-3 border-top">
             <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill px-3 py-2 fw-semibold">
-                <i class="fas fa-check-circle me-1"></i>Đơn hàng đã hoàn thành xuất sắc và đóng lại.
+                <i class="fas fa-check-circle me-1"></i>Đơn hàng đã hoàn thành và đóng lại.
             </span>
         </div>
         <?php endif; ?>
     </div>
 
     <div class="row g-4">
-        <!-- Thông tin giao hàng -->
         <div class="col-lg-4">
             <div class="card border-0 shadow-sm p-4 h-100" style="border-radius:12px;">
                 <h5 class="fw-bold text-dark mb-4 border-bottom pb-2">
@@ -126,6 +164,12 @@ $activeFilter = $_GET['filter'] ?? 'all';
                 <div class="mb-3">
                     <small class="text-muted d-block">Mã đơn hàng:</small>
                     <span class="fw-bold text-secondary">#<?= $order->id ?></span>
+                </div>
+                <div class="mb-3">
+                    <small class="text-muted d-block">Thời gian đặt hàng:</small>
+                    <span class="fw-bold text-dark">
+                        <i class="fas fa-clock text-warning me-1"></i><?= $orderDate ?>
+                    </span>
                 </div>
                 <div class="mb-3">
                     <small class="text-muted d-block">Tên người nhận:</small>
@@ -142,7 +186,6 @@ $activeFilter = $_GET['filter'] ?? 'all';
             </div>
         </div>
 
-        <!-- Sản phẩm trong đơn -->
         <div class="col-lg-8">
             <div class="card border-0 shadow-sm p-4" style="border-radius:12px;">
                 <h5 class="fw-bold text-dark mb-4 border-bottom pb-2">
@@ -168,7 +211,7 @@ $activeFilter = $_GET['filter'] ?? 'all';
                             <tr>
                                 <td>
                                     <div class="d-flex align-items-center gap-3">
-                                        <img src="/project1/public/images/<?= !empty($item->product_image) ? $item->product_image : 'default.jpg' ?>"
+                                        <img src="/public/images/<?= !empty($item->product_image) ? $item->product_image : 'default.jpg' ?>"
                                              alt="" class="rounded border" style="width:55px;height:55px;object-fit:cover;">
                                         <div>
                                             <span class="fw-bold text-dark d-block"><?= htmlspecialchars($item->product_name, ENT_QUOTES, 'UTF-8') ?></span>

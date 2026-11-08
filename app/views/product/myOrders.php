@@ -30,17 +30,17 @@ if ($currentTab !== 'all') {
             <h3 class="fw-bold text-dark mb-1"><i class="fas fa-box-open text-warning me-2"></i>Đơn hàng của tôi</h3>
             <div class="text-muted small">Theo dõi đơn hàng và đánh giá sản phẩm sau khi đã nhận.</div>
         </div>
-        <a href="/project1/Product/index" class="btn btn-dark rounded-pill px-4 fw-semibold">Tiếp tục mua sắm</a>
+        <a href="/Product/index" class="btn btn-dark rounded-pill px-4 fw-semibold">Tiếp tục mua sắm</a>
     </div>
 
     <div class="mb-4 overflow-x-auto pb-2">
         <ul class="nav nav-pills flex-nowrap gap-2" style="white-space: nowrap;">
-            <li class="nav-item"><a class="nav-link <?= $currentTab === 'all' ? 'active' : '' ?>" href="/project1/Product/myOrders?tab=all">Tất cả đơn</a></li>
-            <li class="nav-item"><a class="nav-link <?= $currentTab === 'pending' ? 'active' : '' ?>" href="/project1/Product/myOrders?tab=pending">Chờ xác nhận</a></li>
-            <li class="nav-item"><a class="nav-link <?= $currentTab === 'processing' ? 'active' : '' ?>" href="/project1/Product/myOrders?tab=processing">Đang xử lý</a></li>
-            <li class="nav-item"><a class="nav-link <?= $currentTab === 'shipped' ? 'active' : '' ?>" href="/project1/Product/myOrders?tab=shipped">Đang giao</a></li>
-            <li class="nav-item"><a class="nav-link <?= $currentTab === 'done' ? 'active' : '' ?>" href="/project1/Product/myOrders?tab=done">Hoàn thành</a></li>
-            <li class="nav-item"><a class="nav-link <?= $currentTab === 'cancelled' ? 'active' : '' ?>" href="/project1/Product/myOrders?tab=cancelled">Đã hủy</a></li>
+            <li class="nav-item"><a class="nav-link <?= $currentTab === 'all' ? 'active' : '' ?>" href="/Product/myOrders?tab=all">Tất cả đơn</a></li>
+            <li class="nav-item"><a class="nav-link <?= $currentTab === 'pending' ? 'active' : '' ?>" href="/Product/myOrders?tab=pending">Chờ xác nhận</a></li>
+            <li class="nav-item"><a class="nav-link <?= $currentTab === 'processing' ? 'active' : '' ?>" href="/Product/myOrders?tab=processing">Đang xử lý</a></li>
+            <li class="nav-item"><a class="nav-link <?= $currentTab === 'shipped' ? 'active' : '' ?>" href="/Product/myOrders?tab=shipped">Đang giao</a></li>
+            <li class="nav-item"><a class="nav-link <?= $currentTab === 'done' ? 'active' : '' ?>" href="/Product/myOrders?tab=done">Hoàn thành</a></li>
+            <li class="nav-item"><a class="nav-link <?= $currentTab === 'cancelled' ? 'active' : '' ?>" href="/Product/myOrders?tab=cancelled">Đã hủy</a></li>
         </ul>
     </div>
 
@@ -50,7 +50,7 @@ if ($currentTab !== 'all') {
                 <i class="fas fa-receipt fa-4x text-muted opacity-25 mb-3"></i>
                 <h5 class="fw-bold text-secondary">Chưa có đơn hàng nào ở mục này</h5>
                 <p class="text-muted small">Hãy tiếp tục lựa chọn sản phẩm yêu thích.</p>
-                <a href="/project1/Product/index" class="btn btn-warning fw-bold rounded-pill px-4 py-2 mt-2 text-dark">
+                <a href="/Product/index" class="btn btn-warning fw-bold rounded-pill px-4 py-2 mt-2 text-dark">
                     <i class="fas fa-shopping-cart me-2"></i>Mua sắm ngay
                 </a>
             </div>
@@ -84,15 +84,15 @@ if ($currentTab !== 'all') {
 
                     <div class="d-flex justify-content-end gap-2 mt-3 pt-3 border-top border-light flex-wrap">
                         <?php if ($statusKey === 'done'): ?>
-                            <a href="/project1/Product/myOrderDetail?id=<?= (int)$order->id ?>" class="btn btn-sm btn-warning rounded-pill px-3 fw-bold text-dark">
+                            <a href="/Product/myOrderDetail?id=<?= (int)$order->id ?>" class="btn btn-sm btn-warning rounded-pill px-3 fw-bold text-dark">
                                 <i class="fas fa-star me-1"></i>Đánh giá sản phẩm
                             </a>
                         <?php endif; ?>
-                        <a href="/project1/Product/myOrderDetail?id=<?= (int)$order->id ?>" class="btn btn-sm btn-light border rounded-pill px-3 fw-semibold text-secondary">
+                        <a href="/Product/myOrderDetail?id=<?= (int)$order->id ?>" class="btn btn-sm btn-light border rounded-pill px-3 fw-semibold text-secondary">
                             <i class="fas fa-eye me-1"></i> Xem chi tiết
                         </a>
                         <?php if ($statusKey === 'pending'): ?>
-                            <form method="POST" action="/project1/Product/cancelOrder" onsubmit="return confirm('Bạn chắc chắn muốn hủy đơn hàng này?')">
+                            <form method="POST" action="/Product/cancelOrder" onsubmit="return confirm('Bạn chắc chắn muốn hủy đơn hàng này?')">
                                 <input type="hidden" name="order_id" value="<?= (int)$order->id ?>">
                                 <input type="hidden" name="current_tab" value="<?= htmlspecialchars($currentTab, ENT_QUOTES, 'UTF-8') ?>">
                                 <button type="submit" class="btn btn-sm btn-outline-danger rounded-pill px-3 fw-semibold">Hủy đơn hàng</button>

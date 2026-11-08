@@ -21,15 +21,34 @@ $orderDate = isset($order->created_at) ? date('d/m/Y - H:i', strtotime($order->c
 .step-icon { width: 40px; height: 40px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 1.1rem; }
 .review-box { background: #fff9db; border: 1px solid #ffe58a; }
 .order-item:last-child { border-bottom: 0 !important; padding-bottom: 0 !important; }
+/* ⭐ Badge thời gian */
+.order-time-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: #fff9db;
+    border: 1px solid #ffe58a;
+    border-radius: 20px;
+    padding: 4px 12px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: #856404;
+}
 </style>
 
 <div class="container py-5" style="max-width: 980px;">
     <div class="d-flex align-items-center justify-content-between mb-4 pb-2 border-bottom flex-wrap gap-3">
         <div class="d-flex align-items-center gap-3">
-            <a href="/project1/Product/myOrders" class="btn btn-sm btn-light border rounded-pill px-3 fw-semibold text-secondary">
+            <a href="/Product/myOrders" class="btn btn-sm btn-light border rounded-pill px-3 fw-semibold text-secondary">
                 <i class="fas fa-arrow-left me-1"></i> Quay lại
             </a>
-            <h4 class="fw-bold text-dark mb-0">Chi tiết đơn hàng #<?= (int)$order->id ?></h4>
+            <div>
+                <h4 class="fw-bold text-dark mb-1">Chi tiết đơn hàng #<?= (int)$order->id ?></h4>
+                <!-- ⭐ THỜI GIAN ĐẶT HÀNG NGAY DƯỚI TIÊU ĐỀ -->
+                <span class="order-time-badge">
+                    <i class="fas fa-calendar-alt"></i> Đặt lúc: <?= $orderDate ?>
+                </span>
+            </div>
         </div>
         <span class="badge badge-custom <?= $cfg['bg'] ?> d-inline-flex align-items-center gap-1">
             <i class="fas <?= $cfg['icon'] ?>"></i> <?= $cfg['label'] ?>
@@ -69,8 +88,8 @@ $orderDate = isset($order->created_at) ? date('d/m/Y - H:i', strtotime($order->c
                         $itemName = $item->product_name ?? $item->name ?? 'Sản phẩm không rõ tên';
                         $itemImage = $item->product_image ?? $item->image ?? 'default.jpg';
                         $productImg = (strpos($itemImage, 'public/images/') !== false || strpos($itemImage, 'uploads/') !== false)
-                            ? '/project1/' . $itemImage
-                            : '/project1/public/images/' . $itemImage;
+                            ? '/' . $itemImage
+                            : '/public/images/' . $itemImage;
                     ?>
                         <div class="order-item pb-3 border-bottom border-light">
                             <div class="d-flex align-items-center justify-content-between gap-3 flex-wrap">
@@ -95,13 +114,13 @@ $orderDate = isset($order->created_at) ? date('d/m/Y - H:i', strtotime($order->c
                                             <div class="fw-bold text-dark">Đánh giá sản phẩm vừa nhận</div>
                                             <div class="text-muted small">Nếu bạn đã đánh giá trước đó, gửi lại sẽ cập nhật nội dung mới.</div>
                                         </div>
-                                        <a href="/project1/Product/detail?id=<?= (int)$item->product_id ?>" class="btn btn-sm btn-outline-secondary rounded-pill">
+                                        <a href="/Product/detail?id=<?= (int)$item->product_id ?>" class="btn btn-sm btn-outline-secondary rounded-pill">
                                             Xem sản phẩm
                                         </a>
                                     </div>
-                                    <form method="POST" action="/project1/Product/saveReview" class="row g-2 align-items-end">
+                                    <form method="POST" action="/Product/saveReview" class="row g-2 align-items-end">
                                         <input type="hidden" name="product_id" value="<?= (int)$item->product_id ?>">
-                                        <input type="hidden" name="redirect" value="/project1/Product/myOrderDetail?id=<?= (int)$order->id ?>">
+                                        <input type="hidden" name="redirect" value="/Product/myOrderDetail?id=<?= (int)$order->id ?>">
                                         <div class="col-md-3">
                                             <label class="form-label small fw-semibold text-secondary">Số sao</label>
                                             <select name="rating" class="form-select form-select-sm" required>
@@ -152,7 +171,7 @@ $orderDate = isset($order->created_at) ? date('d/m/Y - H:i', strtotime($order->c
                             <h6 class="fw-bold text-dark mb-1">Bạn muốn hủy đơn?</h6>
                             <p class="text-muted small mb-0">Chỉ có thể hủy khi đơn vẫn đang chờ xác nhận.</p>
                         </div>
-                        <form method="POST" action="/project1/Product/cancelOrder" onsubmit="return confirm('Bạn chắc chắn muốn hủy đơn hàng này?')">
+                        <form method="POST" action="/Product/cancelOrder" onsubmit="return confirm('Bạn chắc chắn muốn hủy đơn hàng này?')">
                             <input type="hidden" name="order_id" value="<?= (int)$order->id ?>">
                             <button type="submit" class="btn btn-outline-danger btn-sm rounded-pill px-3 fw-semibold">Hủy đơn hàng</button>
                         </form>
@@ -178,6 +197,7 @@ $orderDate = isset($order->created_at) ? date('d/m/Y - H:i', strtotime($order->c
                 </div>
             </div>
 
+            <!-- ⭐ CARD LỊCH SỬ MUA - ĐÃ CÓ THỜI GIAN ĐẶT HÀNG -->
             <div class="card detail-card border-0 shadow-sm bg-white p-4">
                 <h5 class="fw-bold mb-3 text-dark"><i class="fas fa-history text-warning me-2"></i>Lịch sử mua</h5>
                 <div class="d-flex align-items-center gap-3">

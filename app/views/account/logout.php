@@ -24,7 +24,7 @@ SessionHelper::start();
                     <small class="text-muted d-block">
                         Nếu trình duyệt không tự chuyển hướng, vui lòng nhấn vào nút bên dưới:
                     </small>
-                    <a href="/project1/Account/executeLogout" class="btn btn-warning fw-bold px-4 rounded-pill mt-3 text-dark btn-logout-manual">
+                    <a href="/Account/executeLogout" class="btn btn-warning fw-bold px-4 rounded-pill mt-3 text-dark btn-logout-manual">
                         Xác nhận Đăng xuất ngay
                     </a>
                 </div>
@@ -48,6 +48,6 @@ SessionHelper::start();
 
 <script>
     setTimeout(function() {
-        window.location.href = '/project1/Account/executeLogout';
+        window.location.href = '/Account/executeLogout';
     }, 1500);
 </script>

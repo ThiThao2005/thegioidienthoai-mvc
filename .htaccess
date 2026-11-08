@@ -1,4 +1,13 @@
+Options -Indexes
+DirectoryIndex index.php
+
 RewriteEngine On
+
+# Chặn truy cập trực tiếp vào mã nguồn, cấu hình, file SQL và script seed
+RewriteRule ^(app|database|docker)(/|$) - [F,L]
+RewriteRule ^(seed_[^/]*\.php|[^/]*\.sql|docker-compose\.yml|Dockerfile|README\.md)$ - [F,L,NC]
+RewriteRule (^|/)\. - [F,L]
+
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
 RewriteRule ^(.*)$ index.php?url=$1 [QSA,L]

@@ -43,7 +43,7 @@ class SessionHelper {
     public static function requireAdmin() {
         if (!self::isAdmin()) {
             // Nếu không phải admin, chuyển hướng thẳng về trang đăng nhập hoặc báo lỗi
-            header('Location: /project1/Account/login');
+            header('Location: /Account/login');
             exit();
         }
     }
@@ -51,7 +51,7 @@ class SessionHelper {
     // Hàm tiện ích: Bắt buộc phải đăng nhập (dành cho trang Checkout, Cart)
     public static function requireLogin() {
         if (!self::isLoggedIn()) {
-            header('Location: /project1/Account/login');
+            header('Location: /Account/login');
             exit();
         }
     }
