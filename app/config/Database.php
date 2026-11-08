@@ -34,6 +34,11 @@ class Database {
         return $config;
     }
 
+    /** Bật chế độ dev (hiện lỗi chi tiết): APP_DEBUG=1 trong Docker hoặc 'debug' => true trong db.local.php */
+    public static function isDebug() {
+        return getenv('APP_DEBUG') === '1' || !empty(self::localConfig()['debug']);
+    }
+
     public function getConnection() {
         $this->conn = null;
         try {

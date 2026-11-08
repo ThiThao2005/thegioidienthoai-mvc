@@ -3,8 +3,12 @@
 // FRONT CONTROLLER - index.php
 // =============================================
 
-ini_set('display_errors', 1);
-ini_set('display_startup_errors', 1);
+require_once 'app/config/Database.php';
+
+// Chỉ hiện lỗi chi tiết khi chạy trên máy (Docker đặt APP_DEBUG=1)
+$appDebug = Database::isDebug();
+ini_set('display_errors', $appDebug ? '1' : '0');
+ini_set('display_startup_errors', $appDebug ? '1' : '0');
 error_reporting(E_ALL);
 
 if (session_status() === PHP_SESSION_NONE) {
@@ -119,8 +123,14 @@ try {
     call_user_func_array([$controller, $action], $params);
 
 } catch (Throwable $e) {
-    echo "<h2 style='color:red'>❌ LỖI:</h2>";
-    echo "<pre>" . htmlspecialchars($e->getMessage()) . "</pre>";
-    echo "<p><strong>File:</strong> " . htmlspecialchars($e->getFile()) . " (dòng " . $e->getLine() . ")</p>";
+    error_log($e);
+    http_response_code(500);
+    if ($appDebug) {
+        echo "<h2 style='color:#c0392b'>LỖI:</h2>";
+        echo "<pre>" . htmlspecialchars($e->getMessage()) . "</pre>";
+        echo "<p><strong>File:</strong> " . htmlspecialchars($e->getFile()) . " (dòng " . $e->getLine() . ")</p>";
+    } else {
+        echo "<div style='font-family:sans-serif;text-align:center;padding:60px'><h2>Đã có lỗi xảy ra</h2><p>Vui lòng thử lại sau ít phút.</p><a href='/'>Về trang chủ</a></div>";
+    }
 }
 ?>

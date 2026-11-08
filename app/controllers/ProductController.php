@@ -2,7 +2,8 @@
 require_once 'app/config/Database.php';
 require_once 'app/models/ProductModel.php';
 require_once 'app/models/CategoryModel.php';
-require_once 'app/helpers/SessionHelper.php'; 
+require_once 'app/helpers/SessionHelper.php';
+require_once 'app/helpers/UploadHelper.php';
 
 class ProductController
 {
@@ -62,11 +63,7 @@ class ProductController
         if ($file['size'] > 5 * 1024 * 1024) {
             return ['Anh san pham khong duoc vuot qua 5MB.'];
         }
-        $allowed = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
-        $mime = mime_content_type($file['tmp_name']);
-        $extension = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
-        $allowedExtensions = ['jpg', 'jpeg', 'png', 'webp', 'gif'];
-        if (!in_array($mime, $allowed, true) && !in_array($extension, $allowedExtensions, true)) {
+        if (UploadHelper::imageExtension($file['tmp_name']) === null) {
             return ['Chi chap nhan anh JPG, PNG, WEBP hoac GIF.'];
         }
         return [];
@@ -78,7 +75,10 @@ class ProductController
         if (!is_dir($uploadDir) || !is_writable($uploadDir)) {
             return null;
         }
-        $extension = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
+        $extension = UploadHelper::imageExtension($file['tmp_name']);
+        if ($extension === null) {
+            return null;
+        }
         $safeName = time() . '_' . bin2hex(random_bytes(4)) . '.' . $extension;
         return move_uploaded_file($file['tmp_name'], $uploadDir . $safeName) ? $safeName : null;
     }

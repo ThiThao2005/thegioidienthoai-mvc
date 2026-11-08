@@ -2,10 +2,14 @@
 
 require_once 'app/helpers/SessionHelper.php';
 require_once 'app/helpers/MailHelper.php';
+require_once 'app/helpers/UploadHelper.php';
 require_once 'app/models/AccountModel.php';
 
 class AccountController
 {
+    // Client ID Google (khớp với data-client_id trong views/account/login.php)
+    const GOOGLE_CLIENT_ID = '694098371336-ie2kni4ae1glc5cui0nam5rqp61phk5q.apps.googleusercontent.com';
+
     private $accountModel;
     private $db;
 
@@ -70,7 +74,7 @@ class AccountController
                 time() + (86400 * 30),
                 '/',
                 '',
-                false,
+                $this->isHttps(),
                 true
             );
         }
@@ -227,19 +231,7 @@ class AccountController
             exit();
         }
 
-        $credential = $_POST['credential'];
-        $parts = explode('.', $credential);
-
-        if (count($parts) !== 3) {
-            echo json_encode([
-                'status' => 'error',
-                'message' => 'Token Google không hợp lệ.'
-            ]);
-            exit();
-        }
-
-        $payloadJson = base64_decode(str_replace(['-', '_'], ['+', '/'], $parts[1]));
-        $payload = json_decode($payloadJson, true);
+        $payload = $this->verifyGoogleIdToken($_POST['credential']);
 
         if (!$payload || empty($payload['email'])) {
             echo json_encode([
@@ -253,7 +245,8 @@ class AccountController
         $googleName = $payload['name'] ?? $googleEmail;
         $googlePicture = $payload['picture'] ?? null;
 
-        $user = $this->accountModel->getAccountByUsername($googleEmail);
+        $user = $this->accountModel->getAccountByEmail($googleEmail)
+            ?: $this->accountModel->getAccountByUsername($googleEmail);
 
         if (!$user) {
             $randomPassword = bin2hex(random_bytes(8));
@@ -293,7 +286,7 @@ class AccountController
 
         if (method_exists($this->accountModel, 'verifyGoogleAccount')) {
             $this->accountModel->verifyGoogleAccount($user['id']);
-            $user = $this->accountModel->getAccountByUsername($googleEmail);
+            $user = $this->accountModel->getAccountById($user['id']) ?: $user;
         }
 
         SessionHelper::login($user);
@@ -351,6 +344,21 @@ class AccountController
         $phone = trim($_POST['phone'] ?? '');
         $address = trim($_POST['address'] ?? '');
 
+        if ($fullname === '' || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            $error = "Vui lòng nhập họ tên và email hợp lệ.";
+            $user = $this->accountModel->getAccountById($userId);
+            require_once 'app/views/account/profile.php';
+            return;
+        }
+
+        $sameEmail = $this->accountModel->getAccountByEmail($email);
+        if ($sameEmail && (int) $sameEmail['id'] !== (int) $userId) {
+            $error = "Email này đã được tài khoản khác sử dụng.";
+            $user = $this->accountModel->getAccountById($userId);
+            require_once 'app/views/account/profile.php';
+            return;
+        }
+
         $avatarName = null;
 
         if (!empty($_FILES['avatar']['name'])) {
@@ -360,11 +368,10 @@ class AccountController
                 mkdir($uploadDir, 0777, true);
             }
 
-            $allowedTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
-            $fileType = mime_content_type($_FILES['avatar']['tmp_name']);
+            $extension = UploadHelper::imageExtension($_FILES['avatar']['tmp_name'] ?? '');
             $fileSize = $_FILES['avatar']['size'];
 
-            if (!in_array($fileType, $allowedTypes)) {
+            if ($extension === null) {
                 $error = "Ảnh đại diện chỉ được dùng JPG, PNG, WEBP hoặc GIF.";
                 $user = $this->accountModel->getAccountById($userId);
                 require_once 'app/views/account/profile.php';
@@ -378,7 +385,6 @@ class AccountController
                 return;
             }
 
-            $extension = strtolower(pathinfo($_FILES['avatar']['name'], PATHINFO_EXTENSION));
             $avatarName = 'avatar_' . $userId . '_' . time() . '.' . $extension;
 
             move_uploaded_file($_FILES['avatar']['tmp_name'], $uploadDir . $avatarName);
@@ -391,6 +397,9 @@ class AccountController
             if (isset($_SESSION['user'])) {
                 $_SESSION['user']['fullname'] = $fullname;
                 $_SESSION['user']['email'] = $email;
+                if ($avatarName) {
+                    $_SESSION['user']['avatar'] = $avatarName;
+                }
             }
 
             $success = "Cập nhật hồ sơ thành công.";
@@ -494,22 +503,28 @@ class AccountController
 
     public function processForgotPassword()
     {
-        $email = trim($_POST['email'] ?? '');
-        $user = $this->accountModel->getAccountByEmail($email);
-
-        if (!$user) {
-            $error = "Email không tồn tại trong hệ thống.";
-            require_once 'app/views/account/forgot_password.php';
-            return;
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            header('Location: /Account/forgotPassword');
+            exit();
         }
 
-        $token = bin2hex(random_bytes(32));
-        $expire = date('Y-m-d H:i:s', strtotime('+30 minutes'));
+        $email = trim($_POST['email'] ?? '');
+        $user = filter_var($email, FILTER_VALIDATE_EMAIL) ? $this->accountModel->getAccountByEmail($email) : null;
 
-        $this->accountModel->saveResetToken($email, $token, $expire);
+        // Luôn trả cùng một thông báo để không lộ email nào có tài khoản
+        $success = "Nếu email này có tài khoản, chúng tôi đã gửi link đặt lại mật khẩu (hiệu lực 30 phút). Hãy kiểm tra hộp thư và mục Spam.";
 
-        $resetLink = $this->getBaseUrl() . "/Account/resetPassword?token=" . urlencode($token);
-        $success = "Link đặt lại mật khẩu của bạn: " . $resetLink;
+        if ($user) {
+            $token = bin2hex(random_bytes(32));
+            $this->accountModel->saveResetToken($email, $token);
+            $resetLink = $this->getBaseUrl() . "/Account/resetPassword?token=" . urlencode($token);
+
+            $sent = MailHelper::sendResetPasswordEmail($email, $user['fullname'] ?? '', $resetLink);
+            if (!$sent && Database::isDebug()) {
+                // Chỉ khi chạy trên máy (Docker) mới hiện link để test
+                $success = "[Chế độ dev] Gửi email thất bại. Link đặt lại mật khẩu: " . $resetLink;
+            }
+        }
 
         require_once 'app/views/account/forgot_password.php';
     }
@@ -642,14 +657,58 @@ class AccountController
         exit();
     }
 
+    private function isHttps()
+    {
+        return (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off')
+            || (($_SERVER['HTTP_X_FORWARDED_PROTO'] ?? '') === 'https');
+    }
+
     private function getBaseUrl()
     {
-        $protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off')
-            ? 'https'
-            : 'http';
+        // Ưu tiên địa chỉ cấu hình sẵn (tránh giả mạo header Host trong link gửi qua email)
+        $configured = getenv('APP_URL') ?: (Database::localConfig()['app_url'] ?? '');
+        if (!empty($configured)) {
+            return rtrim($configured, '/');
+        }
 
-        $host = $_SERVER['HTTP_HOST'];
+        $protocol = $this->isHttps() ? 'https' : 'http';
+        $host = preg_replace('/[^A-Za-z0-9.\-:]/', '', $_SERVER['HTTP_HOST'] ?? 'localhost');
 
         return $protocol . '://' . $host;
+    }
+
+    /** Xác minh Google ID token với máy chủ Google; trả về payload nếu hợp lệ. */
+    private function verifyGoogleIdToken($idToken)
+    {
+        if (!is_string($idToken) || substr_count($idToken, '.') !== 2) {
+            return null;
+        }
+
+        $ch = curl_init('https://oauth2.googleapis.com/tokeninfo?id_token=' . urlencode($idToken));
+        curl_setopt_array($ch, [
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_TIMEOUT => 15,
+            CURLOPT_SSL_VERIFYPEER => true,
+        ]);
+        $response = curl_exec($ch);
+        $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        curl_close($ch);
+
+        if ($httpCode !== 200 || !$response) {
+            return null;
+        }
+
+        $payload = json_decode($response, true);
+        $clientId = Database::localConfig()['google_client_id'] ?? self::GOOGLE_CLIENT_ID;
+
+        if (!is_array($payload)
+            || ($payload['aud'] ?? '') !== $clientId
+            || !in_array($payload['iss'] ?? '', ['accounts.google.com', 'https://accounts.google.com'], true)
+            || (int) ($payload['exp'] ?? 0) < time()
+            || !filter_var($payload['email_verified'] ?? false, FILTER_VALIDATE_BOOLEAN)) {
+            return null;
+        }
+
+        return $payload;
     }
 }

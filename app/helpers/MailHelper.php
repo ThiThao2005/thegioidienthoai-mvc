@@ -54,10 +54,40 @@ class MailHelper
             </div>
         ';
 
+        return self::send($email, 'Xác thực tài khoản Thế Giới Điện Thoại', $html);
+    }
+
+    public static function sendResetPasswordEmail($email, $fullname, $resetLink)
+    {
+        if (empty($email) || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            return false;
+        }
+        $name = htmlspecialchars((string) $fullname, ENT_QUOTES, 'UTF-8');
+        $link = htmlspecialchars($resetLink, ENT_QUOTES, 'UTF-8');
+        $html = '
+            <div style="font-family:Arial,sans-serif;max-width:600px;margin:auto;padding:24px;border:1px solid #e8e4dc;border-radius:14px;color:#1f3a3d;">
+                <h2 style="margin-top:0;">Xin chào ' . $name . '</h2>
+                <p>Bạn (hoặc ai đó) vừa yêu cầu đặt lại mật khẩu tại <strong>Thế Giới Điện Thoại</strong>.</p>
+                <p style="margin:25px 0;">
+                    <a href="' . $link . '" style="background:#2f7d6d;color:#fff;padding:12px 22px;border-radius:10px;text-decoration:none;font-weight:bold;display:inline-block;">Đặt lại mật khẩu</a>
+                </p>
+                <p>Link có hiệu lực trong 30 phút. Nếu bạn không yêu cầu, hãy bỏ qua email này.</p>
+                <p style="word-break:break-all;color:#6b7c80;font-size:13px;">' . $link . '</p>
+            </div>';
+        return self::send($email, 'Đặt lại mật khẩu - Thế Giới Điện Thoại', $html);
+    }
+
+    private static function send($email, $subject, $html)
+    {
+        if (self::apiKey() === '') {
+            error_log('Resend API key chưa được cấu hình.');
+            return false;
+        }
+
         $data = [
             'from' => self::$fromName . ' <' . self::$fromEmail . '>',
             'to' => [$email],
-            'subject' => 'Xác thực tài khoản Thế Giới Điện Thoại',
+            'subject' => $subject,
             'html' => $html
         ];
 
