@@ -26,7 +26,7 @@ $discount = (float)($voucher['discount'] ?? 0);
 <div class="container cart-shell py-4">
     <nav aria-label="breadcrumb" class="mb-3">
         <ol class="breadcrumb mb-0">
-            <li class="breadcrumb-item"><a href="/project1/Product/index" class="text-decoration-none text-dark">Trang chủ</a></li>
+            <li class="breadcrumb-item"><a href="/Product/index" class="text-decoration-none text-dark">Trang chủ</a></li>
             <li class="breadcrumb-item active" aria-current="page">Giỏ hàng</li>
         </ol>
     </nav>
@@ -38,7 +38,7 @@ $discount = (float)($voucher['discount'] ?? 0);
                 <h3 class="fw-bold text-dark mb-1"><?= $totalQuantity ?> sản phẩm đang chờ thanh toán</h3>
                 <p class="mb-0 text-dark opacity-75">Kiểm tra số lượng, áp mã giảm giá và hoàn tất đặt hàng trong một màn hình.</p>
             </div>
-            <a href="/project1/Product/index" class="btn btn-dark rounded-pill px-4 fw-semibold">
+            <a href="/Product/index" class="btn btn-dark rounded-pill px-4 fw-semibold">
                 <i class="fas fa-plus me-2"></i>Chọn thêm
             </a>
         </div>
@@ -51,7 +51,7 @@ $discount = (float)($voucher['discount'] ?? 0);
             </div>
             <h5 class="fw-bold text-dark">Giỏ hàng đang trống</h5>
             <p class="text-muted mb-4">Hãy thêm điện thoại, laptop hoặc phụ kiện bạn thích rồi quay lại đây thanh toán.</p>
-            <a href="/project1/Product/index" class="btn btn-warning rounded-pill px-4 fw-bold text-dark">Mua sắm ngay</a>
+            <a href="/Product/index" class="btn btn-warning rounded-pill px-4 fw-bold text-dark">Mua sắm ngay</a>
         </div>
     <?php else: ?>
         <div class="row g-4">
@@ -72,8 +72,8 @@ $discount = (float)($voucher['discount'] ?? 0);
                             $subTotal = $price * $quantity;
                             $totalPrice += $subTotal;
                             $imagePath = (strpos($image, 'public/images/') !== false || strpos($image, 'uploads/') !== false)
-                                ? '/project1/' . $image
-                                : '/project1/public/images/' . $image;
+                                ? '/' . $image
+                                : '/public/images/' . $image;
                             $safeId = urlencode((string)$id);
                             ?>
                             <div class="cart-item bg-white p-3">
@@ -89,21 +89,21 @@ $discount = (float)($voucher['discount'] ?? 0);
                                     </div>
                                     <div class="col-6 col-md-3">
                                         <div class="qty-control d-flex align-items-center justify-content-md-center">
-                                            <a href="/project1/Product/updateCartQuantity?id=<?= $safeId ?>&action=decrease"
+                                            <a href="/Product/updateCartQuantity?id=<?= $safeId ?>&action=decrease"
                                                class="btn btn-outline-secondary btn-sm rounded-start-pill"
                                                data-quantity="<?= $quantity ?>"
                                                onclick="return handleDecrease(this);">
                                                 <i class="fas fa-minus small"></i>
                                             </a>
                                             <input type="text" class="form-control form-control-sm text-center bg-white rounded-0 fw-bold" value="<?= $quantity ?>" readonly>
-                                            <a href="/project1/Product/updateCartQuantity?id=<?= $safeId ?>&action=increase" class="btn btn-outline-secondary btn-sm rounded-end-pill">
+                                            <a href="/Product/updateCartQuantity?id=<?= $safeId ?>&action=increase" class="btn btn-outline-secondary btn-sm rounded-end-pill">
                                                 <i class="fas fa-plus small"></i>
                                             </a>
                                         </div>
                                     </div>
                                     <div class="col-6 col-md-3 text-end">
                                         <div class="fw-bold text-danger fs-5"><?= number_format($subTotal, 0, ',', '.') ?>đ</div>
-                                        <a href="/project1/Product/removeFromCart?id=<?= $safeId ?>"
+                                        <a href="/Product/removeFromCart?id=<?= $safeId ?>"
                                            class="btn btn-link link-danger text-decoration-none p-0 small fw-semibold"
                                            onclick="return confirm('Bạn có chắc muốn bỏ sản phẩm này khỏi giỏ hàng?');">
                                             <i class="far fa-trash-alt me-1"></i>Xóa
@@ -127,7 +127,7 @@ $discount = (float)($voucher['discount'] ?? 0);
                         <div class="alert alert-success small"><?php echo htmlspecialchars($_SESSION['success_msg'], ENT_QUOTES, 'UTF-8'); unset($_SESSION['success_msg']); ?></div>
                     <?php endif; ?>
 
-                    <form method="POST" action="/project1/Product/applyVoucher" class="mb-3">
+                    <form method="POST" action="/Product/applyVoucher" class="mb-3">
                         <label class="form-label small fw-semibold text-secondary">Mã giảm giá</label>
                         <div class="input-group">
                             <input type="text" name="voucher_code" class="form-control" placeholder="Nhập SALE10 hoặc FREESHIP" value="<?php echo htmlspecialchars($voucher['code'] ?? '', ENT_QUOTES, 'UTF-8'); ?>">
@@ -157,7 +157,7 @@ $discount = (float)($voucher['discount'] ?? 0);
                         <span class="fw-bold fs-3 text-danger"><?= number_format(max(0, $totalPrice - $discount), 0, ',', '.') ?>đ</span>
                     </div>
 
-                    <a href="/project1/Product/checkout" class="checkout-btn btn w-100 fw-bold py-3 rounded-pill d-block text-center text-dark text-decoration-none">
+                    <a href="/Product/checkout" class="checkout-btn btn w-100 fw-bold py-3 rounded-pill d-block text-center text-dark text-decoration-none">
                         Đặt hàng ngay <i class="fas fa-arrow-right ms-2"></i>
                     </a>
                 </div>

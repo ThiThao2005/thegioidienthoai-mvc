@@ -3,261 +3,691 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>📊 QUẢN TRỊ HỆ THỐNG - THẾ GIỚI ĐIỆN THOẠI</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <title>Admin · Thế Giới Điện Thoại</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <style>
-        .tgdd-bg { background-color: #ffd400; }
-        .admin-sidebar-btn { transition: all 0.2s; border-radius: 8px; font-weight: 600; }
-        .admin-sidebar-btn:hover, .admin-sidebar-btn.active { background-color: #ffd400 !important; color: #000 !important; }
-        .stat-card { transition: transform 0.2s, box-shadow 0.2s; border: none; border-radius: 12px; }
-        .stat-card:hover { transform: translateY(-3px); box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
-        .table-container { border-radius: 12px; overflow: hidden; border: 1px solid #dee2e6; }
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        :root {
+            --yellow: #FFD400;
+            --yellow-dark: #E6BE00;
+            --yellow-light: #FFF9D6;
+            --sidebar-w: 260px;
+            --topbar-h: 64px;
+            --radius: 12px;
+            --radius-sm: 8px;
+            --shadow: 0 1px 3px rgba(0,0,0,0.06), 0 4px 16px rgba(0,0,0,0.05);
+            --border: 1px solid #ECEAEA;
+            --text: #1A1A1A;
+            --muted: #888;
+            --bg: #F5F4F1;
+            --white: #FFFFFF;
+            --sidebar-bg: #141414;
+        }
+
+        body {
+            font-family: 'Be Vietnam Pro', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+        }
+
+        /* ── SIDEBAR ── */
+        .sidebar {
+            position: fixed;
+            top: 0; left: 0;
+            width: var(--sidebar-w);
+            height: 100vh;
+            background: var(--sidebar-bg);
+            display: flex;
+            flex-direction: column;
+            z-index: 100;
+            overflow: hidden;
+        }
+
+        .sidebar-brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 20px 24px;
+            border-bottom: 1px solid rgba(255,255,255,0.07);
+        }
+
+        .brand-icon {
+            width: 36px; height: 36px;
+            background: var(--yellow);
+            border-radius: 8px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 18px; line-height: 1;
+        }
+
+        .brand-text {
+            display: flex; flex-direction: column; gap: 1px;
+        }
+
+        .brand-name {
+            font-size: 13px; font-weight: 700;
+            color: #fff; letter-spacing: 0.3px;
+            text-transform: uppercase;
+        }
+
+        .brand-sub {
+            font-size: 10px; font-weight: 500;
+            color: var(--yellow);
+            text-transform: uppercase; letter-spacing: 1px;
+        }
+
+        .sidebar-nav {
+            flex: 1;
+            padding: 16px 12px;
+            display: flex; flex-direction: column; gap: 2px;
+        }
+
+        .nav-label {
+            font-size: 10px; font-weight: 600;
+            color: rgba(255,255,255,0.3);
+            text-transform: uppercase; letter-spacing: 1.2px;
+            padding: 8px 12px 6px;
+            margin-top: 4px;
+        }
+
+        .nav-link {
+            display: flex; align-items: center; gap: 12px;
+            padding: 10px 14px;
+            border-radius: var(--radius-sm);
+            color: rgba(255,255,255,0.55);
+            font-size: 13.5px; font-weight: 500;
+            text-decoration: none;
+            transition: all 0.15s;
+        }
+
+        .nav-link i { font-size: 18px; flex-shrink: 0; }
+
+        .nav-link:hover {
+            background: rgba(255,255,255,0.07);
+            color: rgba(255,255,255,0.9);
+        }
+
+        .nav-link.active {
+            background: var(--yellow);
+            color: #000 !important;
+            font-weight: 600;
+        }
+
+        .sidebar-footer {
+            padding: 16px 12px;
+            border-top: 1px solid rgba(255,255,255,0.07);
+        }
+
+        .user-row {
+            display: flex; align-items: center; gap: 10px;
+            padding: 10px 14px;
+            border-radius: var(--radius-sm);
+        }
+
+        .user-avatar {
+            width: 32px; height: 32px;
+            background: var(--yellow);
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 12px; font-weight: 700; color: #000; flex-shrink: 0;
+        }
+
+        .user-name {
+            font-size: 13px; font-weight: 600; color: rgba(255,255,255,0.85);
+        }
+
+        .user-role {
+            font-size: 11px; color: rgba(255,255,255,0.35);
+        }
+
+        /* ── TOPBAR ── */
+        .topbar {
+            position: fixed;
+            top: 0;
+            left: var(--sidebar-w);
+            right: 0;
+            height: var(--topbar-h);
+            background: var(--white);
+            border-bottom: var(--border);
+            display: flex; align-items: center;
+            padding: 0 28px;
+            gap: 16px;
+            z-index: 90;
+        }
+
+        .topbar-title {
+            flex: 1;
+            font-size: 15px; font-weight: 700;
+            color: var(--text);
+        }
+
+        .topbar-title span {
+            color: var(--muted);
+            font-weight: 400;
+        }
+
+        .clock-badge {
+            background: var(--yellow-light);
+            border: 1px solid var(--yellow-dark);
+            border-radius: 20px;
+            padding: 6px 14px;
+            font-size: 12.5px; font-weight: 600;
+            color: #7A6200;
+            display: flex; align-items: center; gap: 6px;
+        }
+
+        .btn-home {
+            display: flex; align-items: center; gap: 6px;
+            background: var(--yellow);
+            border: none; border-radius: 20px;
+            padding: 7px 16px;
+            font-size: 13px; font-weight: 600;
+            color: #000; cursor: pointer;
+            text-decoration: none;
+            transition: background 0.15s;
+        }
+
+        .btn-home:hover { background: var(--yellow-dark); color: #000; }
+
+        /* ── MAIN ── */
+        .main {
+            margin-left: var(--sidebar-w);
+            padding-top: var(--topbar-h);
+            min-height: 100vh;
+        }
+
+        .main-content {
+            padding: 28px;
+        }
+
+        /* ── SECTION HEADER ── */
+        .section-header {
+            display: flex; align-items: center; justify-content: space-between;
+            margin-bottom: 20px;
+        }
+
+        .section-title {
+            font-size: 13px; font-weight: 700;
+            color: var(--text);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            display: flex; align-items: center; gap: 8px;
+        }
+
+        .section-title::before {
+            content: '';
+            display: inline-block;
+            width: 3px; height: 16px;
+            background: var(--yellow);
+            border-radius: 2px;
+        }
+
+        /* ── STAT CARDS ── */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 14px;
+            margin-bottom: 14px;
+        }
+
+        .stats-grid-3 {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 14px;
+            margin-bottom: 24px;
+        }
+
+        .stat-card {
+            background: var(--white);
+            border: var(--border);
+            border-radius: var(--radius);
+            padding: 18px 20px;
+            display: flex; align-items: center; gap: 16px;
+            box-shadow: var(--shadow);
+            transition: transform 0.15s, box-shadow 0.15s;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.09);
+        }
+
+        .stat-icon {
+            width: 44px; height: 44px;
+            border-radius: 10px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 20px; flex-shrink: 0;
+        }
+
+        .stat-icon.blue  { background: #EBF3FF; color: #2B6CB0; }
+        .stat-icon.green { background: #E8F7EE; color: #1E7E45; }
+        .stat-icon.red   { background: #FEF0EF; color: #C53030; }
+        .stat-icon.cyan  { background: #E8F8F8; color: #0E7490; }
+        .stat-icon.amber { background: #FFF8E8; color: #92650A; }
+        .stat-icon.dark  { background: #F0F0F0; color: #333; }
+        .stat-icon.orange{ background: #FFF3EC; color: #C05621; }
+
+        .stat-label {
+            font-size: 11px; font-weight: 600;
+            color: var(--muted);
+            text-transform: uppercase; letter-spacing: 0.6px;
+            margin-bottom: 4px;
+        }
+
+        .stat-value {
+            font-size: 22px; font-weight: 700;
+            color: var(--text);
+            line-height: 1;
+        }
+
+        .stat-value.danger { color: #C53030; }
+
+        /* ── CONTENT CARDS ── */
+        .content-card {
+            background: var(--white);
+            border: var(--border);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            overflow: hidden;
+            margin-bottom: 20px;
+        }
+
+        .card-header-bar {
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 18px 22px;
+            border-bottom: var(--border);
+        }
+
+        .card-header-bar .title {
+            font-size: 13.5px; font-weight: 700; color: var(--text);
+        }
+
+        /* ── TOP PRODUCTS ── */
+        .top-products {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            padding: 18px 22px;
+        }
+
+        .product-rank-item {
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 10px 14px;
+            background: var(--bg);
+            border-radius: var(--radius-sm);
+            border: var(--border);
+        }
+
+        .product-rank-name {
+            font-size: 13px; font-weight: 600; color: var(--text);
+            white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+            max-width: 160px;
+        }
+
+        .sold-badge {
+            background: #1A1A1A;
+            color: #fff;
+            font-size: 11px; font-weight: 600;
+            padding: 3px 10px;
+            border-radius: 20px;
+            white-space: nowrap; flex-shrink: 0; margin-left: 8px;
+        }
+
+        /* ── PRODUCT TABLE ── */
+        .product-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .product-table thead tr {
+            background: #F7F7F5;
+            border-bottom: var(--border);
+        }
+
+        .product-table th {
+            padding: 12px 16px;
+            font-size: 11px; font-weight: 700;
+            color: var(--muted);
+            text-transform: uppercase; letter-spacing: 0.6px;
+            text-align: left;
+        }
+
+        .product-table tbody tr {
+            border-bottom: var(--border);
+            transition: background 0.1s;
+        }
+
+        .product-table tbody tr:last-child { border-bottom: none; }
+        .product-table tbody tr:hover { background: #FAFAF9; }
+
+        .product-table td {
+            padding: 14px 16px;
+            font-size: 13.5px; color: var(--text);
+            vertical-align: middle;
+        }
+
+        .product-img {
+            width: 44px; height: 44px;
+            border-radius: 8px;
+            object-fit: contain;
+            background: var(--bg);
+            border: var(--border);
+            padding: 3px;
+        }
+
+        .product-name {
+            font-weight: 600; color: var(--text);
+            display: block;
+            max-width: 240px;
+            white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+        }
+
+        .product-id {
+            font-size: 11.5px; color: var(--muted); margin-top: 2px;
+        }
+
+        .category-pill {
+            background: var(--bg);
+            border: var(--border);
+            border-radius: 20px;
+            padding: 3px 10px;
+            font-size: 12px; font-weight: 500;
+            color: var(--text);
+        }
+
+        .price-cell {
+            font-weight: 700; color: #C53030;
+            font-size: 14px;
+        }
+
+        .action-btns { display: flex; gap: 8px; }
+
+        .btn-edit, .btn-delete {
+            display: flex; align-items: center; gap: 5px;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 12px; font-weight: 600;
+            text-decoration: none;
+            border: none; cursor: pointer;
+            transition: all 0.15s;
+        }
+
+        .btn-edit {
+            background: #F0F0F0; color: #333;
+        }
+        .btn-edit:hover { background: #E0E0E0; color: #000; }
+
+        .btn-delete {
+            background: #FEF0EF; color: #C53030;
+        }
+        .btn-delete:hover { background: #FCDEDE; color: #9B2C2C; }
+
+        .btn-add-product {
+            display: flex; align-items: center; gap: 6px;
+            background: var(--yellow);
+            border: none; border-radius: 8px;
+            padding: 8px 16px;
+            font-size: 13px; font-weight: 700;
+            color: #000; cursor: pointer;
+            text-decoration: none;
+            transition: background 0.15s;
+        }
+        .btn-add-product:hover { background: var(--yellow-dark); color: #000; }
+
+        /* ── EMPTY STATE ── */
+        .empty-state {
+            text-align: center;
+            padding: 48px 24px;
+            color: var(--muted);
+            font-size: 14px;
+        }
     </style>
 </head>
-<body class="bg-light">
+<body>
 
-<nav class="navbar navbar-expand-lg tgdd-bg py-3 shadow-sm mb-4">
-    <div class="container-fluid px-4">
-        <a class="navbar-brand fw-bold text-dark fs-4" href="/project1/Product/index">📱 THẾ GIỚI ĐIỆN THOẠI <span class="badge bg-dark fs-6 ms-2 text-warning">ADMIN</span></a>
-        <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#adminNavbar">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="adminNavbar">
-            <ul class="navbar-nav ms-auto gap-3 align-items-lg-center">
-                <li class="nav-item">
-                    <span class="fw-bold bg-white bg-opacity-50 rounded-pill px-3 py-2 text-dark">
-                        <i class="fas fa-user-shield me-1"></i> Xin chào, <?= htmlspecialchars(SessionHelper::getUserData('fullname') ?? 'Admin') ?>
-                    </span>
-                </li>
-                <li class="nav-item">
-                    <a class="btn btn-dark rounded-pill px-3 fw-semibold text-white" href="/project1/Product/index">
-                        <i class="fas fa-home me-1"></i> Xem Trang Chủ
-                    </a>
-                </li>
-            </ul>
+<!-- ══ SIDEBAR ══ -->
+<aside class="sidebar">
+    <div class="sidebar-brand">
+        <div class="brand-icon">📱</div>
+        <div class="brand-text">
+            <div class="brand-name">Thế Giới ĐT</div>
+            <div class="brand-sub">Admin Panel</div>
         </div>
     </div>
-</nav>
 
-<div class="container-fluid px-4">
-    <div class="row g-4">
-        
-        <div class="col-lg-3 col-md-4">
-            <div class="card border-0 shadow-sm p-3" style="border-radius: 12px;">
-                <h6 class="text-muted text-uppercase fw-bold small px-2 mb-3">Danh mục quản lý</h6>
-                <div class="d-flex flex-column gap-2">
-                    <a href="/project1/Product/dashboard" class="nav-link admin-sidebar-btn active p-3 text-dark bg-light">
-                        <i class="fas fa-tachometer-alt me-2 text-warning"></i>Tổng quan Dashboard
-                    </a>
-                    <a href="/project1/Product/categories" class="nav-link admin-sidebar-btn p-3 text-secondary">
-                        <i class="fas fa-tags me-2"></i>Quản lý danh mục
-                    </a>
-                    <a href="/project1/Product/orders" class="nav-link admin-sidebar-btn p-3 text-secondary">
-                        <i class="fas fa-shopping-basket me-2"></i>Quản lý đơn hàng
-                    </a>
-                    <a href="/project1/Product/users" class="nav-link admin-sidebar-btn p-3 text-secondary">
-                        <i class="fas fa-users me-2"></i>Quản lý thành viên
-                    </a>
+    <nav class="sidebar-nav">
+        <div class="nav-label">Tổng quan</div>
+        <a href="/Product/dashboard" class="nav-link active">
+            <i class="ti ti-layout-dashboard"></i> Dashboard
+        </a>
+
+        <div class="nav-label">Quản lý</div>
+        <a href="/Product/categories" class="nav-link">
+            <i class="ti ti-tag"></i> Danh mục
+        </a>
+        <a href="/Product/orders" class="nav-link">
+            <i class="ti ti-shopping-bag"></i> Đơn hàng
+        </a>
+        <a href="/Account/users" class="nav-link">
+            <i class="ti ti-users"></i> Thành viên
+        </a>
+    </nav>
+
+    <div class="sidebar-footer">
+        <div class="user-row">
+            <div class="user-avatar">AD</div>
+            <div>
+                <div class="user-name"><?= htmlspecialchars(SessionHelper::getUserData('fullname') ?? 'Admin') ?></div>
+                <div class="user-role">Quản trị viên</div>
+            </div>
+        </div>
+    </div>
+</aside>
+
+<!-- ══ TOPBAR ══ -->
+<header class="topbar">
+    <div class="topbar-title">
+        Dashboard <span>/ Tổng quan hệ thống</span>
+    </div>
+    <div class="clock-badge">
+        <i class="ti ti-clock" style="font-size:14px;"></i>
+        <span id="liveClock">--:--:--</span>
+    </div>
+    <a href="/Product/index" class="btn-home">
+        <i class="ti ti-home" style="font-size:15px;"></i> Trang chủ
+    </a>
+</header>
+
+<!-- ══ MAIN CONTENT ══ -->
+<main class="main">
+    <div class="main-content">
+
+        <!-- Stat Cards Row 1 -->
+        <div class="section-header">
+            <div class="section-title">Chỉ số chính</div>
+        </div>
+
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon blue">
+                    <i class="ti ti-box"></i>
+                </div>
+                <div>
+                    <div class="stat-label">Sản phẩm</div>
+                    <div class="stat-value"><?= count($products ?? []) ?></div>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon green">
+                    <i class="ti ti-tag"></i>
+                </div>
+                <div>
+                    <div class="stat-label">Danh mục</div>
+                    <div class="stat-value"><?= $totalCategories ?? 0 ?></div>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon red">
+                    <i class="ti ti-shopping-bag"></i>
+                </div>
+                <div>
+                    <div class="stat-label">Đơn hàng</div>
+                    <div class="stat-value"><?= number_format($totalOrders ?? 0, 0, ',', '.') ?></div>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon cyan">
+                    <i class="ti ti-users"></i>
+                </div>
+                <div>
+                    <div class="stat-label">Thành viên</div>
+                    <div class="stat-value"><?= number_format($totalUsers ?? 0, 0, ',', '.') ?></div>
                 </div>
             </div>
         </div>
 
-        <div class="col-lg-9 col-md-8">
-            
-            <div class="d-flex justify-content-between align-items-center mb-4">
-                <h3 class="fw-bold m-0 text-dark text-uppercase fs-4">
-                    <i class="fas fa-tachometer-alt text-warning me-2"></i>Bảng điều khiển tổng quan
-                </h3>
-                <span class="badge bg-white text-secondary border px-3 py-2 fw-semibold shadow-sm" id="liveClock"></span>
-            </div>
-
-            <div class="row g-3 mb-4">
-                <div class="col-6 col-md-3">
-                    <div class="card stat-card bg-white p-3 shadow-sm border-start border-primary border-4">
-                        <div class="d-flex justify-content-between align-items-center">
-                            <div>
-                                <h6 class="text-muted small fw-bold text-uppercase mb-1">Sản phẩm</h6>
-                                <h3 class="fw-bold m-0 text-dark"><?= count($products ?? []) ?></h3>
-                            </div>
-                            <div class="text-primary bg-primary bg-opacity-10 p-2 rounded-circle" style="width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;">
-                                <i class="fas fa-box fa-lg"></i>
-                            </div>
-                        </div>
-                    </div>
+        <!-- Stat Cards Row 2 -->
+        <div class="stats-grid-3">
+            <div class="stat-card">
+                <div class="stat-icon amber">
+                    <i class="ti ti-currency-dollar"></i>
                 </div>
-
-                <div class="col-6 col-md-3">
-                    <div class="card stat-card bg-white p-3 shadow-sm border-start border-success border-4">
-                        <div class="d-flex justify-content-between align-items-center">
-                            <div>
-                                <h6 class="text-muted small fw-bold text-uppercase mb-1">Danh mục</h6>
-                                <h3 class="fw-bold m-0 text-dark"><?= $totalCategories ?? 0 ?></h3>
-                            </div>
-                            <div class="text-success bg-success bg-opacity-10 p-2 rounded-circle" style="width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;">
-                                <i class="fas fa-tags fa-lg"></i>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col-6 col-md-3">
-                    <div class="card stat-card bg-white p-3 shadow-sm border-start border-danger border-4">
-                        <div class="d-flex justify-content-between align-items-center">
-                            <div>
-                                <h6 class="text-muted small fw-bold text-uppercase mb-1">Đơn hàng</h6>
-                                <h3 class="fw-bold m-0 text-dark"><?= number_format($totalOrders ?? 0, 0, ',', '.') ?></h3>
-                            </div>
-                            <div class="text-danger bg-danger bg-opacity-10 p-2 rounded-circle" style="width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;">
-                                <i class="fas fa-shopping-basket fa-lg"></i>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col-6 col-md-3">
-                    <div class="card stat-card bg-white p-3 shadow-sm border-start border-info border-4">
-                        <div class="d-flex justify-content-between align-items-center">
-                            <div>
-                                <h6 class="text-muted small fw-bold text-uppercase mb-1">Thành viên</h6>
-                                <h3 class="fw-bold m-0 text-dark"><?= number_format($totalUsers ?? 0, 0, ',', '.') ?></h3>
-                            </div>
-                            <div class="text-info bg-info bg-opacity-10 p-2 rounded-circle" style="width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;">
-                                <i class="fas fa-users fa-lg"></i>
-                            </div>
-                        </div>
-                    </div>
+                <div>
+                    <div class="stat-label">Doanh thu tổng</div>
+                    <div class="stat-value danger"><?= number_format($dashboardStats['revenue'] ?? 0, 0, ',', '.') ?>đ</div>
                 </div>
             </div>
-
-            <div class="row g-3 mb-4">
-                <div class="col-md-4">
-                    <div class="card stat-card bg-white p-3 shadow-sm border-start border-warning border-4">
-                        <h6 class="text-muted small fw-bold text-uppercase mb-1">Doanh thu tong</h6>
-                        <h3 class="fw-bold m-0 text-danger"><?= number_format($dashboardStats['revenue'] ?? 0, 0, ',', '.') ?>đ</h3>
-                    </div>
+            <div class="stat-card">
+                <div class="stat-icon dark">
+                    <i class="ti ti-calendar-stats"></i>
                 </div>
-                <div class="col-md-4">
-                    <div class="card stat-card bg-white p-3 shadow-sm border-start border-dark border-4">
-                        <h6 class="text-muted small fw-bold text-uppercase mb-1">Doanh thu hom nay</h6>
-                        <h3 class="fw-bold m-0 text-dark"><?= number_format($dashboardStats['todayRevenue'] ?? 0, 0, ',', '.') ?>đ</h3>
-                    </div>
-                </div>
-                <div class="col-md-4">
-                    <div class="card stat-card bg-white p-3 shadow-sm border-start border-danger border-4">
-                        <h6 class="text-muted small fw-bold text-uppercase mb-1">Bien the sap het hang</h6>
-                        <h3 class="fw-bold m-0 text-danger"><?= number_format($dashboardStats['lowStock'] ?? 0, 0, ',', '.') ?></h3>
-                    </div>
+                <div>
+                    <div class="stat-label">Doanh thu hôm nay</div>
+                    <div class="stat-value"><?= number_format($dashboardStats['todayRevenue'] ?? 0, 0, ',', '.') ?>đ</div>
                 </div>
             </div>
-
-            <div class="card border-0 shadow-sm p-4 mb-4" style="border-radius: 12px;">
-                <h5 class="fw-bold m-0 mb-3 text-dark">
-                    <i class="fas fa-chart-line text-warning me-2"></i>Top san pham ban chay
-                </h5>
-                <div class="row g-2">
-                    <?php foreach (($dashboardStats['topProducts'] ?? []) as $top): ?>
-                        <div class="col-md-6">
-                            <div class="border rounded p-3 d-flex justify-content-between">
-                                <span class="fw-semibold"><?= htmlspecialchars($top->name, ENT_QUOTES, 'UTF-8') ?></span>
-                                <span class="badge bg-dark"><?= (int)$top->sold_count ?> da ban</span>
-                            </div>
-                        </div>
-                    <?php endforeach; ?>
+            <div class="stat-card">
+                <div class="stat-icon orange">
+                    <i class="ti ti-alert-triangle"></i>
+                </div>
+                <div>
+                    <div class="stat-label">Biến thể sắp hết hàng</div>
+                    <div class="stat-value danger"><?= number_format($dashboardStats['lowStock'] ?? 0, 0, ',', '.') ?></div>
                 </div>
             </div>
+        </div>
 
-            <div class="card border-0 shadow-sm p-4" style="border-radius: 12px;">
-                <div class="d-flex justify-content-between align-items-center mb-3">
-                    <h5 class="fw-bold m-0 text-dark">
-                        <i class="fas fa-list text-warning me-2"></i>Sản phẩm đang kinh doanh
-                    </h5>
-                    <a href="/project1/Product/add" class="btn btn-sm btn-primary fw-bold px-3 py-2 rounded-pill shadow-sm">
-                        <i class="fas fa-plus-circle me-1"></i> Thêm sản phẩm mới
-                    </a>
+        <!-- Top Products -->
+        <div class="content-card">
+            <div class="card-header-bar">
+                <div class="title">
+                    <i class="ti ti-trophy" style="color:#E6BE00; margin-right:6px; font-size:16px; vertical-align:-2px;"></i>
+                    Top sản phẩm bán chạy
                 </div>
-                
-                <div class="table-responsive table-container bg-white">
-                    <table class="table table-hover align-middle mb-0">
-                        <thead class="table-dark">
-                            <tr class="small text-uppercase">
-                                <th class="text-center py-3" style="width: 80px;">Hình ảnh</th>
-                                <th class="py-3">Tên sản phẩm</th>
-                                <th class="py-3" style="width: 150px;">Danh mục</th>
-                                <th class="py-3" style="width: 150px;">Giá bán</th>
-                                <th class="text-center py-3" style="width: 160px;">Thao tác</th>
+            </div>
+            <div class="top-products">
+                <?php foreach (($dashboardStats['topProducts'] ?? []) as $top): ?>
+                    <div class="product-rank-item">
+                        <span class="product-rank-name"><?= htmlspecialchars($top->name, ENT_QUOTES, 'UTF-8') ?></span>
+                        <span class="sold-badge"><?= (int)$top->sold_count ?> đã bán</span>
+                    </div>
+                <?php endforeach; ?>
+            </div>
+        </div>
+
+        <!-- Product Table -->
+        <div class="content-card">
+            <div class="card-header-bar">
+                <div class="title">
+                    <i class="ti ti-list" style="color:#E6BE00; margin-right:6px; font-size:16px; vertical-align:-2px;"></i>
+                    Sản phẩm đang kinh doanh
+                </div>
+                <a href="/Product/add" class="btn-add-product">
+                    <i class="ti ti-plus" style="font-size:15px;"></i> Thêm sản phẩm
+                </a>
+            </div>
+
+            <div style="overflow-x: auto;">
+                <table class="product-table">
+                    <thead>
+                        <tr>
+                            <th style="width:60px;">Ảnh</th>
+                            <th>Sản phẩm</th>
+                            <th style="width:140px;">Danh mục</th>
+                            <th style="width:140px;">Giá bán</th>
+                            <th style="width:160px; text-align:center;">Thao tác</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php if (empty($products)): ?>
+                            <tr>
+                                <td colspan="5">
+                                    <div class="empty-state">
+                                        <i class="ti ti-inbox" style="font-size:32px; display:block; margin-bottom:8px;"></i>
+                                        Chưa có sản phẩm nào
+                                    </div>
+                                </td>
                             </tr>
-                        </thead>
-                        <tbody>
-                            <?php if (empty($products)): ?>
-                                <tr>
-                                    <td colspan="5" class="text-center text-muted py-4">Chưa có dữ liệu sản phẩm nào hiển thị.</td>
-                                </tr>
-                            <?php else: ?>
-                                <?php foreach ($products as $product): ?>
-                                <tr>
-                                    <td class="text-center">
-                                        <?php 
-                                            $imgName = !empty($product->image) ? $product->image : 'default.jpg';
-                                            $imagePath = (strpos($imgName, 'public/images/') !== false || strpos($imgName, 'uploads/') !== false) 
-                                                ? "/project1/" . $imgName 
-                                                : "/project1/public/images/" . $imgName; 
-                                        ?>
-                                        <img src="<?= htmlspecialchars($imagePath, ENT_QUOTES, 'UTF-8'); ?>" class="rounded" style="width: 50px; height: 50px; object-fit: contain; background: #f8f9fa; border: 1px solid #eee; padding: 2px;">
-                                    </td>
-                                    <td>
-                                        <span class="fw-bold text-dark d-block text-truncate" style="max-width: 250px;"><?= htmlspecialchars($product->name, ENT_QUOTES, 'UTF-8') ?></span>
-                                        <small class="text-muted">ID: #<?= $product->id ?></small>
-                                    </td>
-                                    <td>
-                                        <span class="badge bg-light text-dark border small fw-semibold">
-                                            <?= htmlspecialchars($product->category_name ?? 'Điện thoại', ENT_QUOTES, 'UTF-8') ?>
-                                        </span>
-                                    </td>
-                                    <td>
-                                        <strong class="text-danger"><?= number_format($product->price, 0, ',', '.') ?>₫</strong>
-                                    </td>
-                                    <td class="text-center">
-                                        <div class="d-flex gap-2 justify-content-center">
-                                            <a href="/project1/Product/edit?id=<?= $product->id ?>" class="btn btn-sm btn-outline-secondary rounded-pill px-3">
-                                                <i class="fas fa-edit me-1"></i>Sửa
-                                            </a>
-                                            <a href="/project1/Product/delete?id=<?= $product->id ?>" class="btn btn-sm btn-outline-danger rounded-pill px-3" onclick="return confirm('Bạn chắc chắn muốn xóa sản phẩm này?');">
-                                                <i class="fas fa-trash me-1"></i>Xóa
-                                            </a>
-                                        </div>
-                                    </td>
-                                </tr>
-                                <?php endforeach; ?>
-                            <?php endif; ?>
-                        </tbody>
-                    </table>
-                </div>
+                        <?php else: ?>
+                            <?php foreach ($products as $product): ?>
+                            <?php
+                                $imgName = !empty($product->image) ? $product->image : 'default.jpg';
+                                $imagePath = (strpos($imgName, 'public/images/') !== false || strpos($imgName, 'uploads/') !== false)
+                                    ? "/" . $imgName
+                                    : "/public/images/" . $imgName;
+                            ?>
+                            <tr>
+                                <td>
+                                    <img src="<?= htmlspecialchars($imagePath, ENT_QUOTES, 'UTF-8') ?>"
+                                         class="product-img"
+                                         alt="<?= htmlspecialchars($product->name, ENT_QUOTES, 'UTF-8') ?>">
+                                </td>
+                                <td>
+                                    <span class="product-name"><?= htmlspecialchars($product->name, ENT_QUOTES, 'UTF-8') ?></span>
+                                    <div class="product-id">ID #<?= $product->id ?></div>
+                                </td>
+                                <td>
+                                    <span class="category-pill"><?= htmlspecialchars($product->category_name ?? 'Điện thoại', ENT_QUOTES, 'UTF-8') ?></span>
+                                </td>
+                                <td class="price-cell">
+                                    <?= number_format($product->price, 0, ',', '.') ?>₫
+                                </td>
+                                <td style="text-align:center;">
+                                    <div class="action-btns" style="justify-content:center;">
+                                        <a href="/Product/edit?id=<?= $product->id ?>" class="btn-edit">
+                                            <i class="ti ti-edit" style="font-size:13px;"></i> Sửa
+                                        </a>
+                                        <a href="/Product/delete?id=<?= $product->id ?>"
+                                           class="btn-delete"
+                                           onclick="return confirm('Bạn chắc chắn muốn xóa sản phẩm này?');">
+                                            <i class="ti ti-trash" style="font-size:13px;"></i> Xóa
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                            <?php endforeach; ?>
+                        <?php endif; ?>
+                    </tbody>
+                </table>
             </div>
+        </div>
 
-        </div> 
-    </div> 
-</div> 
+    </div>
+</main>
 
 <script>
     function updateClock() {
         const now = new Date();
-        const timeString = now.toLocaleTimeString('vi-VN', { 
-            hour: '2-digit', 
-            minute: '2-digit', 
-            second: '2-digit',
-            hour12: false 
-        });
-        const dateString = now.toLocaleDateString('vi-VN', { 
-            day: '2-digit', 
-            month: '2-digit', 
-            year: 'numeric' 
-        });
-        const clockEl = document.getElementById('liveClock');
-        if (clockEl) {
-            clockEl.innerHTML = `<i class="far fa-clock me-1 text-warning"></i> ${timeString} — ${dateString}`;
-        }
+        const el = document.getElementById('liveClock');
+        if (!el) return;
+        const t = now.toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false });
+        const d = now.toLocaleDateString('vi-VN', { day: '2-digit', month: '2-digit', year: 'numeric' });
+        el.textContent = `${t} — ${d}`;
     }
     setInterval(updateClock, 1000);
     updateClock();

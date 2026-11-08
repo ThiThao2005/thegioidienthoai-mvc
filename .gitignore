@@ -4,3 +4,12 @@
 *.log
 .idea/
 .vscode/
+
+# Cấu hình DB riêng cho hosting (chứa mật khẩu)
+app/config/db.local.php
+
+# File export DB (có dữ liệu tài khoản)
+database/my_store_export.sql
+
+# Ảnh đại diện người dùng (dữ liệu cá nhân, không đưa lên GitHub)
+public/uploads/

@@ -1,5 +1,5 @@
 <?php
-require_once 'app/config/database.php';
+require_once 'app/config/Database.php';
 require_once 'app/models/ProductModel.php';
 require_once 'app/models/CategoryModel.php';
 require_once 'app/helpers/SessionHelper.php'; 
@@ -257,7 +257,7 @@ class ProductController
 
             if ($result) {
                 $this->saveProductExtras((int) $result);
-                header('Location: /project1/Product/index');
+                header('Location: /Product/index');
                 exit();
             } else {
                 $errors = is_array($result) ? $result : ['Lỗi không xác định khi thêm'];
@@ -374,7 +374,7 @@ class ProductController
             if ($this->productModel->updateProduct($id, $name, $description, $price, $category_id, $imageName, $brand_id, $warranty_months, $sale_percent, $featured)) {
                 $this->saveProductExtras((int) $id);
                 $_SESSION['success_msg'] = "🎉 Đã cập nhật sản phẩm thành công.";
-                header('Location: /project1/Product/index');
+                header('Location: /Product/index');
                 exit();
             } else {
                 echo "Đã xảy ra lỗi khi cập nhật sản phẩm trên cơ sở dữ liệu.";
@@ -401,7 +401,7 @@ class ProductController
             if ($product && $product->image !== 'default.jpg' && file_exists('public/images/' . $product->image)) {
                 unlink('public/images/' . $product->image);
             }
-            header('Location: /project1/Product/index');
+            header('Location: /Product/index');
             exit();
         } else {
             echo "Đã xảy ra lỗi khi xóa sản phẩm.";
@@ -415,14 +415,14 @@ class ProductController
         }
 
         if (!$id) {
-            header('Location: /project1/Product/index');
+            header('Location: /Product/index');
             exit();
         }
 
         $product = $this->productModel->getProductById($id); 
 
         if (!$product) {
-            die("<div style='padding:50px; text-align:center;'><h3>Sản phẩm không tồn tại hoặc đã bị xóa!</h3><a href='/project1/Product/index'>Quay lại trang chủ</a></div>");
+            die("<div style='padding:50px; text-align:center;'><h3>Sản phẩm không tồn tại hoặc đã bị xóa!</h3><a href='/Product/index'>Quay lại trang chủ</a></div>");
         }
 
         $userId = SessionHelper::isLoggedIn() ? SessionHelper::getUserData('id') : null;
@@ -460,7 +460,7 @@ class ProductController
         } else {
             $_SESSION['error_msg'] = 'Vui long nhap cau hoi ro hon.';
         }
-        header('Location: /project1/Product/detail?id=' . $product_id);
+        header('Location: /Product/detail?id=' . $product_id);
         exit();
     }
 
@@ -473,7 +473,7 @@ class ProductController
         if ($questionId > 0 && strlen($answer) >= 2) {
             $this->productModel->answerQuestion($questionId, $answer);
         }
-        header('Location: /project1/Product/detail?id=' . $productId);
+        header('Location: /Product/detail?id=' . $productId);
         exit();
     }
 
@@ -481,7 +481,7 @@ class ProductController
     {
         SessionHelper::requireLogin();
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-            header('Location: /project1/Product/index');
+            header('Location: /Product/index');
             exit();
         }
 
@@ -489,9 +489,9 @@ class ProductController
         $rating = (int) ($_POST['rating'] ?? 0);
         $comment = trim($_POST['comment'] ?? '');
         $user_id = SessionHelper::getUserData('id');
-        $redirect = $_POST['redirect'] ?? ('/project1/Product/detail?id=' . $product_id);
-        if (!is_string($redirect) || strpos($redirect, '/project1/') !== 0) {
-            $redirect = '/project1/Product/detail?id=' . $product_id;
+        $redirect = $_POST['redirect'] ?? ('/Product/detail?id=' . $product_id);
+        if (!is_string($redirect) || strpos($redirect, '/') !== 0) {
+            $redirect = '/Product/detail?id=' . $product_id;
         }
 
         if ($product_id <= 0 || $rating < 1 || $rating > 5 || strlen($comment) < 5) {
@@ -520,7 +520,7 @@ class ProductController
             $added = $this->productModel->toggleWishlist(SessionHelper::getUserData('id'), $product_id);
             $_SESSION['success_msg'] = $added ? 'Da them vao danh sach yeu thich.' : 'Da bo khoi danh sach yeu thich.';
         }
-        $back = $_SERVER['HTTP_REFERER'] ?? '/project1/Product/detail?id=' . $product_id;
+        $back = $_SERVER['HTTP_REFERER'] ?? '/Product/detail?id=' . $product_id;
         header('Location: ' . $back);
         exit();
     }
@@ -538,7 +538,7 @@ class ProductController
                 $_SESSION['error_msg'] = 'Chi co the so sanh toi da 4 san pham.';
             }
         }
-        header('Location: ' . ($_SERVER['HTTP_REFERER'] ?? '/project1/Product/compare'));
+        header('Location: ' . ($_SERVER['HTTP_REFERER'] ?? '/Product/compare'));
         exit();
     }
 
@@ -595,7 +595,7 @@ class ProductController
             ];
         }
         
-        header('Location: /project1/Product/cart');
+        header('Location: /Product/cart');
         exit();
     }
 
@@ -628,7 +628,7 @@ class ProductController
             }
         }
 
-        header('Location: /project1/Product/cart');
+        header('Location: /Product/cart');
         exit();
     }
 
@@ -640,7 +640,7 @@ class ProductController
             unset($_SESSION['cart'][$id]);
         }
 
-        header('Location: /project1/Product/cart');
+        header('Location: /Product/cart');
         exit();
     }
 
@@ -663,7 +663,7 @@ class ProductController
             ];
             $_SESSION['success_msg'] = 'Da ap dung ma ' . $voucher->code . '.';
         }
-        header('Location: /project1/Product/cart');
+        header('Location: /Product/cart');
         exit();
     }
 
@@ -674,7 +674,7 @@ class ProductController
 
         $cart = isset($_SESSION['cart']) ? $_SESSION['cart'] : [];
         if (empty($cart)) {
-            header('Location: /project1/Product/cart');
+            header('Location: /Product/cart');
             exit();
         }
         $this->render('product/checkout', ['cart' => $cart]);
@@ -767,7 +767,7 @@ class ProductController
                 $this->sendOrderEmail($email, $order_id, $name, $total);
                 $_SESSION['success_msg'] = 'Don hang #' . $order_id . ' da duoc tao. Email xac nhan se duoc gui neu server da cau hinh mail.';
 
-                header('Location: /project1/Product/orderConfirmation');
+                header('Location: /Product/orderConfirmation');
                 exit();
 
             } catch (Exception $e) {
@@ -803,7 +803,7 @@ class ProductController
                 $this->productModel->updateUserRole($user_id, $role);
             }
         }
-        header('Location: /project1/Product/users');
+        header('Location: /Product/users');
         exit();
     }
 
@@ -816,7 +816,7 @@ class ProductController
         if ($id) {
             $this->productModel->deleteUser($id);
         }
-        header('Location: /project1/Product/users');
+        header('Location: /Product/users');
         exit();
     }
     
@@ -870,7 +870,7 @@ class ProductController
         }
 
         if (!$id) {
-            header('Location: /project1/Product/orders');
+            header('Location: /Product/orders');
             exit();
         }
 
@@ -893,7 +893,7 @@ class ProductController
         if ($id) {
             $this->productModel->deleteOrder($id);
         }
-        header('Location: /project1/Product/orders?filter=' . urlencode($_GET['filter'] ?? 'all'));
+        header('Location: /Product/orders?filter=' . urlencode($_GET['filter'] ?? 'all'));
         exit();
     }
 
@@ -908,7 +908,7 @@ class ProductController
         }
         $filter = $_GET['filter'] ?? $_POST['filter'] ?? 'all';
         $backId = $_GET['id'] ?? null;
-        $target = $backId ? '/project1/Product/orderDetail?id=' . (int) $backId . '&filter=' . urlencode($filter) : '/project1/Product/orders?filter=' . urlencode($filter);
+        $target = $backId ? '/Product/orderDetail?id=' . (int) $backId . '&filter=' . urlencode($filter) : '/Product/orders?filter=' . urlencode($filter);
         header('Location: ' . $target);
         exit();
     }
@@ -951,7 +951,7 @@ class ProductController
             }
         }
         
-        header('Location: /project1/Product/myOrders?tab=' . $currentTab);
+        header('Location: /Product/myOrders?tab=' . $currentTab);
         exit();
     }
 
@@ -964,7 +964,7 @@ class ProductController
             $id = isset($_GET['id']) ? $_GET['id'] : null;
         }
         if (!$id) {
-            header('Location: /project1/Product/myOrders');
+            header('Location: /Product/myOrders');
             exit();
         }
         
@@ -1001,7 +1001,7 @@ class ProductController
             if (!empty(trim($name))) {
                 $this->categoryModel->addCategory(trim($name));
             }
-            header('Location: /project1/Product/categories');
+            header('Location: /Product/categories');
             exit();
         }
     }
@@ -1018,7 +1018,7 @@ class ProductController
             }
         }
         
-        header('Location: /project1/Product/categories');
+        header('Location: /Product/categories');
         exit();
     }
 
@@ -1030,7 +1030,7 @@ class ProductController
         if ($id) {
             $this->categoryModel->deleteCategory($id);
         }
-        header('Location: /project1/Product/categories');
+        header('Location: /Product/categories');
         exit();
     }
 }

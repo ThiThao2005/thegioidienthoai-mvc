@@ -28,7 +28,7 @@ foreach (($specMap ?? []) as $specs) {
                 <h3 class="fw-bold text-dark mb-1">So sánh sản phẩm</h3>
                 <p class="text-muted mb-0">Đặt tối đa 4 sản phẩm cần cân nhắc vào cùng một bảng để xem giá, thương hiệu, bảo hành và cấu hình.</p>
             </div>
-            <a href="/project1/Product/index" class="btn btn-dark rounded-pill px-4 fw-semibold">
+            <a href="/Product/index" class="btn btn-dark rounded-pill px-4 fw-semibold">
                 <i class="fas fa-plus me-2"></i>Chọn thêm
             </a>
         </div>
@@ -39,7 +39,7 @@ foreach (($specMap ?? []) as $specs) {
             <i class="fas fa-balance-scale fa-4x text-warning mb-3"></i>
             <h5 class="fw-bold text-dark">Chưa có sản phẩm nào để so sánh</h5>
             <p class="text-muted mb-4">Hãy thêm các sản phẩm bạn đang phân vân, trang này sẽ giúp nhìn khác biệt rõ hơn.</p>
-            <a href="/project1/Product/index" class="btn btn-warning rounded-pill px-4 fw-bold text-dark">Đi chọn sản phẩm</a>
+            <a href="/Product/index" class="btn btn-warning rounded-pill px-4 fw-bold text-dark">Đi chọn sản phẩm</a>
         </div>
     <?php else: ?>
         <?php if (isset($_SESSION['error_msg'])): ?>
@@ -51,20 +51,20 @@ foreach (($specMap ?? []) as $specs) {
                 <?php
                 $imgName = !empty($product->image) ? $product->image : 'default.jpg';
                 $imagePath = (strpos($imgName, 'public/images/') !== false || strpos($imgName, 'uploads/') !== false)
-                    ? "/project1/" . $imgName
-                    : "/project1/public/images/" . $imgName;
+                    ? "/" . $imgName
+                    : "/public/images/" . $imgName;
                 ?>
                 <div class="col-12 col-sm-6 col-lg-3">
                     <div class="compare-card bg-white h-100 p-3">
                         <div class="d-flex justify-content-end">
-                            <form method="POST" action="/project1/Product/toggleCompare">
+                            <form method="POST" action="/Product/toggleCompare">
                                 <input type="hidden" name="product_id" value="<?= (int)$product->id ?>">
                                 <button type="submit" class="btn btn-sm btn-light border rounded-circle" title="Bỏ khỏi so sánh">
                                     <i class="fas fa-times"></i>
                                 </button>
                             </form>
                         </div>
-                        <a href="/project1/Product/detail?id=<?= (int)$product->id ?>" class="text-decoration-none">
+                        <a href="/Product/detail?id=<?= (int)$product->id ?>" class="text-decoration-none">
                             <img src="<?= htmlspecialchars($imagePath, ENT_QUOTES, 'UTF-8') ?>" alt="<?= htmlspecialchars($product->name, ENT_QUOTES, 'UTF-8') ?>" class="compare-img mb-3">
                             <h6 class="fw-bold text-dark mb-2" style="min-height: 42px;"><?= htmlspecialchars($product->name, ENT_QUOTES, 'UTF-8') ?></h6>
                         </a>

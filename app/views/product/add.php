@@ -18,7 +18,7 @@
                 </div>
 
                 <div class="card-body p-4">
-                    <form method="POST" action="/project1/Product/save" enctype="multipart/form-data">
+                    <form method="POST" action="/Product/save" enctype="multipart/form-data">
                         <input type="hidden" name="MAX_FILE_SIZE" value="5242880">
 
                         <div class="row g-3">
@@ -126,7 +126,7 @@
                         </div>
 
                         <div class="d-flex justify-content-between gap-3 mt-4">
-                            <a href="/project1/Product/index" class="btn btn-light border flex-grow-1">Quay lai</a>
+                            <a href="/Product/index" class="btn btn-light border flex-grow-1">Quay lai</a>
                             <button type="submit" class="btn btn-success flex-grow-1 shadow-sm">Them san pham</button>
                         </div>
                     </form>

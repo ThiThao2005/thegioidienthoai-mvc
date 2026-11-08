@@ -1,85 +1,126 @@
 <?php
-// 🔥 ĐẢM BẢO SESSION LUÔN CHẠY TRƯỚC KHI NẠP BẤT KỲ FILE NÀO
+// =============================================
+// FRONT CONTROLLER - index.php
+// =============================================
+
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
+
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-// 1. Nạp các cấu hình và Model dùng chung
-require_once 'app/config/Database.php'; // Nạp file cấu hình DB
-require_once 'app/models/ProductModel.php';
-require_once 'app/models/CategoryModel.php'; 
-require_once 'app/helpers/SessionHelper.php';
+try {
+    require_once 'app/config/Database.php';
+    require_once 'app/helpers/SessionHelper.php';
 
-// Khởi tạo biến $db từ class Database để truyền vào Controller
-$database = new Database();
-$db = $database->getConnection();
+    $database = new Database();
+    $db = $database->getConnection();
 
-$url = $_GET['url'] ?? '';
-$url = rtrim($url, '/');
-$url = filter_var($url, FILTER_SANITIZE_URL);
-$url = explode('/', $url);
+    // =====================================================
+    // REMEMBER ME - TỰ ĐỘNG ĐĂNG NHẬP BẰNG COOKIE
+    // =====================================================
+    if (!SessionHelper::isLoggedIn() && isset($_COOKIE['remember_token'])) {
+        require_once 'app/models/AccountModel.php';
 
-// 2. Xác định Controller
-$controllerName = isset($url[0]) && $url[0] != '' ? ucfirst($url[0]) . 'Controller' : 'ProductController';
+        $accountModel = new AccountModel($db);
+        $rememberToken = $_COOKIE['remember_token'];
+        $rememberUser = $accountModel->getAccountByRememberToken($rememberToken);
 
-// 3. Xác định Action
-$action = isset($url[1]) && $url[1] != '' ? $url[1] : 'home';
-if (strpos($action, '?') !== false) {
-    $action = explode('?', $action)[0];
-}
-
-// 4. Kiểm tra file Controller tồn tại
-if (!file_exists('app/controllers/' . $controllerName . '.php')) {
-    header("HTTP/1.0 404 Not Found");
-    die('Controller không tồn tại');
-}
-
-// Nạp file controller tương ứng vào hệ thống
-require_once 'app/controllers/' . $controllerName . '.php';
-
-// =================================================================
-// 🔥 HỆ THỐNG PHÂN QUYỀN TỰ ĐỘNG CHẶN URL Ở TẦNG ROUTER (INDEX.PHP)
-// =================================================================
-
-// Đảm bảo Helper nhận diện session đã start
-SessionHelper::start();
-
-// 1. Chặn toàn bộ các Controller thuộc nhóm quản trị viên (Admin, Danh mục, Thành viên)
-$adminControllers = ['AdminController', 'CategoryController', 'UserController']; 
-if (in_array($controllerName, $adminControllers)) {
-    SessionHelper::requireAdmin(); // Nếu không phải admin, hàm này sẽ đá văng về trang Login
-}
-
-// 2. Chặn các hành động (Action) nhạy cảm, chỉnh sửa dữ liệu bên trong ProductController
-if ($controllerName === 'ProductController') {
-    $adminActions = ['add', 'save', 'edit', 'delete']; // Thêm, lưu, sửa, xóa chỉ dành cho Admin
-    if (in_array($action, $adminActions)) {
-        SessionHelper::requireAdmin(); // Khách hàng hoặc người chưa đăng nhập gõ lậu link sẽ bị chặn đứng
+        if ($rememberUser && ($rememberUser['status'] ?? 'active') === 'active') {
+            SessionHelper::login($rememberUser);
+        }
     }
-}
-// =================================================================
 
-// Khởi tạo Controller sau khi đã qua màng lọc check quyền an toàn ở trên
-$controller = new $controllerName($db); 
+    // =====================================================
+    // XỬ LÝ URL ROUTING
+    // =====================================================
+    $url = $_GET['url'] ?? '';
+    $url = rtrim($url, '/');
+    $url = filter_var($url, FILTER_SANITIZE_URL);
+    $url = explode('/', $url);
 
-// 5. Kiểm tra hàm (Action) trong Controller tồn tại
-if (!method_exists($controller, $action)) {
-    header("HTTP/1.0 404 Not Found");
-    die('Action không tồn tại');
-}
+    $controllerName = isset($url[0]) && $url[0] !== ''
+        ? ucfirst($url[0]) . 'Controller'
+        : 'ProductController';
 
-// 6. XỬ LÝ THAM SỐ THÔNG MINH (Chấp nhận cả 2 dạng: /edit/14 HOẶC /edit?id=14)
-$params = array_slice($url, 2); 
+    $action = isset($url[1]) && $url[1] !== ''
+        ? $url[1]
+        : 'index';
 
-// Nếu mảng $params trống, tự động kiểm tra xem có tham số dạng ?id= hoặc ?category_id= hay không
-if (empty($params)) {
-    if (isset($_GET['id'])) {
-        $params = [$_GET['id']];
-    } elseif (isset($_GET['category_id'])) {
-        $params = [$_GET['category_id']];
+    if (strpos($action, '?') !== false) {
+        $action = explode('?', $action)[0];
     }
-}
 
-// Gọi Action và truyền mảng tham số vào
-call_user_func_array([$controller, $action], $params);
+    // =====================================================
+    // KIỂM TRA CONTROLLER
+    // =====================================================
+    $controllerFile = 'app/controllers/' . $controllerName . '.php';
+
+    if (!file_exists($controllerFile)) {
+        die("❌ Controller không tồn tại: " . htmlspecialchars($controllerName));
+    }
+
+    require_once $controllerFile;
+
+    // =====================================================
+    // PHÂN QUYỀN CONTROLLER ADMIN
+    // =====================================================
+    $adminControllers = [
+        'AdminController',
+        'CategoryController',
+        'UserController'
+    ];
+
+    if (in_array($controllerName, $adminControllers)) {
+        SessionHelper::requireAdmin();
+    }
+
+    // =====================================================
+    // PHÂN QUYỀN ACTION ADMIN TRONG PRODUCTCONTROLLER
+    // =====================================================
+    if ($controllerName === 'ProductController') {
+        $adminActions = [
+            'add',
+            'save',
+            'edit',
+            'delete',
+            'create'
+        ];
+
+        if (in_array($action, $adminActions)) {
+            SessionHelper::requireAdmin();
+        }
+    }
+
+    // =====================================================
+    // KHỞI TẠO CONTROLLER
+    // =====================================================
+    $controller = new $controllerName($db);
+
+    if (!method_exists($controller, $action)) {
+        die("❌ Action không tồn tại: " . htmlspecialchars($action));
+    }
+
+    // =====================================================
+    // XỬ LÝ THAM SỐ
+    // =====================================================
+    $params = array_slice($url, 2);
+
+    if (empty($params)) {
+        if (isset($_GET['id'])) {
+            $params = [$_GET['id']];
+        } elseif (isset($_GET['category_id'])) {
+            $params = [$_GET['category_id']];
+        }
+    }
+
+    call_user_func_array([$controller, $action], $params);
+
+} catch (Throwable $e) {
+    echo "<h2 style='color:red'>❌ LỖI:</h2>";
+    echo "<pre>" . htmlspecialchars($e->getMessage()) . "</pre>";
+    echo "<p><strong>File:</strong> " . htmlspecialchars($e->getFile()) . " (dòng " . $e->getLine() . ")</p>";
+}
 ?>

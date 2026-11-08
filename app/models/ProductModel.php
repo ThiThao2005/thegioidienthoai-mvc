@@ -277,9 +277,9 @@ class ProductModel
         if ($count === 0) {
             $stmt = $this->conn->prepare("INSERT INTO banners (title, subtitle, image, link, position, sort_order) VALUES (:title, :subtitle, :image, :link, 'home', :sort_order)");
             $rows = [
-                ['Flash sale cong nghe moi', 'Giam den 30% cho dien thoai va phu kien hot', '1779075308_xiaomi-17-5g-xanh-la-1-639088210870268655-750x500.jpg', '/project1/Product/index?featured=1', 1],
-                ['Laptop hoc tap lam viec', 'Nhieu mau mong nhe, bao hanh chinh hang', '1778557560_acer-swift-x-14-2024-front-angled-e1715278668968.jpg', '/project1/Product/index?category_id=2', 2],
-                ['Phu kien gia tot', 'Tai nghe, chuot, sac nhanh va man hinh', '1778937883_tai-nghe-bluetooth-chup-tai-sony-wh-ch520-xanh-1-750x500.jpg', '/project1/Product/index?category_id=4', 3],
+                ['Flash sale cong nghe moi', 'Giam den 30% cho dien thoai va phu kien hot', '1779075308_xiaomi-17-5g-xanh-la-1-639088210870268655-750x500.jpg', '/Product/index?featured=1', 1],
+                ['Laptop hoc tap lam viec', 'Nhieu mau mong nhe, bao hanh chinh hang', '1778557560_acer-swift-x-14-2024-front-angled-e1715278668968.jpg', '/Product/index?category_id=2', 2],
+                ['Phu kien gia tot', 'Tai nghe, chuot, sac nhanh va man hinh', '1778937883_tai-nghe-bluetooth-chup-tai-sony-wh-ch520-xanh-1-750x500.jpg', '/Product/index?category_id=4', 3],
             ];
             foreach ($rows as $row) {
                 $stmt->execute([':title' => $row[0], ':subtitle' => $row[1], ':image' => $row[2], ':link' => $row[3], ':sort_order' => $row[4]]);

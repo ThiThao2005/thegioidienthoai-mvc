@@ -3,7 +3,7 @@
         <h4 class="fw-bold text-uppercase m-0 text-dark">
             <i class="fas fa-heart text-danger me-2"></i>Danh sach yeu thich
         </h4>
-        <a href="/project1/Product/index" class="btn btn-outline-secondary rounded-pill px-4">Tiep tuc mua sam</a>
+        <a href="/Product/index" class="btn btn-outline-secondary rounded-pill px-4">Tiep tuc mua sam</a>
     </div>
 
     <?php if (empty($products)): ?>
@@ -17,12 +17,12 @@
                 <?php
                     $imgName = !empty($product->image) ? $product->image : 'default.jpg';
                     $imagePath = (strpos($imgName, 'public/images/') !== false || strpos($imgName, 'uploads/') !== false)
-                        ? "/project1/" . $imgName
-                        : "/project1/public/images/" . $imgName;
+                        ? "/" . $imgName
+                        : "/public/images/" . $imgName;
                 ?>
                 <div class="col">
                     <div class="card h-100 p-2 card-product">
-                        <a href="/project1/Product/detail?id=<?php echo $product->id; ?>" class="text-center d-block">
+                        <a href="/Product/detail?id=<?php echo $product->id; ?>" class="text-center d-block">
                             <img src="<?php echo htmlspecialchars($imagePath, ENT_QUOTES, 'UTF-8'); ?>" class="card-img-top" style="object-fit: contain; height: 160px;">
                         </a>
                         <div class="card-body px-1 py-2">
@@ -32,8 +32,8 @@
                             <strong class="text-danger"><?php echo number_format($product->price, 0, ',', '.'); ?>d</strong>
                         </div>
                         <div class="card-footer bg-transparent border-0 d-grid gap-2">
-                            <a href="/project1/Product/addToCart?id=<?php echo $product->id; ?>" class="btn btn-sm btn-warning rounded-pill fw-bold text-dark">Them vao gio</a>
-                            <form method="POST" action="/project1/Product/toggleWishlist">
+                            <a href="/Product/addToCart?id=<?php echo $product->id; ?>" class="btn btn-sm btn-warning rounded-pill fw-bold text-dark">Them vao gio</a>
+                            <form method="POST" action="/Product/toggleWishlist">
                                 <input type="hidden" name="product_id" value="<?php echo $product->id; ?>">
                                 <button class="btn btn-sm btn-outline-danger rounded-pill w-100" type="submit">Bo yeu thich</button>
                             </form>

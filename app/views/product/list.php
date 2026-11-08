@@ -1,338 +1,936 @@
-<div class="container bg-white p-4 rounded shadow-sm mt-4">
-    
-<div id="promoCarousel" class="carousel slide mb-5 shadow-sm rounded-4 overflow-hidden custom-carousel" data-bs-ride="carousel">
-    <div class="carousel-indicators custom-indicators">
-        <button type="button" data-bs-target="#promoCarousel" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
-        <button type="button" data-bs-target="#promoCarousel" data-bs-slide-to="1" aria-label="Slide 2"></button>
-        <button type="button" data-bs-target="#promoCarousel" data-bs-slide-to="2" aria-label="Slide 3"></button>
-    </div>
-    
-    <div class="carousel-inner">
-        <div class="carousel-item active" data-bs-interval="4000">
-            <a href="/project1/Product/index?promotion=smartphone">
-                <img src="https://cdn11.dienmaycholon.vn/filewebdmclnew/DMCL21/Picture//Tm/Tm_picture_3547/galaxy-s26-ultr_868_959.png.webp" class="d-block w-100 carousel-img" alt="Siêu sale Smartphone - Giảm đến 50%">
-            </a>
-        </div>
-        <div class="carousel-item" data-bs-interval="4000">
-            <a href="/project1/Product/index?search=iPhone">
-                <img src="https://cdn11.dienmaycholon.vn/filewebdmclnew/DMCL21/Picture//Tm/Tm_picture_3454/xiaomi-redmi-a7_849_959.png.webp" class="d-block w-100 carousel-img" alt="iPhone Series - Giá tốt nhất thị trường">
-            </a>
-        </div>
-        <div class="carousel-item" data-bs-interval="4000">
-            <a href="/project1/Product/index?promotion=laptop">
-                <img src="https://cdn11.dienmaycholon.vn/filewebdmclnew/DMCL21/Picture//Tm/Tm_picture_3179/banner-homepage_779_959.png.webp" class="d-block w-100 carousel-img" alt="Laptop Gaming - Quà tặng cực khủng">
-            </a>
-        </div>
-    </div>
-    
-    <button class="carousel-control-prev custom-control-btn" type="button" data-bs-target="#promoCarousel" data-bs-slide="prev">
-        <span class="control-icon-wrapper">
-            <i class="fas fa-chevron-left"></i>
-        </span>
-        <span class="visually-hidden">Trước</span>
-    </button>
-    <button class="carousel-control-next custom-control-btn" type="button" data-bs-target="#promoCarousel" data-bs-slide="next">
-        <span class="control-icon-wrapper">
-            <i class="fas fa-chevron-right"></i>
-        </span>
-        <span class="visually-hidden">Sau</span>
-    </button>
-</div>
+<?php
+/**
+ * View: Product/index.php
+ * Trang chủ / danh sách sản phẩm nâng cấp
+ */
+?>
 
-<style>
-    /* Tổng thể Carousel */
-    .custom-carousel {
-        position: relative;
-        border-radius: 16px !important; /* Bo góc mềm mại hiện đại */
-    }
+<div class="shop-page">
 
-    /* Tối ưu ảnh: Tự động co giãn theo tỷ lệ, sử dụng hình thật không lo bị méo chữ */
-    .carousel-img {
-        height: 380px;
-        object-fit: cover;
-        transition: transform 0.5s ease;
-    }
-    @media (max-width: 991.98px) {
-        .carousel-img {
-            height: 260px; /* Màn hình Tablet */
-        }
-    }
-    @media (max-width: 575.98px) {
-        .carousel-img {
-            height: 160px; /* Màn hình Điện thoại dọc */
-        }
-    }
+    <!-- ===== HERO BANNER ===== -->
+    <section class="shop-hero mb-4">
+        <div class="hero-left">
+            <span class="hero-badge">Ưu đãi nổi bật 2026</span>
+            <h1>Điện thoại chính hãng<br>Giá tốt mỗi ngày</h1>
+            <p>Mua smartphone, laptop, phụ kiện với bảo hành minh bạch và nhiều ưu đãi hấp dẫn.</p>
 
-    /* Custom nút mũi tên chuyển slide */
-    .custom-control-btn {
-        width: 6%;
-        opacity: 0; /* Mặc định ẩn đi */
-        transition: all 0.3s ease-in-out;
-    }
-    .custom-carousel:hover .custom-control-btn {
-        opacity: 1; /* Hover vào mới hiện */
-    }
-    
-    /* Vòng tròn bọc ngoài mũi tên */
-    .control-icon-wrapper {
-        background-color: rgba(255, 255, 255, 0.85);
-        color: #333;
-        width: 45px;
-        height: 45px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        border-radius: 50%;
-        box-shadow: 0 4px 10px rgba(0,0,0,0.15);
-        transition: all 0.2s;
-    }
-    .control-icon-wrapper i {
-        font-size: 1.1rem;
-    }
-    .custom-control-btn:hover .control-icon-wrapper {
-        background-color: #ffd400; /* Màu vàng thương hiệu */
-        color: #000;
-        transform: scale(1.1);
-    }
-
-    /* Custom indicators dưới đáy */
-    .custom-indicators button {
-        width: 10px !important;
-        height: 10px !important;
-        border-radius: 50% !important;
-        margin: 0 5px !important;
-        background-color: rgba(255, 255, 255, 0.6) !important;
-        border: none !important;
-        transition: all 0.3s ease;
-    }
-    .custom-indicators .active {
-        width: 24px !important; /* Dấu active kéo dài thời thượng */
-        border-radius: 5px !important;
-        background-color: #ffd400 !important;
-    }
-</style>
-
-    <?php if (isset($_SESSION['success_msg'])): ?>
-        <div id="successAlert" class="alert alert-success alert-dismissible fade show fw-bold shadow-sm mb-4 border-0" role="alert" style="border-radius: 12px; background-color: #d1e7dd; color: #0f5132; transition: opacity 0.5s ease;">
-            <div class="d-flex align-items-center">
-                <i class="fas fa-check-circle me-2 fs-5 text-success"></i>
-                <span><?php echo $_SESSION['success_msg']; ?></span>
+            <div class="hero-actions">
+                <a href="/Product/index?featured=1" class="hero-btn-primary">
+                    <i class="fas fa-fire me-1"></i> Xem hàng nổi bật
+                </a>
+                <a href="/Product/index?search=iPhone" class="hero-btn-secondary">
+                    Tìm iPhone
+                </a>
             </div>
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+
+        <div class="hero-right">
+            <img src="https://cdn11.dienmaycholon.vn/filewebdmclnew/DMCL21/Picture//Tm/Tm_picture_3547/galaxy-s26-ultr_868_959.png.webp"
+                 alt="Sản phẩm nổi bật">
+        </div>
+    </section>
+
+    <!-- ===== MINI BANNER ===== -->
+    <section class="mini-banner-grid mb-4">
+        <a href="/Product/index?category_id=1" class="mini-banner">
+            <i class="fas fa-mobile-alt"></i>
+            <div>
+                <strong>Điện thoại hot</strong>
+                <span>Giảm đến 30%</span>
+            </div>
+        </a>
+
+        <a href="/Product/index?category_id=2" class="mini-banner">
+            <i class="fas fa-laptop"></i>
+            <div>
+                <strong>Laptop sinh viên</strong>
+                <span>Trả góp 0%</span>
+            </div>
+        </a>
+
+        <a href="/Product/index?category_id=4" class="mini-banner">
+            <i class="fas fa-headphones"></i>
+            <div>
+                <strong>Phụ kiện chính hãng</strong>
+                <span>Mua kèm giá sốc</span>
+            </div>
+        </a>
+    </section>
+
+    <!-- ===== THÔNG BÁO SESSION ===== -->
+    <?php if (isset($_SESSION['success_msg'])): ?>
+        <div id="successAlert" class="alert alert-success alert-dismissible fade show fw-bold shadow-sm border-0 mb-4 rounded-4" role="alert">
+            <i class="fas fa-check-circle me-2"></i>
+            <?php echo htmlspecialchars($_SESSION['success_msg'], ENT_QUOTES, 'UTF-8'); ?>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
         </div>
         <?php unset($_SESSION['success_msg']); ?>
     <?php endif; ?>
 
-    <div class="d-flex justify-content-between align-items-center mb-4 border-bottom pb-3">
-        <h4 class="fw-bold text-uppercase m-0 text-dark">
-            <i class="fas fa-mobile-alt text-warning me-2"></i>Danh sách sản phẩm
-        </h4>
-        
+    <!-- ===== HEADER TITLE ===== -->
+    <div class="section-head mb-3">
+        <div>
+            <span class="section-kicker">Sản phẩm</span>
+            <h4>Danh sách sản phẩm</h4>
+        </div>
+
         <?php if (SessionHelper::isAdmin()): ?>
-            <a href="/project1/Product/add" class="btn fw-bold px-4 shadow-sm" style="background-color: #288ad6; color: white;">
+            <a href="/Product/add" class="btn-add-product">
                 <i class="fas fa-plus-circle me-1"></i> Thêm sản phẩm
             </a>
         <?php endif; ?>
     </div>
 
-    <form class="row g-2 align-items-center mb-4" method="GET" action="/project1/Product/index">
+    <!-- ===== FILTER BOX ===== -->
+    <form class="filter-box mb-4" method="GET" action="/Product/index">
         <?php if (!empty($category_id)): ?>
-            <input type="hidden" name="category_id" value="<?php echo (int) $category_id; ?>">
+            <input type="hidden" name="category_id" value="<?php echo (int)$category_id; ?>">
         <?php endif; ?>
-        <div class="col-md-4">
-            <input type="search" name="search" class="form-control rounded-pill px-4"
-                   value="<?php echo htmlspecialchars($search ?? '', ENT_QUOTES, 'UTF-8'); ?>"
-                   placeholder="Nhap tu khoa san pham, mo ta hoac danh muc...">
+
+        <div class="row g-2">
+            <div class="col-lg-4 col-md-6">
+                <input type="search" name="search"
+                       class="form-control filter-control"
+                       value="<?php echo htmlspecialchars($search ?? '', ENT_QUOTES, 'UTF-8'); ?>"
+                       placeholder="Tìm tên sản phẩm, mô tả, danh mục...">
+            </div>
+
+            <div class="col-lg-2 col-md-6">
+                <select name="brand_id" class="form-select filter-control">
+                    <option value="">Tất cả hãng</option>
+                    <?php foreach (($brands ?? []) as $brand): ?>
+                        <option value="<?php echo $brand->id; ?>"
+                            <?php echo (($filters['brand_id'] ?? '') == $brand->id) ? 'selected' : ''; ?>>
+                            <?php echo htmlspecialchars($brand->name, ENT_QUOTES, 'UTF-8'); ?>
+                        </option>
+                    <?php endforeach; ?>
+                </select>
+            </div>
+
+            <div class="col-lg-2 col-md-6">
+                <input type="number" name="min_price" class="form-control filter-control"
+                       value="<?php echo htmlspecialchars($filters['min_price'] ?? '', ENT_QUOTES, 'UTF-8'); ?>"
+                       placeholder="Giá từ">
+            </div>
+
+            <div class="col-lg-2 col-md-6">
+                <input type="number" name="max_price" class="form-control filter-control"
+                       value="<?php echo htmlspecialchars($filters['max_price'] ?? '', ENT_QUOTES, 'UTF-8'); ?>"
+                       placeholder="Giá đến">
+            </div>
+
+            <div class="col-lg-2 col-md-6">
+                <select name="sort" class="form-select filter-control">
+                    <option value="newest" <?php echo (($filters['sort'] ?? '') === 'newest') ? 'selected' : ''; ?>>Mới nhất</option>
+                    <option value="price_asc" <?php echo (($filters['sort'] ?? '') === 'price_asc') ? 'selected' : ''; ?>>Giá tăng</option>
+                    <option value="price_desc" <?php echo (($filters['sort'] ?? '') === 'price_desc') ? 'selected' : ''; ?>>Giá giảm</option>
+                    <option value="rating" <?php echo (($filters['sort'] ?? '') === 'rating') ? 'selected' : ''; ?>>Đánh giá cao</option>
+                </select>
+            </div>
         </div>
-        <div class="col-md-2">
-            <select name="brand_id" class="form-select rounded-pill">
-                <option value="">Tat ca hang</option>
-                <?php foreach (($brands ?? []) as $brand): ?>
-                    <option value="<?php echo $brand->id; ?>" <?php echo (($filters['brand_id'] ?? '') == $brand->id) ? 'selected' : ''; ?>>
-                        <?php echo htmlspecialchars($brand->name, ENT_QUOTES, 'UTF-8'); ?>
-                    </option>
-                <?php endforeach; ?>
-            </select>
-        </div>
-        <div class="col-md-2">
-            <input type="number" name="min_price" class="form-control rounded-pill" value="<?php echo htmlspecialchars($filters['min_price'] ?? '', ENT_QUOTES, 'UTF-8'); ?>" placeholder="Gia tu">
-        </div>
-        <div class="col-md-2">
-            <input type="number" name="max_price" class="form-control rounded-pill" value="<?php echo htmlspecialchars($filters['max_price'] ?? '', ENT_QUOTES, 'UTF-8'); ?>" placeholder="Gia den">
-        </div>
-        <div class="col-md-2">
-            <select name="sort" class="form-select rounded-pill">
-                <option value="newest" <?php echo (($filters['sort'] ?? '') === 'newest') ? 'selected' : ''; ?>>Moi nhat</option>
-                <option value="price_asc" <?php echo (($filters['sort'] ?? '') === 'price_asc') ? 'selected' : ''; ?>>Gia tang</option>
-                <option value="price_desc" <?php echo (($filters['sort'] ?? '') === 'price_desc') ? 'selected' : ''; ?>>Gia giam</option>
-                <option value="rating" <?php echo (($filters['sort'] ?? '') === 'rating') ? 'selected' : ''; ?>>Danh gia cao</option>
-            </select>
-        </div>
-        <div class="col-12 d-flex gap-2 align-items-center">
-            <label class="form-check-label small me-2">
-                <input class="form-check-input" type="checkbox" name="featured" value="1" <?php echo !empty($filters['featured']) ? 'checked' : ''; ?>> Chi san pham noi bat
+
+        <div class="filter-bottom mt-3">
+            <label class="featured-check">
+                <input class="form-check-input me-1" type="checkbox" name="featured" value="1"
+                    <?php echo !empty($filters['featured']) ? 'checked' : ''; ?>>
+                Chỉ sản phẩm nổi bật
             </label>
-            <button class="btn btn-dark rounded-pill px-4 fw-semibold" type="submit">
-                <i class="fas fa-search me-1"></i> Tim kiem
-            </button>
-            <?php if (!empty($search) || !empty($category_id)): ?>
-                <a class="btn btn-outline-secondary rounded-pill px-4" href="/project1/Product/index">Xoa loc</a>
-            <?php endif; ?>
+
+            <div class="filter-actions">
+                <button class="btn-filter" type="submit">
+                    <i class="fas fa-search me-1"></i> Lọc sản phẩm
+                </button>
+
+                <?php if (!empty($search) || !empty($category_id) || !empty($filters['brand_id']) || !empty($filters['min_price'])): ?>
+                    <a class="btn-clear" href="/Product/index">
+                        <i class="fas fa-times me-1"></i> Xóa lọc
+                    </a>
+                <?php endif; ?>
+            </div>
         </div>
-        <div class="col-12 text-muted small">
-            Tim thay <?php echo (int) ($totalProducts ?? count($products)); ?> san pham<?php echo !empty($search) ? ' cho "' . htmlspecialchars($search, ENT_QUOTES, 'UTF-8') . '"' : ''; ?>.
+
+        <div class="result-count mt-2">
+            Tìm thấy <strong><?php echo (int)($totalProducts ?? count($products)); ?></strong> sản phẩm
+            <?php echo !empty($search) ? ' cho "<strong>' . htmlspecialchars($search, ENT_QUOTES, 'UTF-8') . '</strong>"' : ''; ?>
         </div>
     </form>
 
+    <!-- ===== PRODUCT GRID ===== -->
     <div class="row row-cols-2 row-cols-md-3 row-cols-lg-5 g-3">
-        
         <?php if (empty($products)): ?>
-            <div class="col-12 text-center py-5">
-                <div class="mb-3">
-                    <i class="fas fa-box-open fa-4x text-muted"></i>
+            <div class="col-12">
+                <div class="empty-box">
+                    <i class="fas fa-box-open"></i>
+                    <h5>Chưa có sản phẩm nào</h5>
+                    <p>Vui lòng thử lại với bộ lọc khác.</p>
+
+                    <?php if (SessionHelper::isAdmin()): ?>
+                        <a href="/Product/add" class="btn-add-product mt-2">Thêm sản phẩm ngay</a>
+                    <?php endif; ?>
                 </div>
-                <p class="text-muted fs-5">Chưa có sản phẩm nào thuộc danh mục này.</p>
-                
-                <?php if (SessionHelper::isAdmin()): ?>
-                    <a href="/project1/Product/add" class="btn btn-outline-primary rounded-pill">Thêm sản phẩm ngay</a>
-                <?php endif; ?>
             </div>
         <?php else: ?>
             <?php foreach ($products as $product): ?>
-            <div class="col product-item">
-                <div class="card h-100 p-2 card-product" style="transition: all 0.3s ease; border: 1px solid #eee; border-radius: 12px; background: #fff;">
-                    
-                    <?php 
-                        $imgName = !empty($product->image) ? $product->image : 'default.jpg';
-                        $imagePath = (strpos($imgName, 'public/images/') !== false || strpos($imgName, 'uploads/') !== false) 
-                            ? "/project1/" . $imgName 
-                            : "/project1/public/images/" . $imgName; 
-                    ?>
-                    
-                    <a href="/project1/Product/detail?id=<?php echo $product->id; ?>" class="text-center d-block text-decoration-none position-relative">
-                        <?php if (!empty($product->sale_percent)): ?>
-                            <span class="badge bg-danger position-absolute top-0 start-0 m-2">-<?php echo (int)$product->sale_percent; ?>%</span>
+                <?php
+                    $imgName = !empty($product->image) ? $product->image : 'default.jpg';
+                    $imagePath = (strpos($imgName, 'public/images/') !== false || strpos($imgName, 'uploads/') !== false)
+                        ? '/' . $imgName
+                        : '/public/images/' . $imgName;
+
+                    $salePercent = (int)($product->sale_percent ?? 0);
+                    $originalPrice = (float)$product->price;
+                    $salePrice = $salePercent > 0 ? $originalPrice * (1 - $salePercent / 100) : $originalPrice;
+
+                    $rating = (float)($product->avg_rating ?? 0);
+                    $reviewCount = (int)($product->review_count ?? 0);
+                ?>
+
+                <div class="col">
+                    <div class="product-card">
+
+                        <?php if ($salePercent > 0): ?>
+                            <span class="product-badge sale">-<?php echo $salePercent; ?>%</span>
                         <?php elseif (!empty($product->featured)): ?>
-                            <span class="badge bg-warning text-dark position-absolute top-0 start-0 m-2">Noi bat</span>
+                            <span class="product-badge hot">Hot</span>
                         <?php endif; ?>
-                        <img src="<?php echo htmlspecialchars($imagePath, ENT_QUOTES, 'UTF-8'); ?>" 
-                             class="card-img-top" 
-                             alt="Ảnh sản phẩm"
-                             style="object-fit: contain; height: 160px; padding: 5px;">
-                    </a>
-                    
-                    <div class="card-body px-1 py-2 d-flex flex-column">
-                        <h6 class="card-title fw-bold mb-1" style="font-size: 0.9rem; height: 2.4rem; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; line-height: 1.2rem;">
-                            <a href="/project1/Product/detail?id=<?php echo $product->id; ?>" class="text-dark text-decoration-none product-title-link">
-                                <?php echo htmlspecialchars($product->name, ENT_QUOTES, 'UTF-8'); ?>
-                            </a>
-                        </h6>
 
-                        <div class="mb-2">
-                            <span class="badge bg-light text-secondary border small" style="font-size: 0.75rem;">
-                                <i class="fas fa-tag me-1 text-warning"></i><?php echo htmlspecialchars($product->category_name ?? 'Điện thoại', ENT_QUOTES, 'UTF-8'); ?>
-                            </span>
-                        </div>
-                        
-                        <?php if (!empty($product->brand_name)): ?>
-                            <div class="small fw-semibold text-dark mb-1"><?php echo htmlspecialchars($product->brand_name, ENT_QUOTES, 'UTF-8'); ?></div>
-                        <?php endif; ?>
-                        <p class="card-text text-muted small text-truncate mb-2" style="font-size: 0.8rem;">
-                            <?php echo htmlspecialchars($product->description, ENT_QUOTES, 'UTF-8'); ?>
-                        </p>
+                        <a href="/Product/detail?id=<?php echo $product->id; ?>" class="product-img-wrap">
+                            <img src="<?php echo htmlspecialchars($imagePath, ENT_QUOTES, 'UTF-8'); ?>"
+                                 alt="<?php echo htmlspecialchars($product->name, ENT_QUOTES, 'UTF-8'); ?>"
+                                 loading="lazy">
+                        </a>
 
-                        <div class="mt-auto mb-2">
-                            <strong style="color: #d70018; font-size: 1.05rem;">
-                                <?php echo number_format($product->price, 0, ',', '.'); ?>₫
-                            </strong>
-                            <div class="small text-warning mt-1">
-                                <i class="fas fa-star"></i>
-                                <?php echo number_format((float)($product->avg_rating ?? 0), 1); ?>
-                                <span class="text-muted">(<?php echo (int)($product->review_count ?? 0); ?> danh gia)</span>
+                        <div class="product-info">
+                            <div class="product-tags">
+                                <span><?php echo htmlspecialchars($product->category_name ?? 'Sản phẩm', ENT_QUOTES, 'UTF-8'); ?></span>
+                                <?php if (!empty($product->brand_name)): ?>
+                                    <span><?php echo htmlspecialchars($product->brand_name, ENT_QUOTES, 'UTF-8'); ?></span>
+                                <?php endif; ?>
+                            </div>
+
+                            <h6 class="product-name">
+                                <a href="/Product/detail?id=<?php echo $product->id; ?>">
+                                    <?php echo htmlspecialchars($product->name, ENT_QUOTES, 'UTF-8'); ?>
+                                </a>
+                            </h6>
+
+                            <p class="product-desc">
+                                <?php echo htmlspecialchars($product->description ?? 'Sản phẩm chính hãng, bảo hành đầy đủ.', ENT_QUOTES, 'UTF-8'); ?>
+                            </p>
+
+                            <div class="product-price">
+                                <strong><?php echo number_format($salePrice, 0, ',', '.'); ?>₫</strong>
+
+                                <?php if ($salePercent > 0): ?>
+                                    <span><?php echo number_format($originalPrice, 0, ',', '.'); ?>₫</span>
+                                <?php endif; ?>
+                            </div>
+
+                            <div class="product-meta">
+                                <span class="rating">
+                                    <i class="fas fa-star"></i>
+                                    <?php echo number_format($rating, 1); ?>
+                                </span>
+                                <span><?php echo $reviewCount; ?> đánh giá</span>
                             </div>
                         </div>
-                    </div>
-                    
-                    <div class="card-footer bg-transparent border-0 px-1 pt-0 flex-column d-flex gap-2">
-                        <a href="/project1/Product/addToCart?id=<?php echo $product->id; ?>" class="btn btn-sm btn-warning w-100 fw-bold rounded-pill text-dark py-1.5" style="background-color: #ffd400; border: none;">
-                            <i class="fas fa-cart-plus me-1"></i> Thêm vào giỏ
-                        </a>
-                        
+
+                        <div class="product-actions">
+                            <a href="/Product/addToCart?id=<?php echo $product->id; ?>" class="btn-cart">
+                                <i class="fas fa-cart-plus me-1"></i> Thêm giỏ
+                            </a>
+
+                            <a href="/Product/detail?id=<?php echo $product->id; ?>" class="btn-detail">
+                                Chi tiết
+                            </a>
+                        </div>
+
                         <?php if (SessionHelper::isAdmin()): ?>
-                            <div class="d-flex gap-1 justify-content-between border-top pt-2">
-                                <a href="/project1/Product/edit?id=<?php echo $product->id; ?>" class="btn btn-sm btn-outline-secondary w-50 rounded-pill" style="font-size: 0.75rem; padding: 4px 5px;">
+                            <div class="admin-actions">
+                                <a href="/Product/edit?id=<?php echo $product->id; ?>" class="btn-admin-edit">
                                     <i class="fas fa-edit"></i> Sửa
                                 </a>
-                                <a href="/project1/Product/delete?id=<?php echo $product->id; ?>" class="btn btn-sm btn-outline-danger w-50 rounded-pill" style="font-size: 0.75rem; padding: 4px 5px;"
-                                   onclick="return confirm('Bạn có chắc muốn xóa <?php echo htmlspecialchars($product->name, ENT_QUOTES, 'UTF-8'); ?>?');">
+
+                                <a href="/Product/delete?id=<?php echo $product->id; ?>"
+                                   class="btn-admin-delete"
+                                   onclick="return confirmDelete(<?php echo $product->id; ?>, '<?php echo htmlspecialchars(addslashes($product->name), ENT_QUOTES, 'UTF-8'); ?>')">
                                     <i class="fas fa-trash"></i> Xóa
                                 </a>
                             </div>
                         <?php endif; ?>
+
                     </div>
                 </div>
-            </div>
             <?php endforeach; ?>
         <?php endif; ?>
-
     </div>
 
+    <!-- ===== PAGINATION ===== -->
     <?php if (($totalPages ?? 1) > 1): ?>
         <nav class="mt-4">
-            <ul class="pagination justify-content-center">
+            <ul class="pagination justify-content-center flex-wrap gap-1">
                 <?php
                     $queryBase = [];
+
                     if (!empty($search)) $queryBase['search'] = $search;
                     if (!empty($category_id)) $queryBase['category_id'] = $category_id;
-                    for ($i = 1; $i <= $totalPages; $i++):
-                        $queryBase['page'] = $i;
+                    if (!empty($filters['brand_id'])) $queryBase['brand_id'] = $filters['brand_id'];
+                    if (!empty($filters['min_price'])) $queryBase['min_price'] = $filters['min_price'];
+                    if (!empty($filters['max_price'])) $queryBase['max_price'] = $filters['max_price'];
+                    if (!empty($filters['sort'])) $queryBase['sort'] = $filters['sort'];
+                    if (!empty($filters['featured'])) $queryBase['featured'] = 1;
+
+                    $currentPage = (int)($page ?? 1);
+                    $totalPagesInt = (int)$totalPages;
+
+                    if ($currentPage > 1):
+                        $queryBase['page'] = $currentPage - 1;
                 ?>
-                    <li class="page-item <?php echo $i == ($page ?? 1) ? 'active' : ''; ?>">
-                        <a class="page-link" href="/project1/Product/index?<?php echo http_build_query($queryBase); ?>"><?php echo $i; ?></a>
+                    <li class="page-item">
+                        <a class="page-link rounded-pill" href="/Product/index?<?php echo http_build_query($queryBase); ?>">
+                            <i class="fas fa-chevron-left"></i>
+                        </a>
+                    </li>
+                <?php endif; ?>
+
+                <?php
+                    $range = 3;
+                    $start = max(1, $currentPage - $range);
+                    $end = min($totalPagesInt, $currentPage + $range);
+
+                    if ($start > 1):
+                        $queryBase['page'] = 1;
+                ?>
+                    <li class="page-item">
+                        <a class="page-link rounded-pill" href="/Product/index?<?php echo http_build_query($queryBase); ?>">1</a>
+                    </li>
+                    <?php if ($start > 2): ?>
+                        <li class="page-item disabled"><span class="page-link">…</span></li>
+                    <?php endif; ?>
+                <?php endif; ?>
+
+                <?php for ($i = $start; $i <= $end; $i++):
+                    $queryBase['page'] = $i;
+                ?>
+                    <li class="page-item <?php echo $i === $currentPage ? 'active' : ''; ?>">
+                        <a class="page-link rounded-pill" href="/Product/index?<?php echo http_build_query($queryBase); ?>">
+                            <?php echo $i; ?>
+                        </a>
                     </li>
                 <?php endfor; ?>
+
+                <?php if ($end < $totalPagesInt):
+                    if ($end < $totalPagesInt - 1): ?>
+                        <li class="page-item disabled"><span class="page-link">…</span></li>
+                    <?php endif;
+
+                    $queryBase['page'] = $totalPagesInt;
+                ?>
+                    <li class="page-item">
+                        <a class="page-link rounded-pill" href="/Product/index?<?php echo http_build_query($queryBase); ?>">
+                            <?php echo $totalPagesInt; ?>
+                        </a>
+                    </li>
+                <?php endif; ?>
+
+                <?php if ($currentPage < $totalPagesInt):
+                    $queryBase['page'] = $currentPage + 1;
+                ?>
+                    <li class="page-item">
+                        <a class="page-link rounded-pill" href="/Product/index?<?php echo http_build_query($queryBase); ?>">
+                            <i class="fas fa-chevron-right"></i>
+                        </a>
+                    </li>
+                <?php endif; ?>
             </ul>
         </nav>
+
+        <p class="text-center text-muted small mt-1">
+            Trang <?php echo $currentPage; ?> / <?php echo $totalPagesInt; ?>
+            · <?php echo (int)($totalProducts ?? count($products)); ?> sản phẩm
+        </p>
     <?php endif; ?>
+
 </div>
 
 <style>
-    .product-title-link:hover { color: #288ad6 !important; text-decoration: underline !important; }
+.shop-page {
+    background: transparent;
+}
+
+/* ===== HERO ===== */
+.shop-hero {
+    min-height: 360px;
+    border-radius: 30px;
+    padding: 46px 56px;
+    background:
+        radial-gradient(circle at 75% 35%, rgba(255,212,0,.95) 0, rgba(255,212,0,.25) 32%, transparent 56%),
+        linear-gradient(135deg, #101010 0%, #1f1f1f 56%, #ffd400 100%);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    overflow: hidden;
+    box-shadow: 0 18px 42px rgba(0,0,0,.16);
+}
+
+.hero-left {
+    max-width: 540px;
+    color: #fff;
+    position: relative;
+    z-index: 2;
+}
+
+.hero-badge {
+    display: inline-flex;
+    background: #ffd400;
+    color: #111;
+    border-radius: 999px;
+    padding: 7px 15px;
+    font-size: .78rem;
+    font-weight: 900;
+    margin-bottom: 14px;
+}
+
+.hero-left h1 {
+    font-size: 3rem;
+    line-height: 1.05;
+    font-weight: 900;
+    letter-spacing: -1.3px;
+    margin-bottom: 14px;
+}
+
+.hero-left p {
+    color: rgba(255,255,255,.78);
+    font-size: 1.03rem;
+    margin-bottom: 24px;
+}
+
+.hero-actions {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.hero-btn-primary,
+.hero-btn-secondary {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 999px;
+    padding: 12px 22px;
+    font-weight: 900;
+    text-decoration: none;
+    transition: .2s;
+}
+
+.hero-btn-primary {
+    background: #fff;
+    color: #111;
+}
+
+.hero-btn-secondary {
+    background: rgba(255,255,255,.12);
+    color: #fff;
+    border: 1px solid rgba(255,255,255,.28);
+}
+
+.hero-btn-primary:hover,
+.hero-btn-secondary:hover {
+    transform: translateY(-2px);
+}
+
+.hero-btn-primary:hover {
+    background: #ffd400;
+    color: #111;
+}
+
+.hero-btn-secondary:hover {
+    background: #fff;
+    color: #111;
+}
+
+.hero-right img {
+    max-height: 300px;
+    max-width: 430px;
+    object-fit: contain;
+    filter: drop-shadow(0 22px 28px rgba(0,0,0,.36));
+    transform: rotate(-4deg);
+}
+
+/* ===== MINI BANNER ===== */
+.mini-banner-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+}
+
+.mini-banner {
+    background: #fff;
+    border-radius: 22px;
+    padding: 20px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    color: #111;
+    text-decoration: none;
+    box-shadow: 0 8px 24px rgba(0,0,0,.07);
+    border: 1px solid rgba(0,0,0,.04);
+    transition: .2s;
+}
+
+.mini-banner:hover {
+    color: #111;
+    transform: translateY(-3px);
+    box-shadow: 0 14px 32px rgba(0,0,0,.12);
+}
+
+.mini-banner i {
+    width: 46px;
+    height: 46px;
+    border-radius: 16px;
+    background: #fff3b0;
+    color: #111;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.35rem;
+}
+
+.mini-banner strong {
+    display: block;
+    font-size: .98rem;
+    font-weight: 900;
+}
+
+.mini-banner span {
+    display: block;
+    color: #d70018;
+    font-size: .82rem;
+    font-weight: 800;
+}
+
+/* ===== SECTION HEAD ===== */
+.section-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+}
+
+.section-kicker {
+    color: #d70018;
+    font-size: .76rem;
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: .08em;
+}
+
+.section-head h4 {
+    font-size: 1.45rem;
+    font-weight: 900;
+    margin: 2px 0 0;
+}
+
+.btn-add-product {
+    background: #111;
+    color: #ffd400;
+    border-radius: 999px;
+    padding: 11px 18px;
+    font-weight: 900;
+    text-decoration: none;
+    transition: .2s;
+}
+
+.btn-add-product:hover {
+    background: #ffd400;
+    color: #111;
+    transform: translateY(-2px);
+}
+
+/* ===== FILTER ===== */
+.filter-box {
+    background: #fff;
+    border-radius: 24px;
+    padding: 18px;
+    box-shadow: 0 8px 24px rgba(0,0,0,.07);
+    border: 1px solid rgba(0,0,0,.04);
+}
+
+.filter-control {
+    border-radius: 999px;
+    border: 1px solid #e6e6e6;
+    padding: 10px 16px;
+    font-size: .9rem;
+}
+
+.filter-control:focus {
+    border-color: #ffd400;
+    box-shadow: 0 0 0 .2rem rgba(255,212,0,.2);
+}
+
+.filter-bottom {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+    flex-wrap: wrap;
+}
+
+.featured-check {
+    font-size: .88rem;
+    font-weight: 800;
+    color: #333;
+}
+
+.filter-actions {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.btn-filter,
+.btn-clear {
+    border: none;
+    border-radius: 999px;
+    padding: 10px 18px;
+    font-weight: 900;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+}
+
+.btn-filter {
+    background: #ffd400;
+    color: #111;
+}
+
+.btn-clear {
+    background: #f1f1f1;
+    color: #333;
+}
+
+.btn-filter:hover,
+.btn-clear:hover {
+    transform: translateY(-1px);
+}
+
+.result-count {
+    color: #777;
+    font-size: .86rem;
+}
+
+/* ===== PRODUCT CARD ===== */
+.product-card {
+    height: 100%;
+    background: #fff;
+    border-radius: 22px;
+    padding: 12px;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    border: 1px solid rgba(0,0,0,.055);
+    box-shadow: 0 5px 18px rgba(0,0,0,.07);
+    transition: .22s;
+}
+
+.product-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 16px 34px rgba(0,0,0,.14);
+}
+
+.product-badge {
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    z-index: 2;
+    border-radius: 999px;
+    padding: 5px 9px;
+    font-size: .72rem;
+    font-weight: 900;
+}
+
+.product-badge.sale {
+    background: #d70018;
+    color: #fff;
+}
+
+.product-badge.hot {
+    background: #ffd400;
+    color: #111;
+}
+
+.product-img-wrap {
+    height: 168px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 12px 4px;
+    text-decoration: none;
+}
+
+.product-img-wrap img {
+    max-width: 100%;
+    max-height: 150px;
+    object-fit: contain;
+    transition: .25s;
+}
+
+.product-card:hover .product-img-wrap img {
+    transform: scale(1.04);
+}
+
+.product-info {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+}
+
+.product-tags {
+    display: flex;
+    gap: 5px;
+    flex-wrap: wrap;
+    margin-bottom: 7px;
+}
+
+.product-tags span {
+    background: #f5f5f5;
+    color: #666;
+    border-radius: 999px;
+    padding: 4px 8px;
+    font-size: .68rem;
+    font-weight: 800;
+}
+
+.product-name {
+    min-height: 42px;
+    margin-bottom: 6px;
+}
+
+.product-name a {
+    color: #111;
+    text-decoration: none;
+    font-size: .9rem;
+    line-height: 1.25;
+    font-weight: 900;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.product-name a:hover {
+    color: #d70018;
+}
+
+.product-desc {
+    color: #777;
+    font-size: .78rem;
+    line-height: 1.35;
+    height: 34px;
+    overflow: hidden;
+    margin-bottom: 8px;
+}
+
+.product-price strong {
+    color: #d70018;
+    font-size: 1.08rem;
+    font-weight: 900;
+}
+
+.product-price span {
+    color: #999;
+    text-decoration: line-through;
+    font-size: .78rem;
+    margin-left: 4px;
+}
+
+.product-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 6px;
+    margin-top: 5px;
+    font-size: .76rem;
+    color: #888;
+}
+
+.product-meta .rating {
+    color: #f5a400;
+    font-weight: 900;
+}
+
+.product-actions {
+    display: grid;
+    grid-template-columns: 1.2fr .8fr;
+    gap: 7px;
+    margin-top: 12px;
+}
+
+.btn-cart,
+.btn-detail {
+    border-radius: 999px;
+    padding: 9px 8px;
+    font-size: .8rem;
+    font-weight: 900;
+    text-align: center;
+    text-decoration: none;
+    transition: .2s;
+}
+
+.btn-cart {
+    background: #ffd400;
+    color: #111;
+}
+
+.btn-detail {
+    background: #f1f1f1;
+    color: #333;
+}
+
+.btn-cart:hover,
+.btn-detail:hover {
+    transform: translateY(-1px);
+    color: #111;
+}
+
+.admin-actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 7px;
+    border-top: 1px solid #eee;
+    padding-top: 9px;
+    margin-top: 9px;
+}
+
+.btn-admin-edit,
+.btn-admin-delete {
+    border-radius: 999px;
+    padding: 7px;
+    font-size: .75rem;
+    font-weight: 900;
+    text-align: center;
+    text-decoration: none;
+}
+
+.btn-admin-edit {
+    background: #e3f2fd;
+    color: #1565c0;
+}
+
+.btn-admin-delete {
+    background: #fff0f0;
+    color: #d70018;
+}
+
+.empty-box {
+    background: #fff;
+    border-radius: 24px;
+    padding: 60px 20px;
+    text-align: center;
+    box-shadow: 0 8px 24px rgba(0,0,0,.07);
+}
+
+.empty-box i {
+    font-size: 4rem;
+    color: #ccc;
+    margin-bottom: 14px;
+}
+
+.empty-box h5 {
+    font-weight: 900;
+}
+
+/* ===== PAGINATION ===== */
+.page-link {
+    color: #111;
+    border: none;
+    box-shadow: 0 4px 12px rgba(0,0,0,.08);
+}
+
+.page-item.active .page-link {
+    background: #ffd400;
+    color: #111;
+    font-weight: 900;
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 991px) {
+    .shop-hero {
+        padding: 34px;
+    }
+
+    .hero-left h1 {
+        font-size: 2.35rem;
+    }
+
+    .hero-right img {
+        max-height: 240px;
+    }
+
+    .mini-banner-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 767px) {
+    .shop-hero {
+        flex-direction: column;
+        text-align: center;
+        padding: 30px 22px;
+    }
+
+    .hero-left h1 {
+        font-size: 2rem;
+    }
+
+    .hero-actions {
+        justify-content: center;
+    }
+
+    .hero-right img {
+        margin-top: 20px;
+        max-height: 210px;
+    }
+
+    .section-head {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .filter-bottom {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .product-img-wrap {
+        height: 145px;
+    }
+
+    .product-img-wrap img {
+        max-height: 128px;
+    }
+
+    .product-actions {
+        grid-template-columns: 1fr;
+    }
+}
 </style>
 
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        // ⏳ XỬ LÝ TỰ ĐỘNGẨN THÔNG BÁO SAU 3 GIÂY
-        const successAlert = document.getElementById('successAlert');
-        if (successAlert) {
-            setTimeout(function() {
-                // Tận dụng class ẩn của Bootstrap để làm mờ mượt mà
-                successAlert.classList.remove('show');
-                successAlert.classList.add('fade');
-                
-                // Đợi hiệu ứng mờ chạy xong (500ms) rồi xóa hẳn block khỏi giao diện
-                setTimeout(function() {
-                    successAlert.remove();
-                }, 500);
-            }, 3000); // 3000ms = 3 giây hiển thị rực rỡ
-        }
+document.addEventListener('DOMContentLoaded', function () {
+    const successAlert = document.getElementById('successAlert');
 
-        // 🔍 SCRIPT TÌM KIẾM SẢN PHẨM REALTIME
-        const searchInput = document.getElementById('searchInput');
-        if (searchInput) {
-            searchInput.addEventListener('input', function() {
-                let keyword = this.value.toLowerCase().trim();
-                let products = document.querySelectorAll('.product-item');
+    if (successAlert) {
+        setTimeout(function () {
+            successAlert.classList.remove('show');
+            setTimeout(function () {
+                successAlert.remove();
+            }, 500);
+        }, 3000);
+    }
+});
 
-                products.forEach(function(product) {
-                    let productName = product.querySelector('.card-title').innerText.toLowerCase();
-                    if (productName.includes(keyword)) {
-                        product.style.display = '';
-                    } else {
-                        product.style.display = 'none';
-                    }
-                });
-            });
-        }
-    });
+function confirmDelete(id, name) {
+    return confirm('Xóa sản phẩm "' + name + '"?\nHành động này không thể hoàn tác.');
+}
 </script>

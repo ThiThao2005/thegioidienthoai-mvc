@@ -21,7 +21,7 @@
                 </div>
 
                 <div class="d-grid gap-2 d-sm-flex justify-content-sm-center">
-                    <a href="/project1/Product/index" class="btn btn-warning fw-bold px-4 py-2.5 rounded-pill btn-back-home text-dark text-decoration-none">
+                    <a href="/Product/index" class="btn btn-warning fw-bold px-4 py-2.5 rounded-pill btn-back-home text-dark text-decoration-none">
                         <i class="fas fa-shopping-bag me-1"></i> Tiếp tục mua sắm
                     </a>
                 </div>

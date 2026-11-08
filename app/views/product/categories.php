@@ -3,21 +3,21 @@
         <div class="col-lg-3 col-md-4">
             <div class="card border-0 shadow-sm p-3" style="border-radius: 12px;">
                 <div class="d-flex flex-column gap-2">
-                    <a href="/project1/Product/dashboard" class="nav-link p-3 text-secondary fw-semibold">
+                    <a href="/Product/dashboard" class="nav-link p-3 text-secondary fw-semibold">
                         <i class="fas fa-chart-pie me-2 text-warning"></i>Tổng quan hệ thống
                     </a>
                     
-                    <a href="/project1/Product/categories" class="nav-link p-3 bg-light text-dark fw-bold active border-start border-warning border-3">
+                    <a href="/Product/categories" class="nav-link p-3 bg-light text-dark fw-bold active border-start border-warning border-3">
                         <i class="fas fa-tags me-2 text-success"></i>Quản lý danh mục
                     </a>
-                    <a href="/project1/Product/orders" class="nav-link p-3 text-secondary fw-semibold">
+                    <a href="/Product/orders" class="nav-link p-3 text-secondary fw-semibold">
                         <i class="fas fa-shopping-bag me-2 text-danger"></i>Quản lý đơn hàng
                     </a>
-                    <a href="/project1/Product/users" class="nav-link p-3 text-secondary fw-semibold">
+                    <a href="/Product/users" class="nav-link p-3 text-secondary fw-semibold">
                         <i class="fas fa-users me-2 text-info"></i>Quản lý người dùng
                     </a>
                     <hr class="my-2 opacity-50">
-                    <a href="/project1/Product/index" class="nav-link p-3 text-dark fw-semibold">
+                    <a href="/Product/index" class="nav-link p-3 text-dark fw-semibold">
                         <i class="fas fa-arrow-left me-2"></i>Quay lại trang chủ
                     </a>
                 </div>
@@ -31,7 +31,7 @@
 
             <div class="card border-0 shadow-sm p-4 mb-4" style="border-radius: 12px;">
                 <h5 class="fw-bold mb-3 text-secondary">Thêm danh mục mới</h5>
-                <form action="/project1/Product/addCategory" method="POST" class="row g-3 align-items-center">
+                <form action="/Product/addCategory" method="POST" class="row g-3 align-items-center">
                     <div class="col-md-8">
                         <input type="text" name="name" class="form-control rounded-pill px-4" placeholder="Nhập tên danh mục (Ví dụ: Tai nghe, Sạc dự phòng...)" required>
                     </div>
@@ -84,7 +84,7 @@
                                                 <i class="fas fa-edit me-1"></i>Sửa
                                             </button>
                                             
-                                            <a href="/project1/Product/deleteCategory?id=<?= $cat->id ?>" 
+                                            <a href="/Product/deleteCategory?id=<?= $cat->id ?>" 
                                                class="btn btn-sm btn-outline-danger rounded-pill px-3" 
                                                onclick="return confirm('Bạn có chắc chắn muốn xóa danh mục này? Các sản phẩm thuộc danh mục này có thể bị ảnh hưởng.');">
                                                 <i class="fas fa-trash me-1"></i>Xóa
@@ -112,7 +112,7 @@
                 </h5>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <form action="/project1/Product/updateCategory" method="POST">
+            <form action="/Product/updateCategory" method="POST">
                 <div class="modal-body p-4">
                     <input type="hidden" name="id" id="edit-cat-id">
                     
